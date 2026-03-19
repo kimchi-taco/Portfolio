@@ -1,801 +1,588 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KR.POWER.INTEL — Grid Dashboard</title>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;0,600;1,300&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-  <style>
-    :root {
-      --bg      : #060f09;
-      --surface : #0a1c0e;
-      --surface2: #0e2414;
-      --border  : rgba(52,197,94,.14);
-      --glow    : rgba(52,197,94,.38);
-      --green   : #34c55e;
-      --gdim    : #166534;
-      --amber   : #fbbf24;
-      --red     : #f87171;
-      --blue    : #60a5fa;
-      --purple  : #a78bfa;
-      --text    : #7a8499;
-      --text2   : #cdd3e0;
-      --text3   : #3e4557;
-      --mono    : 'IBM Plex Mono', monospace;
-      --sans    : 'Noto Sans KR', sans-serif;
-    }
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { font-size: 13px; scroll-behavior: smooth; }
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--mono);
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Korea Power Market Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#07090d;--bg2:#0d1017;--bg3:#131720;
+  --border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.11);
+  --text:#cdd3e0;--text2:#7a8499;--text3:#3e4557;
+  --mono:'IBM Plex Mono',monospace;--sans:'Noto Sans KR',sans-serif;
+  --green:#34d399;--blue:#60a5fa;--amber:#fbbf24;
+  --red:#f87171;--purple:#a78bfa;--cyan:#22d3ee;--orange:#fb923c;
+}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:13px;min-height:100vh}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.025) 2px,rgba(0,0,0,0.025) 4px);pointer-events:none;z-index:9999}
 
-    /* ── STARS ── */
-    .stars { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
-    .stars::before, .stars::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background-image:
-        radial-gradient(1px 1px at 20% 30%, rgba(52,197,94,.25) 0%, transparent 100%),
-        radial-gradient(1px 1px at 80% 10%, rgba(52,197,94,.2) 0%, transparent 100%),
-        radial-gradient(1px 1px at 50% 60%, rgba(52,197,94,.15) 0%, transparent 100%),
-        radial-gradient(1px 1px at 35% 80%, rgba(52,197,94,.1) 0%, transparent 100%),
-        radial-gradient(1px 1px at 65% 40%, rgba(52,197,94,.18) 0%, transparent 100%),
-        radial-gradient(1px 1px at 10% 70%, rgba(52,197,94,.12) 0%, transparent 100%),
-        radial-gradient(1px 1px at 90% 85%, rgba(52,197,94,.1) 0%, transparent 100%);
-    }
+.topbar{height:44px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 20px;position:sticky;top:0;z-index:200}
+.logo{font-family:var(--mono);font-size:12px;font-weight:500;letter-spacing:.08em}
+.logo em{color:var(--green);font-style:normal}
+.badge{font-family:var(--mono);font-size:10px;padding:3px 8px;border-radius:3px;letter-spacing:.06em}
+.badge-live{background:rgba(52,211,153,.12);color:var(--green);border:1px solid rgba(52,211,153,.25)}
+.blink{display:inline-block;width:6px;height:6px;background:var(--green);border-radius:50%;margin-right:5px;animation:blink 1.4s ease infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+.refresh-btn{font-family:var(--mono);font-size:10px;padding:4px 10px;background:transparent;border:1px solid var(--border2);color:var(--text2);border-radius:3px;cursor:pointer;transition:all .15s}
+.refresh-btn:hover{border-color:var(--green);color:var(--green)}
+.last-update{font-family:var(--mono);font-size:10px;color:var(--text3)}
 
-    /* ── NAV ── */
-    nav {
-      position: sticky; top: 0; z-index: 100;
-      display: flex; align-items: center; gap: 16px;
-      padding: 10px 24px;
-      border-bottom: 1px solid var(--border);
-      background: rgba(6,15,9,.92);
-      backdrop-filter: blur(10px);
-    }
-    .logo {
-      font-size: 11px; letter-spacing: .22em; text-transform: uppercase;
-      color: var(--green); text-decoration: none; font-weight: 400;
-    }
-    .logo span { color: var(--text3); }
-    .nav-sep { color: var(--text3); font-size: 11px; }
-    .nav-title { font-size: 10px; color: var(--text2); letter-spacing: .12em; }
-    .live-pill {
-      margin-left: auto;
-      display: flex; align-items: center; gap: 7px;
-      background: rgba(52,197,94,.08);
-      border: 1px solid var(--glow);
-      padding: 4px 12px;
-      font-size: 9px; letter-spacing: .18em; color: var(--green);
-    }
-    .dot {
-      width: 6px; height: 6px;
-      border-radius: 50%; background: var(--green);
-      animation: blink 2s ease-in-out infinite;
-    }
-    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.2} }
-    #lastUpdate { font-size: 9px; color: var(--text3); }
-    .btn-sm {
-      background: none; cursor: pointer; font-family: var(--mono);
-      border: 1px solid var(--border); color: var(--text3);
-      padding: 4px 10px; font-size: 9px; letter-spacing: .12em;
-      transition: border-color .2s, color .2s;
-    }
-    .btn-sm:hover { border-color: var(--glow); color: var(--green); }
+.dash{display:flex;flex-direction:column;gap:12px;padding:16px;max-width:1600px;margin:0 auto}
+.section-label{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.12em;text-transform:uppercase;padding:0 4px 8px;display:flex;align-items:center;gap:8px}
+.section-label::after{content:'';flex:1;height:1px;background:var(--border)}
 
-    /* ── ALERT ── */
-    .alert-bar {
-      display: none; align-items: center; gap: 12px;
-      padding: 10px 24px; font-size: 11px; color: var(--red);
-      background: rgba(248,113,113,.08);
-      border-bottom: 1px solid rgba(248,113,113,.28);
-    }
-    .alert-bar.show { display: flex; }
-    .alert-bar.warn { color: var(--amber); background: rgba(251,191,36,.08); border-bottom-color: rgba(251,191,36,.28); }
+.kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.kpi{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;position:relative;overflow:hidden;transition:border-color .2s,transform .15s}
+.kpi.clickable{cursor:pointer}
+.kpi.clickable:hover{border-color:rgba(255,255,255,0.18);transform:translateY(-1px)}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.kpi.c-green::before{background:var(--green)}.kpi.c-blue::before{background:var(--blue)}
+.kpi.c-amber::before{background:var(--amber)}.kpi.c-red::before{background:var(--red)}
+.kpi.c-purple::before{background:var(--purple)}.kpi.c-cyan::before{background:var(--cyan)}
+.kpi.c-orange::before{background:var(--orange)}.kpi.c-slate::before{background:#94a3b8}
+.kpi-label{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.08em;margin-bottom:6px}
+.kpi-value{font-family:var(--mono);font-size:22px;font-weight:500;line-height:1;margin-bottom:4px}
+.kpi-value.c-green{color:var(--green)}.kpi-value.c-blue{color:var(--blue)}
+.kpi-value.c-amber{color:var(--amber)}.kpi-value.c-red{color:var(--red)}
+.kpi-value.c-purple{color:var(--purple)}.kpi-value.c-cyan{color:var(--cyan)}
+.kpi-value.c-orange{color:var(--orange)}.kpi-value.c-slate{color:#94a3b8}
+.kpi-sub{font-family:var(--mono);font-size:10px;color:var(--text3)}
+.kpi-delta{display:flex;align-items:center;gap:5px;margin-top:7px;min-height:18px}
+.dbadge{font-family:var(--mono);font-size:10px;padding:2px 6px;border-radius:3px;font-weight:500}
+.dbadge.up{color:#34d399;background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.2)}
+.dbadge.dn{color:#f87171;background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.2)}
+.dbadge.nc{color:#7a8499;background:rgba(122,132,153,.1);border:1px solid rgba(122,132,153,.15)}
+.dpct{font-family:var(--mono);font-size:10px}
+.dpct.up{color:#34d399}.dpct.dn{color:#f87171}.dpct.nc{color:#7a8499}
 
-    /* ── MAIN ── */
-    .wrap { position: relative; z-index: 1; padding: 20px 24px; max-width: 1440px; margin: 0 auto; }
+.grid2{display:grid;grid-template-columns:2fr 1fr;gap:12px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.grid2eq{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.span2{grid-column:span 2}
 
-    /* ── SECTION LABEL ── */
-    .sec-lbl {
-      font-size: 9px; letter-spacing: .32em; text-transform: uppercase;
-      color: var(--text3); margin-bottom: 12px;
-      display: flex; align-items: center; gap: 8px;
-    }
-    .sec-lbl::before, .sec-lbl::after { content: '◆'; color: var(--gdim); font-size: 7px; }
+.panel{background:var(--bg2);border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.ph{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.ph-title{font-family:var(--mono);font-size:10px;color:var(--text2);letter-spacing:.1em;text-transform:uppercase}
+.ph-meta{font-family:var(--mono);font-size:10px;color:var(--text3)}
+.pb{padding:14px}
 
-    /* ── KPI CARDS ── */
-    .kpi-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
-      gap: 10px; margin-bottom: 18px;
-    }
-    .kpi {
-      background: var(--surface); border: 1px solid var(--border);
-      padding: 14px 14px 12px; position: relative; overflow: hidden;
-      cursor: pointer; transition: border-color .2s;
-    }
-    .kpi:hover { border-color: var(--glow); }
-    .kpi::before {
-      content: ''; position: absolute; top: 0; left: 0;
-      width: 2px; height: 100%;
-    }
-    .kpi.c-green::before { background: var(--green); }
-    .kpi.c-blue::before  { background: var(--blue); }
-    .kpi.c-amber::before { background: var(--amber); }
-    .kpi.c-red::before   { background: var(--red); }
-    .kpi.c-purple::before{ background: var(--purple); }
-    .kpi.c-slate::before { background: #94a3b8; }
+.smp-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:3px;margin-bottom:12px}
+.smp-cell{background:var(--bg3);border-radius:3px;padding:5px 2px;text-align:center;font-family:var(--mono);font-size:9px}
+.smp-cell .h{color:var(--text3);display:block;margin-bottom:2px}
+.smp-cell .v{display:block}
 
-    .kpi-lbl { font-size: 9px; color: var(--text3); letter-spacing: .16em; text-transform: uppercase; margin-bottom: 8px; }
-    .kpi-val { font-size: 22px; font-weight: 500; color: var(--text2); line-height: 1; margin-bottom: 4px; }
-    .kpi-unit{ font-size: 9px; color: var(--text3); }
-    .kpi-delta { margin-top: 6px; font-size: 10px; }
-    .up  { color: var(--green); }
-    .dn  { color: var(--red); }
-    .nc  { color: var(--text3); }
+.fuel-list{display:flex;flex-direction:column;gap:8px}
+.fuel-item{display:flex;align-items:center;gap:10px}
+.fuel-name{font-family:var(--mono);font-size:10px;color:var(--text2);min-width:48px}
+.fuel-bar-track{flex:1;height:6px;background:var(--bg3);border-radius:3px;overflow:hidden}
+.fuel-bar-fill{height:100%;border-radius:3px;transition:width .8s ease}
+.fuel-pct{font-family:var(--mono);font-size:10px;color:var(--text3);min-width:32px;text-align:right}
 
-    /* ── PANELS ── */
-    .row { display: grid; gap: 14px; margin-bottom: 14px; }
-    .row-3-1 { grid-template-columns: 3fr 1fr; }
-    .row-2   { grid-template-columns: 1fr 1fr; }
-    .row-1-2 { grid-template-columns: 1fr 2fr; }
+.gauge-wrap{display:flex;flex-direction:column;align-items:center}
+.gauge-arc{position:relative;width:160px;height:90px;overflow:hidden;margin-bottom:12px}
+.gauge-val{position:absolute;bottom:0;left:50%;transform:translateX(-50%);text-align:center}
+.gauge-num{font-family:var(--mono);font-size:24px;font-weight:500}
+.gauge-unit{font-family:var(--mono);font-size:10px;color:var(--text3)}
 
-    .panel {
-      background: var(--surface); border: 1px solid var(--border); padding: 16px;
-    }
-    .p-header {
-      display: flex; align-items: baseline; justify-content: space-between;
-      margin-bottom: 14px;
-    }
-    .p-title { font-size: 10px; color: var(--text2); letter-spacing: .1em; }
-    .p-sub   { font-size: 9px; color: var(--text3); }
+.comm-table{width:100%;border-collapse:collapse}
+.comm-table th{font-family:var(--mono);font-size:10px;color:var(--text3);text-align:left;padding:0 8px 8px;border-bottom:1px solid var(--border)}
+.comm-table td{padding:8px;border-bottom:1px solid var(--border);font-family:var(--mono);font-size:12px}
+.comm-table tr:last-child td{border-bottom:none}
+.cup{color:var(--green)}.cdn{color:var(--red)}
 
-    /* ── SMP HEATMAP ── */
-    .heatmap {
-      display: grid; grid-template-columns: repeat(24,1fr);
-      gap: 2px; margin-bottom: 10px;
-    }
-    .hcell {
-      aspect-ratio: 1; display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      font-size: 6.5px; gap: 1px;
-    }
-    .hcell .hh { color: var(--text3); }
-    .hcell .hv { font-weight: 500; font-size: 7.5px; }
+.alert-bar{background:rgba(251,191,36,.05);border:1px solid rgba(251,191,36,.15);border-radius:6px;padding:10px 14px;display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;color:var(--amber)}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px}
+.dot-ok{background:var(--green)}.dot-err{background:var(--red)}
 
-    /* ── GAUGE ── */
-    .gauge-wrap { display: flex; flex-direction: column; align-items: center; padding: 8px 0; }
-    .gauge-num  { font-size: 30px; font-weight: 500; margin-top: -14px; }
-    .gauge-unit { font-size: 9px; color: var(--text3); margin-top: 2px; }
-    .gauge-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; width: 100%; }
-    .gstat { background: var(--surface2); padding: 8px; text-align: center; }
-    .gstat .v { font-size: 12px; color: var(--text2); }
-    .gstat .l { font-size: 8px; color: var(--text3); margin-top: 2px; }
+/* 모달 */
+.backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:1000;display:flex;align-items:center;justify-content:center;animation:fi .15s ease}
+@keyframes fi{from{opacity:0}to{opacity:1}}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:12px;width:min(800px,95vw);max-height:92vh;display:flex;flex-direction:column;animation:su .18s ease}
+@keyframes su{from{transform:translateY(14px);opacity:0}to{transform:none;opacity:1}}
+.mh{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.mt{font-family:var(--mono);font-size:13px;font-weight:500;color:var(--text)}
+.ms2{font-family:var(--mono);font-size:10px;color:var(--text3);margin-top:2px}
+.mcl{width:28px;height:28px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text2);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.mcl:hover{border-color:var(--border2);color:var(--text)}
+.mstats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:12px 18px;border-bottom:1px solid var(--border);flex-shrink:0}
+.mst{background:var(--bg3);border-radius:6px;padding:10px 12px}
+.mst-l{font-family:var(--mono);font-size:10px;color:var(--text3);margin-bottom:5px}
+.mst-v{font-family:var(--mono);font-size:15px;font-weight:500;color:var(--text)}
+.mper{display:flex;gap:6px;padding:10px 18px;border-bottom:1px solid var(--border);flex-shrink:0}
+.pb{font-family:var(--mono);font-size:10px;padding:4px 12px;border-radius:3px;border:1px solid var(--border);background:transparent;color:var(--text3);cursor:pointer;transition:all .15s}
+.pb:hover{border-color:var(--border2);color:var(--text2)}
+.pb.active{background:rgba(52,211,153,.1);border-color:rgba(52,211,153,.3);color:#34d399}
+.mchart{padding:16px 18px;flex:1;position:relative;min-height:260px}
 
-    /* ── FUEL LEGEND ── */
-    .fuel-legend { display: flex; flex-direction: column; gap: 5px; }
-    .fuel-row { display: flex; align-items: center; gap: 8px; }
-    .fdot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-    .fname { font-size: 10px; color: var(--text3); flex: 1; }
-    .fbar-track { width: 72px; height: 3px; background: var(--surface2); border-radius: 2px; overflow: hidden; }
-    .fbar-fill  { height: 100%; border-radius: 2px; }
-    .fpct { font-size: 9.5px; color: var(--text2); width: 34px; text-align: right; }
-
-    /* ── TABLE ── */
-    .tbl { width: 100%; border-collapse: collapse; font-size: 10px; }
-    .tbl th { text-align: left; color: var(--text3); font-weight: 400; font-size: 9px; letter-spacing: .1em; padding: 5px 8px; border-bottom: 1px solid var(--border); }
-    .tbl td { padding: 6px 8px; border-bottom: 1px solid rgba(255,255,255,.03); color: var(--text); }
-    .tbl tr:last-child td { border-bottom: none; }
-    .cup { color: var(--green); }
-    .cdn { color: var(--red); }
-
-    /* ── LOGS ── */
-    .log-row {
-      display: flex; align-items: center; gap: 10px;
-      padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,.03);
-      font-size: 10px;
-    }
-    .ldot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
-    .dok { background: var(--green); }
-    .derr{ background: var(--red); }
-    .log-src { color: var(--text2); min-width: 106px; }
-    .log-ts  { color: var(--text3); min-width: 126px; }
-    .log-msg { color: var(--red); font-size: 9px; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .log-dur { color: var(--text3); margin-left: auto; white-space: nowrap; }
-
-    /* ── MODAL ── */
-    .backdrop {
-      display: none; position: fixed; inset: 0; z-index: 200;
-      background: rgba(0,0,0,.72); align-items: center; justify-content: center;
-    }
-    .modal {
-      background: var(--surface); border: 1px solid var(--border);
-      padding: 24px; width: min(620px, 95vw); max-height: 92vh; overflow-y: auto;
-    }
-    .modal-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 16px; }
-    .modal-title{ font-size: 15px; color: var(--text2); }
-    .modal-sub  { font-size: 10px; color: var(--text3); margin-top: 3px; }
-    .close-btn  { background: none; border: none; color: var(--text3); font-size: 18px; cursor: pointer; font-family: var(--mono); }
-    .modal-stats{ display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; margin-bottom: 16px; }
-    .mstat      { background: var(--surface2); padding: 8px; }
-    .mstat .ml  { font-size: 9px; color: var(--text3); }
-    .mstat .mv  { font-size: 15px; color: var(--text2); margin-top: 4px; }
-    .period-btns{ display: flex; gap: 8px; margin-bottom: 12px; }
-    .pb {
-      background: none; border: 1px solid var(--border); color: var(--text3);
-      font-family: var(--mono); font-size: 9px; padding: 4px 10px;
-      cursor: pointer; letter-spacing: .1em; transition: all .2s;
-    }
-    .pb.active { border-color: var(--glow); color: var(--green); }
-
-    /* ── RESPONSIVE ── */
-    @media (max-width: 860px) {
-      .row-3-1, .row-2, .row-1-2 { grid-template-columns: 1fr; }
-    }
-
-    /* ── SCROLLBAR ── */
-    ::-webkit-scrollbar { width: 4px; }
-    ::-webkit-scrollbar-track { background: var(--bg); }
-    ::-webkit-scrollbar-thumb { background: var(--glow); border-radius: 2px; }
-  </style>
+@media(max-width:900px){.kpi-row{grid-template-columns:repeat(2,1fr)}.grid2,.grid3{grid-template-columns:1fr}.span2{grid-column:auto}}
+@media(max-width:700px){.grid2eq{grid-template-columns:1fr}}
+</style>
 </head>
 <body>
 
-<!-- Stars -->
-<div class="stars"></div>
-
-<!-- NAV -->
-<nav>
-  <a class="logo" href="/">◆ FORGE <span>NEVER SLEEPS</span></a>
-  <span class="nav-sep">·</span>
-  <span class="nav-title">KR POWER INTEL</span>
-  <span id="lastUpdate" style="margin-left:auto"></span>
-  <div class="live-pill"><div class="dot"></div> LIVE</div>
-  <button class="btn-sm" onclick="loadAll()">↻ 갱신</button>
-</nav>
-
-<!-- ALERT -->
-<div class="alert-bar" id="alertBar">
-  <span>⚠</span>
-  <span id="alertText"></span>
+<div class="topbar">
+  <div style="display:flex;align-items:center;gap:12px">
+    <span class="logo">KR<em>.</em>POWER<em>.</em>INTEL</span>
+    <span class="badge badge-live"><span class="blink"></span>LIVE</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:12px">
+    <span class="last-update" id="lastUpdate">--</span>
+    <button class="refresh-btn" onclick="loadAll()">↻ 새로고침</button>
+  </div>
 </div>
 
-<!-- MAIN -->
-<div class="wrap">
+<div class="dash">
 
-  <!-- KPI Row 1: Power Market -->
-  <div class="sec-lbl" style="margin-top:4px">전력시장 핵심 지표</div>
-  <div class="kpi-grid">
-    <div class="kpi c-green" onclick="openModal('SMP','SMP (육지)','원/kWh')">
-      <div class="kpi-lbl">SMP 현재 · 육지</div>
-      <div class="kpi-val" id="v-smp">—</div>
-      <div class="kpi-unit">원/kWh</div>
-      <div class="kpi-delta" id="d-smp"></div>
+  <div id="alertBox" style="display:none" class="alert-bar">
+    <span>⚠</span><span id="alertText"></span>
+  </div>
+
+  <div>
+    <div class="section-label">실시간 핵심 지표
+      <span style="font-size:9px;color:var(--text3);font-family:var(--mono);text-transform:none;letter-spacing:0;font-weight:400">— 카드 클릭 시 트렌드 차트</span>
     </div>
-    <div class="kpi c-green">
-      <div class="kpi-lbl">공급 예비율</div>
-      <div class="kpi-val" id="v-res">—</div>
-      <div class="kpi-unit">%</div>
-      <div class="kpi-delta" style="font-size:9px;color:var(--text3)" id="v-resmw">— MW</div>
-    </div>
-    <div class="kpi c-blue">
-      <div class="kpi-lbl">현재 수요</div>
-      <div class="kpi-val" id="v-load">—</div>
-      <div class="kpi-unit">MW</div>
-    </div>
-    <div class="kpi c-blue">
-      <div class="kpi-lbl">공급 능력</div>
-      <div class="kpi-val" id="v-cap">—</div>
-      <div class="kpi-unit">MW</div>
-    </div>
-    <div class="kpi c-purple" onclick="openModal('REC','REC 현물','원/REC')">
-      <div class="kpi-lbl">REC 평균가</div>
-      <div class="kpi-val" id="v-rec">—</div>
-      <div class="kpi-unit">원/REC</div>
-      <div class="kpi-delta" id="d-rec"></div>
+    <div class="kpi-row">
+
+      <div class="kpi c-green clickable" onclick="openModal('SMP','SMP 육지 현물가','원/kWh')">
+        <div class="kpi-label">SMP 현재 (육지)</div>
+        <div class="kpi-value c-green" id="v-smp">—</div>
+        <div class="kpi-sub">원/kWh</div>
+        <div class="kpi-delta" id="d-smp"></div>
+      </div>
+
+      <div class="kpi c-blue clickable" onclick="openModal('REC','REC 현물 평균가','원/REC')">
+        <div class="kpi-label">REC 현물 평균가</div>
+        <div class="kpi-value c-blue" id="v-rec">—</div>
+        <div class="kpi-sub">원/REC</div>
+        <div class="kpi-delta" id="d-rec"></div>
+      </div>
+
+      <div class="kpi c-amber">
+        <div class="kpi-label">공급 예비율</div>
+        <div class="kpi-value c-amber" id="v-res">—</div>
+        <div class="kpi-sub">% · <span id="v-resmw">—</span> MW</div>
+      </div>
+
+      <div class="kpi c-cyan">
+        <div class="kpi-label">현재 부하</div>
+        <div class="kpi-value c-cyan" id="v-load">—</div>
+        <div class="kpi-sub">MW · 공급 <span id="v-cap">—</span></div>
+      </div>
+
+      <div class="kpi c-red clickable" onclick="openModal('USDKRW','USD/KRW 환율','원')">
+        <div class="kpi-label">USD / KRW</div>
+        <div class="kpi-value c-red" id="v-krw">—</div>
+        <div class="kpi-sub">원</div>
+        <div class="kpi-delta" id="d-krw"></div>
+      </div>
+
+      <div class="kpi c-purple clickable" onclick="openModal('LNG_HH','LNG Henry Hub','USD/MMBtu')">
+        <div class="kpi-label">LNG Henry Hub</div>
+        <div class="kpi-value c-purple" id="v-lng">—</div>
+        <div class="kpi-sub">USD/MMBtu</div>
+        <div class="kpi-delta" id="d-lng"></div>
+      </div>
+
+      <div class="kpi c-amber clickable" onclick="openModal('URANIUM','우라늄 현물','USD/lb')">
+        <div class="kpi-label">우라늄 현물</div>
+        <div class="kpi-value c-amber" id="v-uranium">—</div>
+        <div class="kpi-sub">USD/lb</div>
+        <div class="kpi-delta" id="d-uranium"></div>
+      </div>
+
+      <div class="kpi c-orange clickable" onclick="openModal('DUBAI','두바이유 (Brent)','USD/bbl')">
+        <div class="kpi-label">두바이유 (Brent)</div>
+        <div class="kpi-value c-orange" id="v-dubai">—</div>
+        <div class="kpi-sub">USD/bbl</div>
+        <div class="kpi-delta" id="d-dubai"></div>
+      </div>
+
+      <div class="kpi c-slate clickable" onclick="openModal('COAL','석탄 (호주)','USD/ton')">
+        <div class="kpi-label">석탄 (호주)</div>
+        <div class="kpi-value c-slate" id="v-coal">—</div>
+        <div class="kpi-sub">USD/ton</div>
+        <div class="kpi-delta" id="d-coal"></div>
+      </div>
+
+      <div class="kpi c-green clickable" onclick="openModal('KAU','탄소배출권 KAU','원/톤')">
+        <div class="kpi-label">탄소배출권 (KAU)</div>
+        <div class="kpi-value c-green" id="v-kau">—</div>
+        <div class="kpi-sub">원/톤</div>
+        <div class="kpi-delta" id="d-kau"></div>
+      </div>
+
     </div>
   </div>
 
-  <!-- KPI Row 2: Commodities -->
-  <div class="sec-lbl">글로벌 연료 원자재</div>
-  <div class="kpi-grid">
-    <div class="kpi c-purple" onclick="openModal('LNG_HH','LNG Henry Hub','USD/MMBtu')">
-      <div class="kpi-lbl">LNG Henry Hub</div>
-      <div class="kpi-val" id="v-lng">—</div>
-      <div class="kpi-unit">USD/MMBtu</div>
-      <div class="kpi-delta" id="d-lng"></div>
-    </div>
-    <div class="kpi c-red" onclick="openModal('USDKRW','USD/KRW','원')">
-      <div class="kpi-lbl">USD / KRW</div>
-      <div class="kpi-val" id="v-krw">—</div>
-      <div class="kpi-unit">원</div>
-      <div class="kpi-delta" id="d-krw"></div>
-    </div>
-    <div class="kpi c-amber" onclick="openModal('DUBAI','두바이유','USD/bbl')">
-      <div class="kpi-lbl">두바이유</div>
-      <div class="kpi-val" id="v-dubai">—</div>
-      <div class="kpi-unit">USD/bbl</div>
-      <div class="kpi-delta" id="d-dubai"></div>
-    </div>
-    <div class="kpi c-slate" onclick="openModal('COAL','호주 석탄','USD/ton')">
-      <div class="kpi-lbl">석탄 (호주)</div>
-      <div class="kpi-val" id="v-coal">—</div>
-      <div class="kpi-unit">USD/ton</div>
-      <div class="kpi-delta" id="d-coal"></div>
-    </div>
-    <div class="kpi c-amber" onclick="openModal('URANIUM','우라늄','USD/lb')">
-      <div class="kpi-lbl">우라늄 현물</div>
-      <div class="kpi-val" id="v-uranium">—</div>
-      <div class="kpi-unit">USD/lb</div>
-      <div class="kpi-delta" id="d-uranium"></div>
-    </div>
-    <div class="kpi c-green" onclick="openModal('KAU','탄소배출권 (KAU)','원/톤')">
-      <div class="kpi-lbl">탄소배출권 KAU</div>
-      <div class="kpi-val" id="v-kau">—</div>
-      <div class="kpi-unit">원/톤</div>
-      <div class="kpi-delta" id="d-kau"></div>
-    </div>
-  </div>
-
-  <!-- Row 1: SMP hourly + Fuel -->
-  <div class="row row-3-1" style="margin-top:4px">
-    <div class="panel">
-      <div class="p-header">
-        <span class="p-title">SMP 시간대별 — 오늘 24H (육지)</span>
-        <span class="p-sub" id="smpHourlyDate">—</span>
+  <div>
+    <div class="section-label">전력시장 가격 & 발전 구성</div>
+    <div class="grid2">
+      <div class="panel">
+        <div class="ph"><span class="ph-title">SMP 시간대별 (오늘 24h)</span><span class="ph-meta">육지 기준</span></div>
+        <div class="pb">
+          <div class="smp-grid" id="smpGrid"></div>
+          <div style="height:130px;position:relative"><canvas id="smpLine"></canvas></div>
+        </div>
       </div>
-      <div class="heatmap" id="smpGrid"></div>
-      <div style="position:relative;height:100px">
-        <canvas id="smpLine"></canvas>
-      </div>
-    </div>
-    <div class="panel">
-      <div class="p-header">
-        <span class="p-title">발전 연료원</span>
-        <span class="p-sub">현재</span>
-      </div>
-      <div style="position:relative;height:150px">
-        <canvas id="fuelDonut"></canvas>
-      </div>
-      <div class="fuel-legend" id="fuelList" style="margin-top:10px"></div>
-    </div>
-  </div>
-
-  <!-- Row 2: Gauge + SMP 30D -->
-  <div class="row row-1-2">
-    <div class="panel">
-      <div class="p-header">
-        <span class="p-title">공급 예비율 게이지</span>
-        <span class="p-sub">적정 15%↑</span>
-      </div>
-      <div class="gauge-wrap">
-        <canvas id="gaugeCanvas" width="200" height="110"></canvas>
-        <div class="gauge-num" id="gaugeNum" style="margin-top:-18px">—</div>
-        <div class="gauge-unit">%</div>
-        <div class="gauge-grid">
-          <div class="gstat"><div class="v" id="g-cap">—</div><div class="l">공급능력 MW</div></div>
-          <div class="gstat"><div class="v" id="g-res">—</div><div class="l">예비력 MW</div></div>
+      <div class="panel">
+        <div class="ph"><span class="ph-title">발전 연료원 구성</span><span class="ph-meta">현재</span></div>
+        <div class="pb">
+          <div style="height:150px;position:relative;margin-bottom:12px"><canvas id="fuelDonut"></canvas></div>
+          <div class="fuel-list" id="fuelList"></div>
         </div>
       </div>
     </div>
-    <div class="panel">
-      <div class="p-header">
-        <span class="p-title">30일 SMP 추이 (육지 기준)</span>
-        <span class="p-sub" id="smpAvgLbl">일별 평균</span>
+  </div>
+
+  <div>
+    <div class="section-label">계통 안정성 & 30일 트렌드</div>
+    <div class="grid3">
+      <div class="panel">
+        <div class="ph"><span class="ph-title">공급 예비율 게이지</span><span class="ph-meta">적정 15%↑</span></div>
+        <div class="pb">
+          <div class="gauge-wrap">
+            <div class="gauge-arc">
+              <canvas id="gaugeCanvas" width="160" height="90"></canvas>
+              <div class="gauge-val"><div class="gauge-num" id="gaugeNum">—</div><div class="gauge-unit">%</div></div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%">
+              <div style="background:var(--bg3);border-radius:6px;padding:10px;text-align:center">
+                <div style="font-family:var(--mono);font-size:10px;color:var(--text3);margin-bottom:4px">공급능력</div>
+                <div style="font-family:var(--mono);font-size:14px;color:var(--cyan)" id="g-cap">—</div>
+                <div style="font-family:var(--mono);font-size:9px;color:var(--text3)">MW</div>
+              </div>
+              <div style="background:var(--bg3);border-radius:6px;padding:10px;text-align:center">
+                <div style="font-family:var(--mono);font-size:10px;color:var(--text3);margin-bottom:4px">예비력</div>
+                <div style="font-family:var(--mono);font-size:14px;color:var(--green)" id="g-res">—</div>
+                <div style="font-family:var(--mono);font-size:9px;color:var(--text3)">MW</div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div style="position:relative;height:236px">
-        <canvas id="trendChart"></canvas>
+      <div class="panel span2">
+        <div class="ph"><span class="ph-title">30일 SMP 추이</span><span class="ph-meta">일별 평균</span></div>
+        <div class="pb"><div style="height:200px;position:relative"><canvas id="trendChart"></canvas></div></div>
       </div>
     </div>
   </div>
 
-  <!-- Row 3: REC + Commodity table -->
-  <div class="row row-2">
-    <div class="panel">
-      <div class="p-header">
-        <span class="p-title">REC 현물 추이</span>
-        <span class="p-sub">원/REC</span>
+  <div>
+    <div class="section-label">REC 시장 & 글로벌 원자재</div>
+    <div class="grid2eq">
+      <div class="panel">
+        <div class="ph"><span class="ph-title">REC 현물 추이</span><span class="ph-meta">원/REC</span></div>
+        <div class="pb"><div style="height:180px;position:relative"><canvas id="recChart"></canvas></div></div>
       </div>
-      <div style="position:relative;height:190px">
-        <canvas id="recChart"></canvas>
+      <div class="panel">
+        <div class="ph"><span class="ph-title">글로벌 연료 원자재</span><span class="ph-meta" id="commTs">—</span></div>
+        <div class="pb">
+          <table class="comm-table">
+            <thead><tr><th>품목</th><th>현재가</th><th>전일비</th><th>단위</th></tr></thead>
+            <tbody id="commBody"></tbody>
+          </table>
+        </div>
       </div>
-    </div>
-    <div class="panel">
-      <div class="p-header">
-        <span class="p-title">글로벌 연료 원자재</span>
-        <span class="p-sub" id="commTs">—</span>
-      </div>
-      <table class="tbl">
-        <thead><tr><th>품목</th><th>현재가</th><th>전일비</th><th>단위</th></tr></thead>
-        <tbody id="commBody"></tbody>
-      </table>
     </div>
   </div>
 
-  <!-- Logs -->
-  <div class="panel">
-    <div class="p-header">
-      <span class="p-title">수집 상태 로그</span>
-      <span class="p-sub">최근 10건</span>
-    </div>
-    <div id="logList"></div>
+  <div>
+    <div class="section-label">수집 상태 로그</div>
+    <div class="panel"><div class="pb"><div id="logList" style="display:flex;flex-direction:column;gap:4px;font-family:var(--mono);font-size:11px"></div></div></div>
   </div>
 
-</div><!-- /wrap -->
+</div>
 
-<!-- MODAL -->
-<div class="backdrop" id="backdrop" onclick="if(event.target===this)closeModal()">
+<!-- 트렌드 모달 -->
+<div id="backdrop" style="display:none" class="backdrop" onclick="onBdClick(event)">
   <div class="modal">
-    <div class="modal-head">
+    <div class="mh">
       <div>
-        <div class="modal-title" id="mTitle"></div>
-        <div class="modal-sub" id="mSub"></div>
+        <div class="mt" id="mTitle">—</div>
+        <div class="ms2" id="mSub">—</div>
       </div>
-      <button class="close-btn" onclick="closeModal()">✕</button>
+      <button class="mcl" onclick="closeModal()">✕</button>
     </div>
-    <div class="modal-stats">
-      <div class="mstat"><div class="ml">현재가</div><div class="mv" id="ms-cur">—</div></div>
-      <div class="mstat"><div class="ml">전일 대비</div><div id="ms-chg" style="font-size:13px;margin-top:4px">—</div></div>
-      <div class="mstat"><div class="ml">기간 최고</div><div class="mv" id="ms-max">—</div></div>
-      <div class="mstat"><div class="ml">기간 평균</div><div class="mv" id="ms-avg">—</div></div>
+    <div class="mstats">
+      <div class="mst"><div class="mst-l">현재가</div><div class="mst-v" id="ms-cur">—</div></div>
+      <div class="mst"><div class="mst-l">전일 대비</div><div class="mst-v" id="ms-chg">—</div></div>
+      <div class="mst"><div class="mst-l">기간 최고</div><div class="mst-v" id="ms-max">—</div></div>
+      <div class="mst"><div class="mst-l">기간 평균</div><div class="mst-v" id="ms-avg">—</div></div>
     </div>
-    <div class="period-btns">
-      <button class="pb active" onclick="setPeriod(30,this)">1개월</button>
-      <button class="pb" onclick="setPeriod(90,this)">3개월</button>
+    <div class="mper">
+      <button class="pb" onclick="setPeriod(30,this)">1개월</button>
+      <button class="pb active" onclick="setPeriod(90,this)">3개월</button>
       <button class="pb" onclick="setPeriod(180,this)">6개월</button>
       <button class="pb" onclick="setPeriod(365,this)">1년</button>
     </div>
-    <div style="position:relative;height:300px"><canvas id="mChart"></canvas></div>
+    <div class="mchart"><canvas id="mChart"></canvas></div>
   </div>
 </div>
 
 <script>
-// ─────────────────────────────────────────────────────────────
-// CONFIG
-// API_BASE: 같은 서버에서 서빙할 경우 '' (relative)
-//           외부 API 서버가 있다면 'https://api.your-domain.com' 형태로
-// ─────────────────────────────────────────────────────────────
-const API_BASE = 'https://api.mav-ash.com';
+const MONO="'IBM Plex Mono',monospace";
+Chart.defaults.color='#3e4557';
+Chart.defaults.font.family=MONO;
+Chart.defaults.font.size=10;
 
-const MONO = "'IBM Plex Mono',monospace";
-Chart.defaults.color = '#3e4557';
-Chart.defaults.font.family = MONO;
-Chart.defaults.font.size = 10;
+let charts={};
+let mChart=null;
+let mSym='', mUnit='';
 
-let charts = {}, mChart = null, mSym = '', mUnit = '';
+const FC={nuclear:'#60a5fa',lng:'#a78bfa',coal:'#94a3b8',renewable:'#34d399',oil:'#fbbf24',pumped:'#f87171',other:'#64748b'};
+const FL={nuclear:'원자력',lng:'LNG',coal:'석탄',renewable:'신재생',oil:'석유',pumped:'양수',other:'기타'};
+const CC={LNG_HH:'#a78bfa',USDKRW:'#f87171',URANIUM:'#fbbf24',DUBAI:'#fb923c',COAL:'#94a3b8',KAU:'#34d399',GOLD:'#fcd34d',OIL_KRX:'#60a5fa'};
+const CL={LNG_HH:'LNG Henry Hub',USDKRW:'USD/KRW',URANIUM:'우라늄',COAL:'호주 석탄',DUBAI:'두바이유',KAU:'탄소배출권(KAU)',GOLD:'금 시세',OIL_KRX:'석유(경유)'};
+const CU={LNG_HH:'USD/MMBtu',USDKRW:'원',URANIUM:'USD/lb',COAL:'USD/ton',DUBAI:'USD/bbl',KAU:'원/톤',GOLD:'원/g',OIL_KRX:'원/L'};
 
-const FC = { nuclear:'#60a5fa', lng:'#a78bfa', coal:'#94a3b8', renewable:'#34d399', oil:'#fbbf24', pumped:'#f87171', other:'#64748b' };
-const FL = { nuclear:'원자력', lng:'LNG', coal:'석탄', renewable:'신재생', oil:'석유', pumped:'양수', other:'기타' };
-const CC = { LNG_HH:'#a78bfa', USDKRW:'#f87171', URANIUM:'#fbbf24', DUBAI:'#fb923c', COAL:'#94a3b8', KAU:'#34d399' };
-const CL = { LNG_HH:'LNG Henry Hub', USDKRW:'USD/KRW', URANIUM:'우라늄', COAL:'호주 석탄', DUBAI:'두바이유', KAU:'탄소배출권(KAU)' };
-const CU = { LNG_HH:'USD/MMBtu', USDKRW:'원', URANIUM:'USD/lb', COAL:'USD/ton', DUBAI:'USD/bbl', KAU:'원/톤' };
-
-// ─── utils ───────────────────────────────────────────────────
-async function apiFetch(path) {
-  const r = await fetch(API_BASE + path);
-  if (!r.ok) throw new Error('HTTP ' + r.status);
-  const j = await r.json();
-  return j.data;
-}
-function set(id, v) { const e = document.getElementById(id); if (e) e.textContent = v; }
-function renderDelta(id, chg, pct, dec) {
-  const el = document.getElementById(id); if (!el || chg == null) return;
-  const zero = Math.abs(chg) < 0.001, up = chg > 0;
-  const cls = zero ? 'nc' : up ? 'up' : 'dn';
-  const arr = zero ? '─' : up ? '▲' : '▼';
-  const avs = dec === 0 ? Math.round(Math.abs(chg)).toLocaleString() : Math.abs(chg).toFixed(dec);
-  const ps  = pct != null ? ` <span class="${cls}">${up&&!zero?'+':''}${pct.toFixed(2)}%</span>` : '';
-  el.innerHTML = `<span class="${cls}">${arr} ${avs}</span>${ps}`;
+async function apiFetch(path){
+  const r=await fetch(path);
+  if(!r.ok) throw new Error('HTTP '+r.status);
+  return (await r.json()).data;
 }
 
-// ─── LOAD ALL ─────────────────────────────────────────────────
-async function loadAll() {
-  set('lastUpdate', '로딩 중...');
-  try {
-    const [sum, smpD, recD, logs] = await Promise.all([
+async function loadAll(){
+  try{
+    document.getElementById('lastUpdate').textContent='로딩 중...';
+    const [sum,smpD,recD,logs]=await Promise.all([
       apiFetch('/api/summary'),
-      apiFetch('/api/smp/daily?days=30').catch(() => []),
-      apiFetch('/api/rec?days=30').catch(() => []),
-      apiFetch('/api/logs').catch(() => []),
+      apiFetch('/api/smp/daily?days=30'),
+      apiFetch('/api/rec?days=12'),
+      apiFetch('/api/logs'),
     ]);
     renderKpis(sum);
-    renderSmpHourly(sum.smpToday || []);
+    renderSmpGrid(sum.smpToday||[]);
+    renderSmpLine(sum.smpToday||[]);
     renderFuel(sum.fuel);
     renderGauge(sum.grid);
-    renderTrend(smpD || []);
-    renderRec(recD || []);
-    renderComms(sum.commodities || []);
-    renderLogs(logs || []);
+    renderTrend(smpD);
+    renderRec(recD);
+    renderComms(sum.commodities||[]);
+    renderLogs(logs||[]);
     checkAlert(sum.grid);
-    set('lastUpdate', '업데이트: ' + new Date().toLocaleTimeString('ko-KR'));
-  } catch (e) {
+    document.getElementById('lastUpdate').textContent='업데이트: '+new Date().toLocaleTimeString('ko-KR');
+  }catch(e){
     console.error(e);
-    set('lastUpdate', '오류: ' + e.message);
+    document.getElementById('lastUpdate').textContent='오류: '+e.message;
   }
 }
 
-// ─── KPIs ─────────────────────────────────────────────────────
-function renderKpis(s) {
-  const g = s.grid || {};
-  if (s.smpNow) set('v-smp', s.smpNow.price?.toFixed(1) || '—');
-  if (s.rec)    set('v-rec', Math.round(s.rec.avg_price || 0).toLocaleString());
-  if (g.reserve_rate != null) {
-    const rr = parseFloat(g.reserve_rate).toFixed(1);
-    const el = document.getElementById('v-res');
-    el.textContent = rr;
-    el.style.color = rr < 10 ? 'var(--red)' : rr < 15 ? 'var(--amber)' : 'var(--green)';
+function set(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
+
+function renderDelta(id,chg,pct,dec){
+  const el=document.getElementById(id);
+  if(!el||chg==null)return;
+  const zero=Math.abs(chg)<0.001;
+  const up=chg>0;
+  const cls=zero?'nc':up?'up':'dn';
+  const arrow=zero?'─':up?'▲':'▼';
+  const av=Math.abs(chg);
+  const vs=dec===0?Math.round(av).toLocaleString():av.toFixed(dec);
+  const ps=pct!=null?`${up&&!zero?'+':''}${pct.toFixed(2)}%`:'';
+  el.innerHTML=`<span class="dbadge ${cls}">${arrow} ${vs}</span>${ps?`<span class="dpct ${cls}">${ps}</span>`:''}`;
+}
+
+function renderKpis(s){
+  const g=s.grid||{},smp=s.smpNow,rec=s.rec,comms=s.commodities||[];
+  if(smp) set('v-smp',smp.price?.toFixed(1)||'—');
+  if(rec) set('v-rec',Math.round(rec.avg_price||0).toLocaleString());
+  if(g.reserve_rate!=null){
+    const rr=parseFloat(g.reserve_rate).toFixed(1);
+    set('v-res',rr);
+    document.getElementById('v-res').style.color=rr<10?'var(--red)':rr<15?'var(--amber)':'var(--green)';
   }
-  if (g.reserve_mw)   set('v-resmw', Math.round(+g.reserve_mw).toLocaleString() + ' MW');
-  if (g.current_load) set('v-load',  Math.round(+g.current_load).toLocaleString());
-  if (g.supply_cap)   set('v-cap',   Math.round(+g.supply_cap).toLocaleString());
-  if (s.smpDelta) renderDelta('d-smp', s.smpDelta.change, s.smpDelta.change_pct, 1);
-  if (s.recDelta) renderDelta('d-rec', s.recDelta.change, s.recDelta.change_pct, 0);
-  const MAP = {
-    LNG_HH:  { v:'v-lng',     d:'d-lng',     dec:2 },
-    USDKRW:  { v:'v-krw',     d:'d-krw',     dec:0, comma:true },
-    URANIUM: { v:'v-uranium', d:'d-uranium', dec:2 },
-    DUBAI:   { v:'v-dubai',   d:'d-dubai',   dec:2 },
-    COAL:    { v:'v-coal',    d:'d-coal',    dec:2 },
-    KAU:     { v:'v-kau',     d:'d-kau',     dec:0, comma:true },
+  if(g.reserve_mw)   set('v-resmw',Math.round(+g.reserve_mw).toLocaleString());
+  if(g.current_load) set('v-load', Math.round(+g.current_load).toLocaleString());
+  if(g.supply_cap)   set('v-cap',  Math.round(+g.supply_cap).toLocaleString());
+  if(s.smpDelta) renderDelta('d-smp',s.smpDelta.change,s.smpDelta.change_pct,1);
+  if(s.recDelta) renderDelta('d-rec',s.recDelta.change,s.recDelta.change_pct,0);
+  const MAP={
+    LNG_HH: {v:'v-lng',    d:'d-lng',     dec:2},
+    USDKRW: {v:'v-krw',    d:'d-krw',     dec:0,comma:true},
+    URANIUM:{v:'v-uranium',d:'d-uranium', dec:2},
+    DUBAI:  {v:'v-dubai',  d:'d-dubai',   dec:2},
+    COAL:   {v:'v-coal',   d:'d-coal',    dec:2},
+    KAU:    {v:'v-kau',    d:'d-kau',     dec:0,comma:true},
+    GOLD:   {v:'v-gold',   d:'d-gold',    dec:0,comma:true},
+    OIL_KRX:{v:'v-oil-krx',d:'d-oil-krx', dec:0,comma:true},
   };
-  (s.commodities || []).forEach(c => {
-    const m = MAP[c.symbol]; if (!m) return;
-    const p = parseFloat(c.price);
-    set(m.v, m.comma ? Math.round(p).toLocaleString() : p.toFixed(m.dec));
-    if (c.change != null) renderDelta(m.d, c.change, c.change_pct, m.dec);
+  comms.forEach(c=>{
+    const m=MAP[c.symbol];if(!m)return;
+    const p=parseFloat(c.price);
+    set(m.v,m.comma?Math.round(p).toLocaleString():p.toFixed(m.dec));
+    if(c.change!=null) renderDelta(m.d,c.change,c.change_pct,m.dec);
   });
 }
 
-// ─── SMP HOURLY HEATMAP ───────────────────────────────────────
-function renderSmpHourly(hours) {
-  const grid = document.getElementById('smpGrid');
-  if (!hours.length) {
-    grid.innerHTML = '<div style="grid-column:span 24;padding:8px;color:var(--text3);font-size:10px">데이터 없음</div>';
-    return;
-  }
-  set('smpHourlyDate', new Date().toLocaleDateString('ko-KR'));
-  const pr = hours.map(h => h.price);
-  const mx = Math.max(...pr), mn = Math.min(...pr);
-  const nowH = new Date().getHours();
-  grid.innerHTML = hours.map(h => {
-    const n  = (h.price - mn) / ((mx - mn) || 1);
-    const r  = Math.round(248*n + 96*(1-n));
-    const g2 = Math.round(113*(1-n) + 165*n);
-    const b  = Math.round(113*(1-n) + 100*n);
-    const hl = h.hour === nowH ? 'border:1px solid rgba(255,255,255,.28)' : '';
-    return `<div class="hcell" style="background:rgba(${r},${g2},${b},.14);${hl}">
-      <span class="hh">${String(h.hour).padStart(2,'0')}</span>
-      <span class="hv" style="color:rgb(${r},${g2},${b})">${h.price?.toFixed(0)}</span>
-    </div>`;
-  }).join('');
-
-  const ctx = document.getElementById('smpLine').getContext('2d');
-  if (charts.smpLine) charts.smpLine.destroy();
-  const g = ctx.createLinearGradient(0,0,0,100);
-  g.addColorStop(0,'rgba(52,197,94,.2)'); g.addColorStop(1,'rgba(52,197,94,0)');
-  charts.smpLine = new Chart(ctx, {
-    type:'line',
-    data:{ labels: hours.map(h=>h.hour+'h'), datasets:[{ data:hours.map(h=>h.price), fill:true, borderColor:'#34c55e', backgroundColor:g, borderWidth:1.5, pointRadius:0, tension:.4 }] },
-    options:{ responsive:true, maintainAspectRatio:false,
-      plugins:{ legend:{display:false}, tooltip:{ backgroundColor:'#0a1c0e', titleColor:'#3e4557', bodyColor:'#cdd3e0', borderColor:'rgba(255,255,255,.08)', borderWidth:1, callbacks:{ label:c=>`${c.raw?.toFixed(1)} 원/kWh` } } },
-      scales:{ x:{grid:{color:'rgba(255,255,255,.04)'}}, y:{grid:{color:'rgba(255,255,255,.04)'}} }
-    }
-  });
-}
-
-// ─── FUEL MIX ─────────────────────────────────────────────────
-function renderFuel(fuel) {
-  if (!fuel) return;
-  const keys = ['nuclear','lng','coal','renewable','oil','pumped','other'];
-  const vals = keys.map(k => parseFloat(fuel[k]||0));
-  const ctx  = document.getElementById('fuelDonut').getContext('2d');
-  if (charts.fuel) charts.fuel.destroy();
-  charts.fuel = new Chart(ctx, {
-    type:'doughnut',
-    data:{ labels:keys.map(k=>FL[k]), datasets:[{ data:vals, backgroundColor:keys.map(k=>FC[k]+'33'), borderColor:keys.map(k=>FC[k]), borderWidth:1.5 }] },
-    options:{ responsive:true, maintainAspectRatio:false, cutout:'68%',
-      plugins:{ legend:{display:false}, tooltip:{ backgroundColor:'#0a1c0e', titleColor:'#3e4557', bodyColor:'#cdd3e0', borderColor:'rgba(255,255,255,.08)', borderWidth:1 } }
-    }
-  });
-  document.getElementById('fuelList').innerHTML = keys.filter((_,i)=>vals[i]>0).map(k=>`
-    <div class="fuel-row">
-      <div class="fdot" style="background:${FC[k]}"></div>
-      <span class="fname">${FL[k]}</span>
-      <div class="fbar-track"><div class="fbar-fill" style="width:${parseFloat(fuel[k]||0).toFixed(1)}%;background:${FC[k]}"></div></div>
-      <span class="fpct">${parseFloat(fuel[k]||0).toFixed(1)}%</span>
-    </div>`).join('');
-}
-
-// ─── GAUGE ────────────────────────────────────────────────────
-function renderGauge(grid) {
-  if (!grid) return;
-  const pct = parseFloat(grid.reserve_rate || 0);
-  const canvas = document.getElementById('gaugeCanvas');
-  const ctx = canvas.getContext('2d');
-  ctx.clearRect(0,0,200,110);
-  const cx=100, cy=100, r=76;
-  ctx.beginPath(); ctx.arc(cx,cy,r,Math.PI,2*Math.PI);
-  ctx.strokeStyle='rgba(255,255,255,.05)'; ctx.lineWidth=11; ctx.lineCap='round'; ctx.stroke();
-  const color = pct<10?'#f87171':pct<15?'#fbbf24':'#34c55e';
-  ctx.beginPath(); ctx.arc(cx,cy,r,Math.PI,Math.PI+(Math.min(pct,40)/40)*Math.PI);
-  ctx.strokeStyle=color; ctx.lineWidth=11; ctx.lineCap='round'; ctx.stroke();
-  // 15% threshold marker
-  const a15 = Math.PI+(15/40)*Math.PI;
-  ctx.beginPath();
-  ctx.moveTo(cx+(r-8)*Math.cos(a15), cy+(r-8)*Math.sin(a15));
-  ctx.lineTo(cx+(r+6)*Math.cos(a15), cy+(r+6)*Math.sin(a15));
-  ctx.strokeStyle='rgba(255,255,255,.22)'; ctx.lineWidth=1.5; ctx.lineCap='square'; ctx.stroke();
-  const el = document.getElementById('gaugeNum');
-  el.textContent = pct.toFixed(1); el.style.color = color;
-  set('g-cap', Math.round(grid.supply_cap||0).toLocaleString());
-  set('g-res', Math.round(grid.reserve_mw||0).toLocaleString());
-}
-
-// ─── 30D TREND ────────────────────────────────────────────────
-function renderTrend(smpD) {
-  const ctx = document.getElementById('trendChart').getContext('2d');
-  if (charts.trend) charts.trend.destroy();
-  if (!smpD?.length) return;
-  const avg = smpD.reduce((a,b)=>a+b.land_avg,0)/smpD.length;
-  set('smpAvgLbl', `30일 평균 ${avg.toFixed(1)} 원/kWh`);
-  const g = ctx.createLinearGradient(0,0,0,240);
-  g.addColorStop(0,'rgba(52,197,94,.14)'); g.addColorStop(1,'rgba(52,197,94,0)');
-  charts.trend = new Chart(ctx, {
-    type:'line',
-    data:{ labels:smpD.map(d=>d.trade_date?.slice(5)), datasets:[{ data:smpD.map(d=>d.land_avg), fill:true, borderColor:'#34c55e', backgroundColor:g, borderWidth:1.5, pointRadius:0, tension:.4 }] },
-    options:{ responsive:true, maintainAspectRatio:false,
-      plugins:{ legend:{display:false}, tooltip:{ backgroundColor:'#0a1c0e', titleColor:'#3e4557', bodyColor:'#cdd3e0', borderColor:'rgba(255,255,255,.08)', borderWidth:1, callbacks:{ label:c=>`${c.raw?.toFixed(1)} 원/kWh` } } },
-      scales:{ x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{maxTicksLimit:8}}, y:{grid:{color:'rgba(255,255,255,.04)'}} }
-    }
-  });
-}
-
-// ─── REC ──────────────────────────────────────────────────────
-function renderRec(data) {
-  const ctx = document.getElementById('recChart').getContext('2d');
-  if (charts.rec) charts.rec.destroy();
-  if (!data?.length) return;
-  const g = ctx.createLinearGradient(0,0,0,190);
-  g.addColorStop(0,'rgba(167,139,250,.22)'); g.addColorStop(1,'rgba(167,139,250,0)');
-  charts.rec = new Chart(ctx, {
-    type:'line',
-    data:{ labels:data.map(d=>d.trade_date?.slice(5)), datasets:[{ data:data.map(d=>d.avg_price), fill:true, borderColor:'#a78bfa', backgroundColor:g, borderWidth:1.5, pointRadius:2, pointBackgroundColor:'#a78bfa', tension:.4 }] },
-    options:{ responsive:true, maintainAspectRatio:false,
-      plugins:{ legend:{display:false}, tooltip:{ backgroundColor:'#0a1c0e', titleColor:'#3e4557', bodyColor:'#cdd3e0', borderColor:'rgba(255,255,255,.08)', borderWidth:1, callbacks:{ label:c=>`${Math.round(c.raw).toLocaleString()} 원/REC` } } },
-      scales:{ x:{grid:{color:'rgba(255,255,255,.04)'}}, y:{grid:{color:'rgba(255,255,255,.04)'},ticks:{callback:v=>v.toLocaleString()}} }
-    }
-  });
-}
-
-// ─── COMMODITY TABLE ──────────────────────────────────────────
-function renderComms(comms) {
-  if (!comms.length) return;
-  set('commTs', comms[0]?.fetched_at?.slice(0,16)||'—');
-  document.getElementById('commBody').innerHTML = comms.map(c=>{
-    const chg=c.change, pct=c.change_pct, up=chg>0;
-    const chgHtml = chg!=null
-      ? `<span class="${up?'cup':'cdn'}">${up?'▲':'▼'}${Math.abs(chg).toLocaleString(undefined,{maximumFractionDigits:2})} (${Math.abs(pct||0).toFixed(2)}%)</span>`
-      : '<span style="color:var(--text3)">—</span>';
-    return `<tr>
-      <td style="color:var(--text2)">${CL[c.symbol]||c.symbol}</td>
-      <td style="font-weight:500">${parseFloat(c.price).toLocaleString(undefined,{maximumFractionDigits:2})}</td>
-      <td>${chgHtml}</td>
-      <td style="color:var(--text3);font-size:9px">${CU[c.symbol]||c.unit}</td>
-    </tr>`;
+function renderSmpGrid(hours){
+  const grid=document.getElementById('smpGrid');
+  if(!hours.length){grid.innerHTML='<div style="color:var(--text3);font-family:var(--mono);font-size:11px;grid-column:span 12;padding:8px">데이터 없음</div>';return;}
+  const pr=hours.map(h=>h.price),mx=Math.max(...pr),mn=Math.min(...pr),nowH=new Date().getHours();
+  grid.innerHTML=hours.map(h=>{
+    const n=(h.price-mn)/((mx-mn)||1);
+    const r=Math.round(248*n+96*(1-n)),g2=Math.round(113*(1-n)+165*n),b=Math.round(113*(1-n)+100*n);
+    const hl=h.hour===nowH?'border:1px solid rgba(255,255,255,0.25)':'';
+    return`<div class="smp-cell" style="background:rgba(${r},${g2},${b},0.15);${hl}"><span class="h">${String(h.hour).padStart(2,'0')}</span><span class="v" style="color:rgb(${r},${g2},${b})">${h.price?.toFixed(0)}</span></div>`;
   }).join('');
 }
 
-// ─── LOGS ─────────────────────────────────────────────────────
-function renderLogs(logs) {
-  document.getElementById('logList').innerHTML = (logs||[]).slice(0,10).map(l=>`
-    <div class="log-row">
-      <span class="ldot ${l.status==='ok'?'dok':'derr'}"></span>
-      <span class="log-src">${l.source}</span>
-      <span class="log-ts">${l.ts?.slice(0,19)||'—'}</span>
-      ${l.message?`<span class="log-msg">${l.message}</span>`:''}
-      <span class="log-dur">${l.duration_ms}ms</span>
-    </div>`).join('');
+function renderSmpLine(hours){
+  const ctx=document.getElementById('smpLine').getContext('2d');
+  if(charts.smpLine)charts.smpLine.destroy();
+  if(!hours.length)return;
+  const g=ctx.createLinearGradient(0,0,0,130);
+  g.addColorStop(0,'rgba(52,211,153,0.2)');g.addColorStop(1,'rgba(52,211,153,0)');
+  charts.smpLine=new Chart(ctx,{type:'line',data:{labels:hours.map(h=>h.hour+'h'),datasets:[{data:hours.map(h=>h.price),fill:true,borderColor:'#34d399',backgroundColor:g,borderWidth:1.5,pointRadius:0,tension:.4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:'#1a1f2b',titleColor:'#7a8499',bodyColor:'#cdd3e0',borderColor:'rgba(255,255,255,.1)',borderWidth:1,callbacks:{label:c=>`${c.raw?.toFixed(1)} 원/kWh`}}},scales:{x:{grid:{color:'rgba(255,255,255,0.04)'}},y:{grid:{color:'rgba(255,255,255,0.04)'}}}}});
 }
 
-// ─── ALERT ────────────────────────────────────────────────────
-function checkAlert(grid) {
-  if (!grid) return;
-  const pct = parseFloat(grid.reserve_rate||99);
-  const bar = document.getElementById('alertBar');
-  if (pct < 10) {
-    bar.className = 'alert-bar show';
-    set('alertText', `공급예비율 ${pct.toFixed(1)}% — 수급 위기. 즉시 수요 감축 필요.`);
-  } else if (pct < 15) {
-    bar.className = 'alert-bar show warn';
-    set('alertText', `공급예비율 ${pct.toFixed(1)}% — 적정 수준(15%) 하회. 계통 주의.`);
-  } else {
-    bar.className = 'alert-bar';
-  }
+function renderFuel(fuel){
+  if(!fuel)return;
+  const keys=['nuclear','lng','coal','renewable','oil','pumped','other'];
+  const vals=keys.map(k=>parseFloat(fuel[k]||0));
+  const ctx=document.getElementById('fuelDonut').getContext('2d');
+  if(charts.fuel)charts.fuel.destroy();
+  charts.fuel=new Chart(ctx,{type:'doughnut',data:{labels:keys.map(k=>FL[k]),datasets:[{data:vals,backgroundColor:keys.map(k=>FC[k]+'33'),borderColor:keys.map(k=>FC[k]),borderWidth:1.5}]},options:{responsive:true,maintainAspectRatio:false,cutout:'68%',plugins:{legend:{display:false},tooltip:{backgroundColor:'#1a1f2b',titleColor:'#7a8499',bodyColor:'#cdd3e0',borderColor:'rgba(255,255,255,.1)',borderWidth:1}}}});
+  document.getElementById('fuelList').innerHTML=keys.filter((_,i)=>vals[i]>0).map(k=>`<div class="fuel-item"><span class="fuel-name">${FL[k]}</span><div class="fuel-bar-track"><div class="fuel-bar-fill" style="width:${parseFloat(fuel[k]||0).toFixed(1)}%;background:${FC[k]}"></div></div><span class="fuel-pct">${parseFloat(fuel[k]||0).toFixed(1)}%</span></div>`).join('');
 }
 
-// ─── MODAL ────────────────────────────────────────────────────
-async function openModal(sym, title, unit) {
-  mSym = sym; mUnit = unit;
-  set('mTitle', title); set('mSub', unit);
-  document.getElementById('backdrop').style.display = 'flex';
-  document.body.style.overflow = 'hidden';
-  document.querySelectorAll('.pb').forEach((b,i)=>{ b.classList.toggle('active', i===0); });
-  await loadMData(sym, 30);
+function renderGauge(grid){
+  if(!grid)return;
+  const pct=parseFloat(grid.reserve_rate||0);
+  const canvas=document.getElementById('gaugeCanvas'),ctx=canvas.getContext('2d');
+  ctx.clearRect(0,0,160,90);
+  const cx=80,cy=86,r=66;
+  ctx.beginPath();ctx.arc(cx,cy,r,Math.PI,2*Math.PI);ctx.strokeStyle='rgba(255,255,255,0.06)';ctx.lineWidth=10;ctx.lineCap='round';ctx.stroke();
+  const color=pct<10?'#f87171':pct<15?'#fbbf24':'#34d399';
+  ctx.beginPath();ctx.arc(cx,cy,r,Math.PI,Math.PI+(Math.min(pct,40)/40)*Math.PI);ctx.strokeStyle=color;ctx.lineWidth=10;ctx.lineCap='round';ctx.stroke();
+  const el=document.getElementById('gaugeNum');el.textContent=pct.toFixed(1);el.style.color=color;
+  set('g-cap',Math.round(grid.supply_cap||0).toLocaleString());
+  set('g-res',Math.round(grid.reserve_mw||0).toLocaleString());
 }
-function closeModal() {
-  document.getElementById('backdrop').style.display = 'none';
-  document.body.style.overflow = '';
-  if (mChart) { mChart.destroy(); mChart = null; }
-}
-document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeModal(); });
 
-async function setPeriod(days, btn) {
+function renderTrend(smpD){
+  const ctx=document.getElementById('trendChart').getContext('2d');
+  if(charts.trend)charts.trend.destroy();
+  if(!smpD?.length)return;
+  const g=ctx.createLinearGradient(0,0,0,200);
+  g.addColorStop(0,'rgba(52,211,153,0.15)');g.addColorStop(1,'rgba(52,211,153,0)');
+  charts.trend=new Chart(ctx,{type:'line',data:{labels:smpD.map(d=>d.trade_date?.slice(5)),datasets:[{data:smpD.map(d=>d.land_avg),fill:true,borderColor:'#34d399',backgroundColor:g,borderWidth:1.5,pointRadius:0,tension:.4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:'#1a1f2b',titleColor:'#7a8499',bodyColor:'#cdd3e0',borderColor:'rgba(255,255,255,.1)',borderWidth:1,callbacks:{label:c=>`${c.raw?.toFixed(1)} 원/kWh`}}},scales:{x:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{maxTicksLimit:10}},y:{grid:{color:'rgba(255,255,255,0.04)'}}}}});
+}
+
+function renderRec(data){
+  const ctx=document.getElementById('recChart').getContext('2d');
+  if(charts.rec)charts.rec.destroy();
+  if(!data?.length)return;
+  const g=ctx.createLinearGradient(0,0,0,180);
+  g.addColorStop(0,'rgba(96,165,250,0.25)');g.addColorStop(1,'rgba(96,165,250,0)');
+  charts.rec=new Chart(ctx,{type:'line',data:{labels:data.map(d=>d.trade_date?.slice(5)),datasets:[{data:data.map(d=>d.avg_price),fill:true,borderColor:'#60a5fa',backgroundColor:g,borderWidth:1.5,pointRadius:2,pointBackgroundColor:'#60a5fa',tension:.4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:'#1a1f2b',titleColor:'#7a8499',bodyColor:'#cdd3e0',borderColor:'rgba(255,255,255,.1)',borderWidth:1,callbacks:{label:c=>`${Math.round(c.raw).toLocaleString()} 원/REC`}}},scales:{x:{grid:{color:'rgba(255,255,255,0.04)'}},y:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{callback:v=>v.toLocaleString()}}}}});
+}
+
+function renderComms(comms){
+  if(!comms.length)return;
+  document.getElementById('commTs').textContent=comms[0]?.fetched_at?.slice(0,16)||'—';
+  document.getElementById('commBody').innerHTML=comms.map(c=>{
+    const chg=c.change,pct=c.change_pct,up=chg>0;
+    const chgHtml=chg!=null?`<span class="${up?'cup':'cdn'}">${up?'▲':'▼'}${Math.abs(chg).toLocaleString(undefined,{maximumFractionDigits:2})} (${Math.abs(pct||0).toFixed(2)}%)</span>`:'<span style="color:var(--text3)">—</span>';
+    return`<tr><td style="color:var(--text2);font-size:11px">${CL[c.symbol]||c.symbol}</td><td style="font-weight:500">${parseFloat(c.price).toLocaleString(undefined,{maximumFractionDigits:2})}</td><td>${chgHtml}</td><td style="color:var(--text3);font-size:10px">${CU[c.symbol]||c.unit}</td></tr>`;
+  }).join('');
+}
+
+function renderLogs(logs){
+  document.getElementById('logList').innerHTML=logs.slice(0,8).map(l=>`<div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid var(--border)"><span class="dot ${l.status==='ok'?'dot-ok':'dot-err'}"></span><span style="color:var(--text2);min-width:110px">${l.source}</span><span style="color:var(--text3)">${l.ts?.slice(0,19)}</span>${l.message?`<span style="color:var(--red);font-size:10px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${l.message}</span>`:''}<span style="color:var(--text3);margin-left:auto">${l.duration_ms}ms</span></div>`).join('');
+}
+
+function checkAlert(grid){
+  if(!grid)return;
+  const pct=parseFloat(grid.reserve_rate||99),box=document.getElementById('alertBox');
+  if(pct<10){box.style.display='flex';document.getElementById('alertText').textContent=`공급예비율 ${pct.toFixed(1)}% — 수급 위기. 즉시 수요 감축 필요.`;}
+  else if(pct<15){box.style.display='flex';document.getElementById('alertText').textContent=`공급예비율 ${pct.toFixed(1)}% — 적정 수준(15%) 하회. 계통 주의.`;}
+  else box.style.display='none';
+}
+
+// ── 모달 ─────────────────────────────────────────────────────
+async function openModal(sym,title,unit){
+  mSym=sym; mUnit=unit;
+  set('mTitle',title); set('mSub',unit);
+  document.getElementById('backdrop').style.display='flex';
+  document.body.style.overflow='hidden';
+  document.querySelectorAll('.pb').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.pb')[1].classList.add('active');
+  await loadMData(sym,90);
+}
+
+function closeModal(){
+  document.getElementById('backdrop').style.display='none';
+  document.body.style.overflow='';
+  if(mChart){mChart.destroy();mChart=null;}
+}
+
+function onBdClick(e){if(e.target===document.getElementById('backdrop'))closeModal();}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+
+async function setPeriod(days,btn){
   document.querySelectorAll('.pb').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
-  await loadMData(mSym, days);
+  await loadMData(mSym,days);
 }
 
-async function loadMData(sym, days) {
+async function loadMData(sym,days){
   ['ms-cur','ms-chg','ms-max','ms-avg'].forEach(id=>set(id,'...'));
-  try {
-    let labels, values, color;
-    if (sym==='SMP') {
+  try{
+    let labels,values,color;
+    if(sym==='SMP'){
       const d=await apiFetch(`/api/smp/trend?days=${days}`);
-      labels=d.map(x=>x.trade_date?.slice(5)); values=d.map(x=>x.land_avg); color='#34c55e';
-    } else if (sym==='REC') {
+      labels=d.map(x=>x.trade_date?.slice(5)); values=d.map(x=>x.land_avg); color='#34d399';
+    }else if(sym==='REC'){
       const d=await apiFetch(`/api/rec/trend?days=${days}`);
-      labels=d.map(x=>x.trade_date?.slice(5)); values=d.map(x=>x.avg_price); color='#a78bfa';
-    } else {
+      labels=d.map(x=>x.trade_date?.slice(5)); values=d.map(x=>x.avg_price); color='#60a5fa';
+    }else{
       const d=await apiFetch(`/api/commodities/${sym}/trend?days=${days}`);
       labels=d.map(x=>x.ts?.slice(0,10)); values=d.map(x=>x.price); color=CC[sym]||'#60a5fa';
     }
-    if (!values.length) throw new Error('no data');
-    drawMChart(labels, values, color);
+    if(!values.length)throw new Error('no data');
+    drawMChart(labels,values,color);
     drawMStats(values);
-  } catch {
+  }catch{
     ['ms-cur','ms-chg','ms-max','ms-avg'].forEach(id=>set(id,'—'));
-    if (mChart) { mChart.destroy(); mChart = null; }
+    if(mChart){mChart.destroy();mChart=null;}
   }
 }
 
-function drawMChart(labels, values, color) {
-  const ctx = document.getElementById('mChart').getContext('2d');
-  if (mChart) mChart.destroy();
-  const g = ctx.createLinearGradient(0,0,0,300);
-  g.addColorStop(0,color+'30'); g.addColorStop(1,color+'00');
-  mChart = new Chart(ctx, {
+function drawMChart(labels,values,color){
+  const ctx=document.getElementById('mChart').getContext('2d');
+  if(mChart)mChart.destroy();
+  const g=ctx.createLinearGradient(0,0,0,260);
+  g.addColorStop(0,color+'30');g.addColorStop(1,color+'00');
+  mChart=new Chart(ctx,{
     type:'line',
-    data:{ labels, datasets:[{ data:values, fill:true, borderColor:color, backgroundColor:g, borderWidth:1.5, pointRadius:0, pointHoverRadius:4, pointHoverBackgroundColor:color, tension:.3 }] },
-    options:{ responsive:true, maintainAspectRatio:false,
-      interaction:{ mode:'index', intersect:false },
-      plugins:{ legend:{display:false}, tooltip:{ backgroundColor:'#0a1c0e', titleColor:'#3e4557', bodyColor:'#cdd3e0', borderColor:'rgba(255,255,255,.08)', borderWidth:1, padding:10, callbacks:{ label:c=>` ${c.raw?.toLocaleString(undefined,{maximumFractionDigits:2})} ${mUnit}` } } },
-      scales:{ x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{maxTicksLimit:8}}, y:{grid:{color:'rgba(255,255,255,.04)'},ticks:{callback:v=>v?.toLocaleString(undefined,{maximumFractionDigits:1})}} }
+    data:{labels,datasets:[{data:values,fill:true,borderColor:color,backgroundColor:g,borderWidth:1.5,pointRadius:0,pointHoverRadius:4,pointHoverBackgroundColor:color,tension:.3}]},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      interaction:{mode:'index',intersect:false},
+      plugins:{legend:{display:false},tooltip:{backgroundColor:'#1a1f2b',titleColor:'#7a8499',bodyColor:'#cdd3e0',borderColor:'rgba(255,255,255,.1)',borderWidth:1,padding:10,callbacks:{label:c=>`  ${c.raw?.toLocaleString(undefined,{maximumFractionDigits:2})} ${mUnit}`}}},
+      scales:{x:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{maxTicksLimit:8}},y:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{callback:v=>v?.toLocaleString(undefined,{maximumFractionDigits:1})}}}
     }
   });
 }
 
-function drawMStats(values) {
-  const fmt = v=>v?.toLocaleString(undefined,{maximumFractionDigits:2});
-  const cur=values[values.length-1], prev=values[values.length-2]??cur;
-  const max=Math.max(...values), avg=values.reduce((a,b)=>a+b,0)/values.length;
-  const chg=cur-prev, pct=prev?chg/prev*100:0, up=chg>=0, zero=Math.abs(chg)<0.001;
-  const cc=zero?'var(--text2)':up?'#34c55e':'#f87171';
+function drawMStats(values){
+  const fmt=v=>v?.toLocaleString(undefined,{maximumFractionDigits:2});
+  const cur=values[values.length-1],prev=values[values.length-2]??cur;
+  const max=Math.max(...values),avg=values.reduce((a,b)=>a+b,0)/values.length;
+  const chg=cur-prev,pct=prev?chg/prev*100:0,up=chg>=0;
+  const zero=Math.abs(chg)<0.001;
+  const cc=zero?'var(--text2)':up?'#34d399':'#f87171';
   set('ms-cur',fmt(cur));
-  document.getElementById('ms-chg').innerHTML=`<span style="color:${cc};font-size:13px">${up&&!zero?'+':''}${fmt(chg)} (${up&&!zero?'+':''}${pct.toFixed(2)}%)</span>`;
-  set('ms-max',fmt(max)); set('ms-avg',fmt(avg));
+  document.getElementById('ms-chg').innerHTML=`<span style="color:${cc}">${up&&!zero?'+':''}${fmt(chg)} (${up&&!zero?'+':''}${pct.toFixed(2)}%)</span>`;
+  set('ms-max',fmt(max));
+  set('ms-avg',fmt(avg));
 }
 
-// ─── BOOT ─────────────────────────────────────────────────────
 loadAll();
-setInterval(loadAll, 5 * 60 * 1000);
+setInterval(loadAll,5*60*1000);
 </script>
 </body>
 </html>
