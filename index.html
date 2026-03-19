@@ -1,58 +1,62 @@
 <!DOCTYPE html>
-<html lang="ko" data-theme="dark">
+<html lang="ko">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SangHo Ahn — Energy & Power</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=Pretendard:wght@300;400;500;600&display=swap" rel="stylesheet">
+<title>Forge Maverick — Energy & Power</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=DM+Mono:wght@300;400;500&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-/* ── Reset & Root ─────────────────────────────────────────── */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
+/* ── 테마 변수 ─────────────────────────────────────────────── */
 :root {
-  --ease: cubic-bezier(.16,1,.3,1);
-  --t: .3s;
+  /* dark (기본) */
+  --bg:       #060a08;
+  --bg2:      #0c1210;
+  --bg3:      #141e18;
+  --bg4:      #1c2a22;
+  --border:   rgba(60,160,80,0.10);
+  --border2:  rgba(60,160,80,0.22);
+  --border3:  rgba(60,160,80,0.42);
+  --text:     #d0e5d8;
+  --text2:    #7a9e88;
+  --text3:    #385248;
+  --accent:   #3ecf6c;
+  --accent2:  #5ae888;
+  --adim:     rgba(62,207,108,0.10);
+  --aglow:    rgba(62,207,108,0.22);
+  --red:      #c04040;
+  --shadow:   0 0 0 1px rgba(60,160,80,0.08), 0 8px 32px rgba(0,0,0,0.65);
+  --card:     rgba(12,18,16,0.82);
+  --nav-bg:   rgba(6,10,8,0.88);
+  /* sky */
+  --sky0: #020a04;
+  --sky1: #060e08;
+  --sky2: #0c1810;
 }
 
-[data-theme="dark"] {
-  --bg:      #080b0f;
-  --bg2:     #0e1319;
-  --bg3:     #141b24;
-  --surface: #1a2330;
-  --border:  rgba(255,255,255,0.07);
-  --border2: rgba(255,255,255,0.13);
-  --text:    #dde4ef;
-  --text2:   #7f8fa6;
-  --text3:   #3d4f63;
-  --accent:  #4fffb0;
-  --accent2: #00d977;
-  --accent-dim: rgba(79,255,176,0.08);
-  --accent-glow: rgba(79,255,176,0.15);
-  --card-bg: #0e1319;
-  --tag-bg:  rgba(79,255,176,0.08);
-  --tag-text:#4fffb0;
-  --shadow:  0 0 0 1px rgba(255,255,255,0.05), 0 8px 32px rgba(0,0,0,0.4);
-}
-
-[data-theme="light"] {
-  --bg:      #f7f8fa;
-  --bg2:     #ffffff;
-  --bg3:     #f0f2f5;
-  --surface: #ffffff;
-  --border:  rgba(0,0,0,0.07);
-  --border2: rgba(0,0,0,0.13);
-  --text:    #0f1923;
-  --text2:   #5a6a7e;
-  --text3:   #9aaabb;
-  --accent:  #00925a;
-  --accent2: #007a4c;
-  --accent-dim: rgba(0,146,90,0.08);
-  --accent-glow: rgba(0,146,90,0.12);
-  --card-bg: #ffffff;
-  --tag-bg:  rgba(0,146,90,0.08);
-  --tag-text:#00925a;
-  --shadow:  0 0 0 1px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.08);
+body.day {
+  --bg:       #eaf2ec;
+  --bg2:      #ddeee2;
+  --bg3:      #cce4d4;
+  --bg4:      #b8d8c4;
+  --border:   rgba(20,100,40,0.12);
+  --border2:  rgba(20,100,40,0.24);
+  --border3:  rgba(20,100,40,0.44);
+  --text:     #0a2414;
+  --text2:    #2e6040;
+  --text3:    #70a880;
+  --accent:   #1a7a38;
+  --accent2:  #228844;
+  --adim:     rgba(26,122,56,0.10);
+  --aglow:    rgba(26,122,56,0.18);
+  --red:      #904030;
+  --shadow:   0 0 0 1px rgba(20,100,40,0.08), 0 8px 24px rgba(0,0,0,0.10);
+  --card:     rgba(234,242,236,0.88);
+  --nav-bg:   rgba(234,242,236,0.92);
+  --sky0: #c8e8d0;
+  --sky1: #daf0e2;
+  --sky2: #eef8f2;
 }
 
 html { scroll-behavior: smooth; }
@@ -60,844 +64,569 @@ html { scroll-behavior: smooth; }
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: 'Pretendard', sans-serif;
-  font-size: 15px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 14px;
   line-height: 1.7;
-  transition: background var(--t), color var(--t);
   overflow-x: hidden;
+  transition: background 0.6s, color 0.6s;
 }
 
-/* ── Noise texture overlay ────────────────────────────────── */
-body::before {
+/* 스캔라인 */
+body::after {
   content: '';
-  position: fixed;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  position: fixed; inset: 0;
+  background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.018) 3px, rgba(0,0,0,0.018) 4px);
   pointer-events: none;
-  z-index: 9998;
-  opacity: .4;
+  z-index: 9999;
 }
 
-/* ── Nav ─────────────────────────────────────────────────── */
+/* ── 배경 캔버스 ──────────────────────────────────────────── */
+#bg-wrap {
+  position: fixed; inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* 하늘 gradient */
+#sky-layer {
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, var(--sky0) 0%, var(--sky1) 55%, var(--sky2) 100%);
+  transition: background 0.7s;
+}
+
+/* 별 캔버스 */
+#star-canvas {
+  position: absolute; inset: 0;
+  transition: opacity 0.7s;
+}
+
+/* 낮 구름 */
+#cloud-wrap {
+  position: absolute; inset: 0;
+  opacity: 0;
+  transition: opacity 0.7s;
+}
+
+body.day #star-canvas  { opacity: 0; }
+body.day #cloud-wrap   { opacity: 1; }
+
+/* 바위 레이어들 */
+.rock {
+  position: absolute;
+  bottom: 0; left: 0;
+  width: 100%;
+  will-change: transform;
+}
+
+/* forge glow */
+#glow-layer {
+  position: absolute; bottom: 0; left: 0;
+  width: 100%; height: 35%;
+  background:
+    radial-gradient(ellipse 60% 100% at 50% 100%, rgba(30,180,80,0.22) 0%, transparent 70%),
+    radial-gradient(ellipse 30% 60% at 15% 100%, rgba(20,160,60,0.15) 0%, transparent 70%),
+    radial-gradient(ellipse 28% 55% at 85% 100%, rgba(40,180,70,0.12) 0%, transparent 70%);
+  transition: opacity 0.6s;
+}
+body.day #glow-layer { opacity: 0.15; }
+
+/* nav/main/footer 위로 */
+nav, main, footer { position: relative; z-index: 10; }
+
+/* ── NAV ──────────────────────────────────────────────────── */
 nav {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  z-index: 100;
-  padding: 0 2rem;
-  height: 56px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  backdrop-filter: blur(20px) saturate(1.4);
-  -webkit-backdrop-filter: blur(20px) saturate(1.4);
-  border-bottom: 1px solid var(--border);
-  background: color-mix(in srgb, var(--bg) 80%, transparent);
-  transition: background var(--t), border-color var(--t);
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  height: 52px; padding: 0 2rem;
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--nav-bg);
+  backdrop-filter: blur(18px) saturate(1.3);
+  border-bottom: 1px solid var(--border2);
+  transition: background 0.6s, border-color 0.6s;
+}
+nav::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent 0%, var(--accent) 30%, var(--accent2) 60%, transparent 100%);
+  opacity: .65;
 }
 
 .nav-logo {
-  font-family: 'DM Mono', monospace;
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--accent);
-  letter-spacing: .06em;
-  text-decoration: none;
+  font-family: 'Cinzel', serif; font-size: 13px; font-weight: 700;
+  color: var(--accent); text-decoration: none; letter-spacing: .14em;
 }
 
-.nav-links {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-  list-style: none;
-}
-
+.nav-links { display: flex; gap: 1.75rem; list-style: none; }
 .nav-links a {
-  font-family: 'DM Mono', monospace;
-  font-size: 11px;
-  font-weight: 400;
-  color: var(--text2);
-  text-decoration: none;
-  letter-spacing: .06em;
-  text-transform: uppercase;
-  transition: color .2s;
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  color: var(--text3); text-decoration: none;
+  letter-spacing: .1em; text-transform: uppercase; transition: color .2s;
 }
+.nav-links a:hover { color: var(--accent); }
 
-.nav-links a:hover { color: var(--text); }
-
-.theme-btn {
-  width: 32px; height: 32px;
-  border-radius: 8px;
-  border: 1px solid var(--border2);
-  background: transparent;
-  color: var(--text2);
-  cursor: pointer;
+#theme-btn {
+  width: 32px; height: 32px; border-radius: 4px;
+  border: 1px solid var(--border2); background: transparent;
+  color: var(--text2); cursor: pointer; font-size: 15px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 14px;
-  transition: all .2s;
-  margin-left: .5rem;
+  transition: border-color .2s, color .2s;
+}
+#theme-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ── LAYOUT ───────────────────────────────────────────────── */
+main { padding-top: 52px; }
+section { max-width: 1080px; margin: 0 auto; padding: 6rem 2rem; }
+.divider { height: 1px; background: linear-gradient(90deg, transparent, var(--border3), transparent); }
+
+/* ── SEC HEADER ───────────────────────────────────────────── */
+.sec-label {
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  color: var(--accent); letter-spacing: .16em; text-transform: uppercase;
+  margin-bottom: 1rem; display: flex; align-items: center; gap: 10px;
+}
+.sec-label::before, .sec-label::after { content: '⬥'; font-size: 8px; opacity: .6; }
+.sec-title {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  font-weight: 600; color: var(--text);
+  line-height: 1.2; margin-bottom: .75rem; letter-spacing: .04em;
+}
+.sec-desc {
+  font-size: 14px; color: var(--text2);
+  max-width: 560px; margin-bottom: 2.5rem;
+  font-weight: 300; line-height: 1.8;
 }
 
-.theme-btn:hover { border-color: var(--accent); color: var(--accent); }
-
-/* ── Layout ───────────────────────────────────────────────── */
-main { padding-top: 56px; }
-
-section {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 7rem 2rem;
+/* ── HERO ─────────────────────────────────────────────────── */
+#about {
+  min-height: calc(100vh - 52px);
+  display: flex; align-items: center;
+  padding: 6rem 2rem 5rem;
 }
-
-section + section { padding-top: 0; }
-
-/* ── Hero ─────────────────────────────────────────────────── */
-#hero {
-  min-height: calc(100vh - 56px);
-  display: flex;
-  align-items: center;
-  position: relative;
-  padding: 7rem 2rem 5rem;
+.hero-inner {
+  width: 100%; display: grid;
+  grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center;
 }
-
-.hero-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 5rem;
-  align-items: center;
-  width: 100%;
+.hero-kicker {
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  color: var(--text3); letter-spacing: .14em; text-transform: uppercase;
+  margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px;
 }
-
-.hero-eyebrow {
-  font-family: 'DM Mono', monospace;
-  font-size: 11px;
-  font-weight: 400;
-  color: var(--accent);
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  margin-bottom: 1.25rem;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.hero-eyebrow::before {
-  content: '';
-  display: inline-block;
-  width: 24px; height: 1px;
-  background: var(--accent);
-}
+.hero-kicker::before { content: ''; display: inline-block; width: 28px; height: 1px; background: var(--accent); }
 
 .hero-name {
-  font-family: 'DM Serif Display', serif;
-  font-size: clamp(2.8rem, 5vw, 4.2rem);
-  font-weight: 400;
-  line-height: 1.1;
-  color: var(--text);
-  margin-bottom: .75rem;
-  letter-spacing: -.02em;
+  font-family: 'Cinzel', serif;
+  font-size: clamp(2.8rem, 5vw, 4rem);
+  font-weight: 700; line-height: 1.05;
+  letter-spacing: .06em; color: var(--text); margin-bottom: 1rem;
 }
-
-.hero-name em {
-  font-style: italic;
-  color: var(--accent);
-}
-
-.hero-role {
-  font-size: 17px;
-  color: var(--text2);
-  margin-bottom: 2rem;
-  font-weight: 300;
-  line-height: 1.6;
-}
-
-.hero-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 2.5rem;
-}
-
-.tag {
-  font-family: 'DM Mono', monospace;
-  font-size: 11px;
-  padding: 5px 12px;
-  border-radius: 4px;
-  background: var(--tag-bg);
-  color: var(--tag-text);
-  border: 1px solid rgba(79,255,176,0.15);
-  letter-spacing: .04em;
-  transition: background .2s;
-}
-
-[data-theme="light"] .tag { border-color: rgba(0,146,90,0.2); }
-
-.hero-cta {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.btn-primary {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 11px 24px;
-  border-radius: 8px;
-  background: var(--accent);
-  color: #080b0f;
-  font-family: 'DM Mono', monospace;
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: .04em;
-  text-decoration: none;
-  transition: all .2s;
-}
-
-.btn-primary:hover { background: var(--accent2); transform: translateY(-1px); }
-
-.btn-secondary {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 11px 24px;
-  border-radius: 8px;
-  border: 1px solid var(--border2);
-  color: var(--text2);
-  font-family: 'DM Mono', monospace;
-  font-size: 12px;
-  font-weight: 400;
-  letter-spacing: .04em;
-  text-decoration: none;
-  transition: all .2s;
-  background: transparent;
-}
-
-.btn-secondary:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-1px); }
-
-/* Hero 우측 — 애니메이션 카드 */
-.hero-visual {
-  position: relative;
-}
-
-.hero-card {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 1.5rem;
-  box-shadow: var(--shadow);
-  transition: background var(--t);
-}
-
-.hc-header {
-  font-family: 'DM Mono', monospace;
-  font-size: 10px;
-  color: var(--text3);
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  margin-bottom: 1rem;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.live-dot {
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  background: var(--accent);
-  animation: pulse 2s ease infinite;
-}
-
-@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.8)} }
-
-.hc-metrics {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-bottom: 14px;
-}
-
-.hc-metric {
-  background: var(--bg3);
-  border-radius: 8px;
-  padding: 12px;
-  transition: background var(--t);
-}
-
-.hc-label {
-  font-family: 'DM Mono', monospace;
-  font-size: 9px;
-  color: var(--text3);
-  letter-spacing: .08em;
-  margin-bottom: 5px;
-  text-transform: uppercase;
-}
-
-.hc-value {
-  font-family: 'DM Mono', monospace;
-  font-size: 20px;
-  font-weight: 500;
-  color: var(--accent);
-}
-
-.hc-value.muted { color: var(--text2); font-size: 16px; }
-
-.hc-bar-wrap {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.hc-bar-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.hc-bar-label {
-  font-family: 'DM Mono', monospace;
-  font-size: 10px;
-  color: var(--text3);
-  min-width: 36px;
-}
-
-.hc-bar-track {
-  flex: 1;
-  height: 4px;
-  background: var(--surface);
-  border-radius: 2px;
-  overflow: hidden;
-}
-
-.hc-bar-fill {
-  height: 100%;
-  border-radius: 2px;
-  animation: barIn 1.2s var(--ease) forwards;
-  transform-origin: left;
-}
-
-@keyframes barIn { from{transform:scaleX(0)} to{transform:scaleX(1)} }
-
-.hc-bar-pct {
-  font-family: 'DM Mono', monospace;
-  font-size: 10px;
-  color: var(--text2);
-  min-width: 28px;
-  text-align: right;
-}
-
-/* 배경 glow */
-.hero-glow {
-  position: absolute;
-  width: 500px; height: 500px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(79,255,176,0.06) 0%, transparent 70%);
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-  z-index: -1;
-}
-
-/* ── Section header ──────────────────────────────────────── */
-.sec-label {
-  font-family: 'DM Mono', monospace;
-  font-size: 11px;
-  color: var(--accent);
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  margin-bottom: 1rem;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.sec-label::before {
-  content: '';
-  display: inline-block;
-  width: 20px; height: 1px;
-  background: var(--accent);
-}
-
-.sec-title {
-  font-family: 'DM Serif Display', serif;
-  font-size: clamp(1.8rem, 3vw, 2.4rem);
-  font-weight: 400;
-  color: var(--text);
-  line-height: 1.2;
-  margin-bottom: .75rem;
-  letter-spacing: -.01em;
-}
-
-.sec-desc {
-  font-size: 15px;
-  color: var(--text2);
-  max-width: 560px;
-  margin-bottom: 3rem;
-  font-weight: 300;
-}
-
-/* ── Career ───────────────────────────────────────────────── */
-.career-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  position: relative;
-}
-
-.career-list::before {
-  content: '';
-  position: absolute;
-  left: 0; top: 8px; bottom: 8px;
-  width: 1px;
-  background: linear-gradient(to bottom, var(--accent), transparent);
-}
-
-.career-item {
-  display: grid;
-  grid-template-columns: 200px 1fr;
-  gap: 2rem;
-  padding: 1.75rem 0 1.75rem 2rem;
-  border-bottom: 1px solid var(--border);
-  position: relative;
-  transition: all .2s;
-}
-
-.career-item::before {
-  content: '';
-  position: absolute;
-  left: -4px; top: 2rem;
-  width: 9px; height: 9px;
-  border-radius: 50%;
-  background: var(--bg);
-  border: 2px solid var(--accent);
-  transition: background .2s;
-}
-
-.career-item:hover::before { background: var(--accent); }
-.career-item:last-child { border-bottom: none; }
-
-.career-period {
-  font-family: 'DM Mono', monospace;
-  font-size: 11px;
-  color: var(--text3);
-  letter-spacing: .04em;
-  padding-top: 3px;
-}
-
-.career-company {
-  font-size: 17px;
-  font-weight: 600;
-  color: var(--text);
-  margin-bottom: 3px;
-}
-
-.career-role {
-  font-size: 14px;
-  color: var(--accent);
-  font-family: 'DM Mono', monospace;
-  margin-bottom: 8px;
-  letter-spacing: .02em;
-}
-
-.career-desc {
-  font-size: 14px;
-  color: var(--text2);
-  font-weight: 300;
-  line-height: 1.7;
-}
-
-/* ── Dashboard section ───────────────────────────────────── */
-.dashboard-card {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: var(--shadow);
-  transition: all .3s var(--ease);
-}
-
-.dashboard-card:hover {
-  border-color: var(--border2);
-  transform: translateY(-3px);
-  box-shadow: var(--shadow), 0 0 40px var(--accent-glow);
-}
-
-.dc-header {
-  padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: var(--bg3);
-  transition: background var(--t);
-}
-
-.dc-title-wrap { display: flex; align-items: center; gap: 10px; }
-
-.dc-dot {
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  background: var(--accent);
-  animation: pulse 2s ease infinite;
-}
-
-.dc-title {
-  font-family: 'DM Mono', monospace;
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--text);
-  letter-spacing: .04em;
-}
-
-.dc-badge {
-  font-family: 'DM Mono', monospace;
-  font-size: 10px;
-  padding: 3px 10px;
-  border-radius: 4px;
-  background: var(--accent-dim);
-  color: var(--accent);
-  border: 1px solid rgba(79,255,176,0.2);
-  letter-spacing: .06em;
-}
-
-.dc-preview {
-  padding: 1.5rem;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  margin-bottom: 1rem;
-}
-
-.dc-stat {
-  background: var(--bg3);
-  border-radius: 8px;
-  padding: 14px;
-  text-align: center;
-  transition: background var(--t);
-}
-
-.dc-stat-label {
-  font-family: 'DM Mono', monospace;
-  font-size: 9px;
-  color: var(--text3);
-  letter-spacing: .08em;
-  text-transform: uppercase;
-  margin-bottom: 6px;
-}
-
-.dc-stat-value {
-  font-family: 'DM Mono', monospace;
-  font-size: 18px;
-  font-weight: 500;
-}
-
-.dc-footer {
-  padding: 0 1.5rem 1.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.dc-desc {
-  font-size: 13px;
-  color: var(--text2);
-  font-weight: 300;
-}
-
-.dc-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-family: 'DM Mono', monospace;
-  font-size: 11px;
-  color: var(--accent);
-  text-decoration: none;
-  letter-spacing: .04em;
-  padding: 8px 16px;
-  border: 1px solid rgba(79,255,176,0.25);
-  border-radius: 6px;
-  transition: all .2s;
-  white-space: nowrap;
-}
-
-.dc-link:hover {
-  background: var(--accent-dim);
-  border-color: var(--accent);
-}
-
-/* ── Projects ─────────────────────────────────────────────── */
-.projects-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-}
-
-.proj-card {
-  background: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  transition: all .25s var(--ease);
-  box-shadow: var(--shadow);
-  cursor: default;
-}
-
-.proj-card:hover {
-  border-color: var(--border2);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow), 0 0 24px var(--accent-glow);
-}
-
-.proj-icon {
-  width: 40px; height: 40px;
-  border-radius: 10px;
-  background: var(--accent-dim);
-  border: 1px solid rgba(79,255,176,0.15);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-}
-
-.proj-name {
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--text);
-  margin-bottom: 4px;
-}
-
-.proj-desc {
-  font-size: 13px;
-  color: var(--text2);
-  font-weight: 300;
-  line-height: 1.65;
-  flex: 1;
-}
-
-.proj-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.proj-tag {
-  font-family: 'DM Mono', monospace;
-  font-size: 10px;
-  padding: 3px 8px;
-  border-radius: 3px;
-  background: var(--bg3);
-  color: var(--text3);
-  letter-spacing: .03em;
-  transition: background var(--t);
-}
-
-/* ── Contact ──────────────────────────────────────────────── */
-.contact-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 3rem;
-  align-items: start;
-}
-
-.contact-links {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.contact-link {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 14px 18px;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  text-decoration: none;
-  transition: all .2s;
-  background: var(--card-bg);
-}
-
-.contact-link:hover {
-  border-color: var(--accent);
-  background: var(--accent-dim);
-  transform: translateX(4px);
-}
-
-.cl-icon {
-  width: 36px; height: 36px;
-  border-radius: 8px;
-  background: var(--bg3);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 16px;
-  flex-shrink: 0;
-  transition: background var(--t);
-}
-
-.cl-label {
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--text);
+.hero-name span {
   display: block;
-  margin-bottom: 1px;
+  font-size: clamp(1.1rem, 2.2vw, 1.5rem);
+  font-weight: 400; color: var(--accent);
+  letter-spacing: .22em; margin-top: .4rem;
 }
-
-.cl-sub {
-  font-family: 'DM Mono', monospace;
-  font-size: 11px;
-  color: var(--text3);
-  letter-spacing: .03em;
+.hero-desc {
+  font-size: 14px; color: var(--text2); line-height: 1.85;
+  margin-bottom: 2rem; font-weight: 300;
+  border-left: 2px solid var(--border3); padding-left: 1rem;
 }
+.hero-tags { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 2.5rem; }
+.tag {
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  padding: 4px 10px; border-radius: 2px;
+  background: var(--adim); color: var(--accent);
+  border: 1px solid var(--border2); letter-spacing: .05em; text-transform: uppercase;
+}
+.hero-cta { display: flex; gap: 12px; flex-wrap: wrap; }
 
-/* ── Footer ───────────────────────────────────────────────── */
+.btn-forge {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 22px; border-radius: 3px;
+  background: var(--accent); color: #080400;
+  font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 500;
+  letter-spacing: .06em; text-transform: uppercase; text-decoration: none;
+  transition: all .2s; border: 1px solid transparent;
+}
+.btn-forge:hover { background: var(--accent2); transform: translateY(-1px); box-shadow: 0 4px 20px var(--aglow); }
+
+.btn-outline {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 22px; border-radius: 3px;
+  border: 1px solid var(--border2); color: var(--text2);
+  font-family: 'DM Mono', monospace; font-size: 11px;
+  letter-spacing: .06em; text-transform: uppercase; text-decoration: none;
+  transition: all .2s; background: transparent;
+}
+.btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+
+/* HERO 우측 카드 */
+.forge-card {
+  background: var(--card);
+  border: 1px solid var(--border2); border-radius: 4px;
+  overflow: hidden; box-shadow: var(--shadow);
+  backdrop-filter: blur(12px);
+  transition: background 0.6s, border-color 0.6s, box-shadow 0.6s;
+}
+.forge-card::before {
+  content: ''; display: block; height: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2), var(--accent));
+}
+.fc-head {
+  padding: 12px 16px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.2);
+}
+body.day .fc-head { background: rgba(0,0,0,0.06); }
+.fc-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--accent); box-shadow: 0 0 6px var(--accent);
+  animation: fpulse 2s ease infinite;
+}
+@keyframes fpulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+.fc-title { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text2); letter-spacing: .08em; text-transform: uppercase; }
+.fc-badge {
+  margin-left: auto; font-family: 'DM Mono', monospace; font-size: 9px;
+  padding: 2px 8px; border-radius: 2px;
+  background: rgba(40,160,80,0.15); color: #5ae888;
+  border: 1px solid rgba(40,160,80,0.3); letter-spacing: .06em;
+}
+.fc-metrics {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 1px; background: var(--border); border-bottom: 1px solid var(--border);
+}
+.fc-metric { background: var(--card); padding: 14px; transition: background 0.6s; }
+.fc-lbl { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--text3); letter-spacing: .08em; text-transform: uppercase; margin-bottom: 6px; }
+.fc-val { font-family: 'DM Mono', monospace; font-size: 20px; font-weight: 500; color: var(--accent); }
+.fc-val.dim { color: var(--text2); font-size: 16px; }
+.fc-unit { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--text3); margin-top: 2px; }
+.fc-bars { padding: 14px 16px; display: flex; flex-direction: column; gap: 9px; }
+.fc-barlbl { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--text3); letter-spacing: .08em; text-transform: uppercase; margin-bottom: 2px; }
+.fc-bar-row { display: flex; align-items: center; gap: 8px; }
+.fc-bar-name { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--text3); min-width: 36px; }
+.fc-bar-track { flex: 1; height: 3px; background: var(--bg4); border-radius: 2px; overflow: hidden; }
+.fc-bar-fill { height: 100%; border-radius: 2px; }
+.fc-bar-pct { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--text3); min-width: 26px; text-align: right; }
+
+/* ── CAREER ───────────────────────────────────────────────── */
+.career-list { position: relative; display: flex; flex-direction: column; }
+.career-list::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+  width: 1px; background: linear-gradient(to bottom, var(--accent), transparent);
+}
+.career-item {
+  display: grid; grid-template-columns: 180px 1fr; gap: 2rem;
+  padding: 1.75rem 0 1.75rem 2rem; border-bottom: 1px solid var(--border); position: relative;
+}
+.career-item::before { content: '⬥'; position: absolute; left: -6px; top: 1.9rem; font-size: 10px; color: var(--accent); line-height: 1; }
+.career-item:last-child { border-bottom: none; }
+.career-period { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text3); letter-spacing: .04em; padding-top: 3px; }
+.career-company { font-family: 'Cinzel', serif; font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 3px; letter-spacing: .04em; }
+.career-role { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--accent); margin-bottom: 8px; letter-spacing: .03em; }
+.career-desc { font-size: 13px; color: var(--text2); font-weight: 300; line-height: 1.75; }
+
+/* ── DASHBOARD ────────────────────────────────────────────── */
+.dash-card {
+  background: var(--card); border: 1px solid var(--border2); border-radius: 4px;
+  overflow: hidden; box-shadow: var(--shadow); backdrop-filter: blur(12px);
+  transition: all .3s;
+}
+.dash-card::before { content: ''; display: block; height: 3px; background: linear-gradient(90deg, var(--accent), var(--accent2), var(--accent)); }
+.dash-card:hover { border-color: var(--border3); box-shadow: var(--shadow), 0 0 40px var(--aglow); }
+.dc-head { padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.2); }
+body.day .dc-head { background: rgba(0,0,0,0.06); }
+.dc-head-l { display: flex; align-items: center; gap: 8px; }
+.dc-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 6px var(--accent); animation: fpulse 2s ease infinite; }
+.dc-title { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text2); letter-spacing: .06em; }
+.dc-badge { font-family: 'DM Mono', monospace; font-size: 9px; padding: 2px 8px; border-radius: 2px; background: var(--adim); color: var(--accent); border: 1px solid var(--border2); letter-spacing: .08em; }
+.dc-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1px; background: var(--border); border-bottom: 1px solid var(--border); }
+.dc-stat { background: var(--card); padding: 16px; transition: background 0.6s; }
+.dc-stat-lbl { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--text3); letter-spacing: .08em; text-transform: uppercase; margin-bottom: 7px; }
+.dc-stat-val { font-family: 'DM Mono', monospace; font-size: 18px; font-weight: 500; margin-bottom: 2px; }
+.dc-stat-unit { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--text3); }
+.dc-footer { padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; }
+.dc-footer-txt { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text3); letter-spacing: .04em; }
+.dc-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: 'DM Mono', monospace; font-size: 10px; color: var(--accent);
+  text-decoration: none; letter-spacing: .06em; text-transform: uppercase;
+  padding: 7px 14px; border: 1px solid var(--border2); border-radius: 2px; transition: all .2s;
+}
+.dc-link:hover { background: var(--adim); border-color: var(--accent); }
+
+/* ── PROJECTS ─────────────────────────────────────────────── */
+.proj-grid {
+  display: grid; grid-template-columns: repeat(3,1fr);
+  gap: 1px; background: var(--border2);
+  border: 1px solid var(--border2); border-radius: 4px; overflow: hidden;
+}
+.proj-card {
+  background: var(--card); padding: 1.5rem;
+  display: flex; flex-direction: column; gap: .875rem;
+  transition: background .2s; backdrop-filter: blur(8px);
+}
+.proj-card:hover { background: var(--bg3); }
+.proj-icon {
+  font-size: 20px; width: 38px; height: 38px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--adim); border: 1px solid var(--border2); border-radius: 3px;
+}
+.proj-name { font-family: 'Cinzel', serif; font-size: 13px; font-weight: 600; color: var(--text); letter-spacing: .04em; margin-bottom: 3px; }
+.proj-desc { font-size: 12px; color: var(--text2); font-weight: 300; line-height: 1.7; flex: 1; }
+.proj-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: auto; }
+.proj-tag { font-family: 'DM Mono', monospace; font-size: 9px; padding: 2px 7px; border-radius: 2px; background: var(--bg4); color: var(--text3); letter-spacing: .04em; border: 1px solid var(--border); }
+
+/* ── CONTACT ──────────────────────────────────────────────── */
+.contact-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start; }
+.contact-links { display: flex; flex-direction: column; gap: 10px; }
+.contact-link {
+  display: flex; align-items: center; gap: 14px;
+  padding: 13px 16px; border: 1px solid var(--border); border-radius: 3px;
+  text-decoration: none; background: var(--card); backdrop-filter: blur(8px); transition: all .2s;
+}
+.contact-link:hover { border-color: var(--accent); background: var(--adim); }
+.cl-icon { width: 34px; height: 34px; border-radius: 3px; background: var(--adim); border: 1px solid var(--border2); display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; font-family: 'DM Mono', monospace; color: var(--accent); }
+.cl-label { font-size: 13px; font-weight: 500; color: var(--text); display: block; margin-bottom: 1px; }
+.cl-sub { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text3); letter-spacing: .03em; }
+
+/* ── FOOTER ───────────────────────────────────────────────── */
 footer {
-  border-top: 1px solid var(--border);
-  padding: 2rem;
-  text-align: center;
-  font-family: 'DM Mono', monospace;
-  font-size: 11px;
-  color: var(--text3);
-  letter-spacing: .04em;
-  transition: border-color var(--t);
+  border-top: 1px solid var(--border2); padding: 1.5rem 2rem;
+  text-align: center; font-family: 'DM Mono', monospace;
+  font-size: 10px; color: var(--text3); letter-spacing: .1em; text-transform: uppercase;
+  position: relative;
 }
-
+footer::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent); opacity: .4;
+}
 footer span { color: var(--accent); }
 
-/* ── Animations ────────────────────────────────────────────── */
-.fade-up {
-  opacity: 0;
-  transform: translateY(24px);
-  transition: opacity .7s var(--ease), transform .7s var(--ease);
-}
-
-.fade-up.visible {
-  opacity: 1;
-  transform: none;
-}
-
-/* ── Responsive ───────────────────────────────────────────── */
-@media (max-width: 900px) {
-  .hero-grid { grid-template-columns: 1fr; gap: 3rem; }
+/* ── RESPONSIVE ───────────────────────────────────────────── */
+@media(max-width:900px) {
+  .hero-inner { grid-template-columns: 1fr; gap: 3rem; }
   .hero-visual { display: none; }
-  .career-item { grid-template-columns: 1fr; gap: .5rem; }
-  .career-list::before { display: none; }
-  .career-item { padding-left: 0; }
-  .career-item::before { display: none; }
-  .projects-grid { grid-template-columns: 1fr 1fr; }
-  .contact-grid { grid-template-columns: 1fr; }
-  .dc-preview { grid-template-columns: repeat(3,1fr); }
+  .career-item { grid-template-columns: 1fr; gap: .4rem; padding-left: 1.5rem; }
+  .proj-grid { grid-template-columns: 1fr 1fr; }
+  .contact-wrap { grid-template-columns: 1fr; gap: 2rem; }
 }
-
-@media (max-width: 600px) {
+@media(max-width:600px) {
   section { padding: 4rem 1.25rem; }
-  .projects-grid { grid-template-columns: 1fr; }
-  .dc-preview { grid-template-columns: 1fr 1fr; }
+  .proj-grid { grid-template-columns: 1fr; }
   .nav-links { display: none; }
 }
 </style>
 </head>
 <body>
 
-<!-- NAV -->
+<!-- ── 배경 ────────────────────────────────────────────────── -->
+<div id="bg-wrap">
+  <div id="sky-layer"></div>
+  <canvas id="star-canvas"></canvas>
+
+  <!-- 낮 구름 -->
+  <div id="cloud-wrap">
+    <svg style="position:absolute;top:0;left:0;width:100%;height:100%" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+      <!-- 태양 -->
+      <defs>
+        <radialGradient id="sunG" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#fffbe0" stop-opacity=".9"/>
+          <stop offset="60%" stop-color="#f5d060" stop-opacity=".35"/>
+          <stop offset="100%" stop-color="#f5d060" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+      <ellipse cx="280" cy="160" rx="120" ry="120" fill="url(#sunG)"/>
+      <circle  cx="280" cy="160" r="38" fill="#fff8d0" opacity=".9"/>
+      <!-- 구름들 -->
+      <g fill="rgba(255,248,220,0.55)">
+        <ellipse cx="420"  cy="130" rx="90"  ry="38"/>
+        <ellipse cx="480"  cy="118" rx="70"  ry="30"/>
+        <ellipse cx="360"  cy="140" rx="65"  ry="28"/>
+        <ellipse cx="900"  cy="90"  rx="110" ry="42"/>
+        <ellipse cx="970"  cy="78"  rx="80"  ry="33"/>
+        <ellipse cx="840"  cy="100" rx="70"  ry="28"/>
+        <ellipse cx="1250" cy="140" rx="95"  ry="36"/>
+        <ellipse cx="1320" cy="128" rx="72"  ry="29"/>
+        <ellipse cx="1180" cy="150" rx="68"  ry="26"/>
+        <ellipse cx="650"  cy="200" rx="78"  ry="30"/>
+        <ellipse cx="710"  cy="188" rx="58"  ry="24"/>
+      </g>
+    </svg>
+  </div>
+
+  <!-- 바위 레이어 4 — 원거리 능선 -->
+  <svg id="rock-far" class="rock" style="height:58%;opacity:.45" viewBox="0 0 1440 520" preserveAspectRatio="xMidYMax meet" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="rfg" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#0a2010"/><stop offset="100%" stop-color="#060e08"/>
+      </linearGradient>
+    </defs>
+    <path d="M0,520 L0,350 C200,290 400,260 600,240 C720,230 760,232 800,240 C880,258 920,280 1000,240 C1100,192 1200,160 1440,148 L1440,520 Z" fill="url(#rfg)"/>
+    <line x1="600" y1="240" x2="596" y2="520" stroke="rgba(40,160,80,0.07)" stroke-width="1.5"/>
+    <line x1="1000" y1="240" x2="1004" y2="520" stroke="rgba(40,160,80,0.06)" stroke-width="1.5"/>
+  </svg>
+
+  <!-- 바위 레이어 3 — El Capitan 메인 절벽 -->
+  <svg id="rock-mid" class="rock" style="height:80%;opacity:.88" viewBox="0 0 1440 720" preserveAspectRatio="xMidYMax meet" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="rmg" x1="5%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%"  stop-color="#0e2818"/>
+        <stop offset="40%" stop-color="#0a1e12"/>
+        <stop offset="100%" stop-color="#060e08"/>
+      </linearGradient>
+      <linearGradient id="rmface" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%"   stop-color="#ffffff" stop-opacity=".025"/>
+        <stop offset="28%"  stop-color="#ffffff" stop-opacity=".07"/>
+        <stop offset="55%"  stop-color="#000000" stop-opacity=".05"/>
+        <stop offset="100%" stop-color="#ffffff" stop-opacity=".01"/>
+      </linearGradient>
+    </defs>
+    <!-- 메인 절벽 — 큰 곡선 덩어리 -->
+    <path id="mid-path" d="
+      M0,720 L0,530
+      C40,495 80,468 120,445
+      C165,420 195,412 215,392
+      C238,368 234,335 242,305
+      C250,275 265,252 296,235
+      C340,212 382,216 415,230
+      C448,244 462,262 478,255
+      C498,245 505,218 522,196
+      C542,170 566,154 600,145
+      C638,135 668,144 692,158
+      C716,172 728,190 748,184
+      C772,176 784,148 808,130
+      C836,109 868,100 906,110
+      C944,120 968,146 992,160
+      C1016,173 1034,180 1056,173
+      C1082,164 1096,138 1122,120
+      C1152,100 1184,93 1220,104
+      C1256,115 1278,144 1302,160
+      C1326,176 1346,184 1374,179
+      C1402,173 1424,156 1440,148
+      L1440,720 Z
+    " fill="url(#rmg)"/>
+    <!-- 빛 반사 하이라이트 (수직 균열) -->
+    <g stroke="rgba(80,200,100,0.11)" stroke-width="2" fill="none">
+      <path d="M242,305 C240,400 238,560 236,720"/>
+      <path d="M600,145 C598,240 596,430 594,720"/>
+      <path d="M906,110 C908,210 910,420 912,720"/>
+      <path d="M1220,104 C1218,200 1216,410 1214,720"/>
+    </g>
+    <!-- 지층 수평선 -->
+    <g stroke="rgba(40,160,80,0.045)" stroke-width="1.5" fill="none">
+      <path d="M0,490 Q360,474 720,480 Q1080,488 1440,472"/>
+      <path d="M0,570 Q360,556 720,561 Q1080,568 1440,554"/>
+      <path d="M0,645 Q360,635 720,638 Q1080,644 1440,632"/>
+    </g>
+    <!-- 바위 면 텍스처 -->
+    <path d="M0,720 L0,530 C40,495 80,468 120,445 C165,420 195,412 215,392 C238,368 234,335 242,305 C250,275 265,252 296,235 C340,212 382,216 415,230 C448,244 462,262 478,255 C498,245 505,218 522,196 C542,170 566,154 600,145 C638,135 668,144 692,158 C716,172 728,190 748,184 C772,176 784,148 808,130 C836,109 868,100 906,110 C944,120 968,146 992,160 C1016,173 1034,180 1056,173 C1082,164 1096,138 1122,120 C1152,100 1184,93 1220,104 C1256,115 1278,144 1302,160 C1326,176 1346,184 1374,179 C1402,173 1424,156 1440,148 L1440,720 Z"
+      fill="url(#rmface)" opacity=".6"/>
+  </svg>
+
+  <!-- 바위 레이어 2 — 전면 기단 -->
+  <svg id="rock-near" class="rock" style="height:36%;opacity:.94" viewBox="0 0 1440 324" preserveAspectRatio="xMidYMax meet" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="rng" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#0c2010"/><stop offset="100%" stop-color="#060e08"/>
+      </linearGradient>
+    </defs>
+    <path d="
+      M0,324 L0,200
+      C120,172 260,155 420,148
+      C520,144 570,147 620,158
+      C690,173 720,192 780,185
+      C860,175 900,148 990,132
+      C1060,118 1110,122 1160,138
+      C1230,158 1258,182 1320,175
+      C1375,169 1415,150 1440,142
+      L1440,324 Z
+    " fill="url(#rng)"/>
+    <g stroke="rgba(80,200,100,0.13)" stroke-width="1.5" fill="none">
+      <path d="M420,148 C418,205 416,265 414,324"/>
+      <path d="M780,185 C782,232 784,278 786,324"/>
+      <path d="M1160,138 C1158,196 1156,260 1154,324"/>
+    </g>
+  </svg>
+
+  <!-- forge glow -->
+  <div id="glow-layer"></div>
+</div>
+
+<!-- ── NAV ────────────────────────────────────────────────── -->
 <nav>
-  <a href="#" class="nav-logo">AHN<span style="color:var(--text3)">.</span>SANGHO</a>
+  <a href="#" class="nav-logo">⬥ FORGE MAVERICK</a>
   <ul class="nav-links">
-    <li><a href="#about">About</a></li>
-    <li><a href="#career">Career</a></li>
-    <li><a href="#dashboard">Dashboard</a></li>
-    <li><a href="#projects">Projects</a></li>
+    <li><a href="#about">Forge</a></li>
+    <li><a href="#career">History</a></li>
+    <li><a href="#dashboard">Grid</a></li>
+    <li><a href="#projects">Works</a></li>
     <li><a href="#contact">Contact</a></li>
   </ul>
-  <button class="theme-btn" onclick="toggleTheme()" id="themeBtn" title="테마 전환">☀</button>
+  <button id="theme-btn" title="낮/밤 전환">🌙</button>
 </nav>
 
 <main>
 
 <!-- HERO -->
 <section id="about">
-  <div class="hero-grid">
+  <div class="hero-inner">
     <div>
-      <p class="hero-eyebrow">Energy & Power Professional</p>
-      <h1 class="hero-name">안상호<br><em>Maverick</em></h1>
-      <p class="hero-role">
-        SK Innovation · 전력사업 개발/기획<br>
-        LNG · SMR · 신재생에너지 · 계통 분석
+      <p class="hero-kicker">Energy & Power Engineer · Korea</p>
+      <h1 class="hero-name">FORGE<span>MAVERICK</span></h1>
+      <p class="hero-desc">
+        만들고, 분석하고, 직접 돌린다.<br>
+        SK Innovation · 전력사업 개발·기획.<br>
+        LNG · SMR · 신재생 · 계통 분석.
       </p>
       <div class="hero-tags">
-        <span class="tag">LNG Power</span>
-        <span class="tag">SMR</span>
-        <span class="tag">Renewable</span>
-        <span class="tag">Grid Analysis</span>
-        <span class="tag">ESS</span>
-        <span class="tag">SCADA</span>
+        <span class="tag">LNG Power</span><span class="tag">SMR</span>
+        <span class="tag">Renewable</span><span class="tag">Grid</span>
+        <span class="tag">ESS</span><span class="tag">SCADA</span>
         <span class="tag">EV Charging</span>
       </div>
       <div class="hero-cta">
-        <a href="#dashboard" class="btn-primary">
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 10L5 5.5L8 8.5L11 3.5L13 5.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          전력 대시보드
-        </a>
-        <a href="#career" class="btn-secondary">
-          커리어 보기 →
-        </a>
+        <a href="#dashboard" class="btn-forge">⚡ Power Grid</a>
+        <a href="#career" class="btn-outline">History →</a>
       </div>
     </div>
-
     <div class="hero-visual">
-      <div class="hero-glow"></div>
-      <div class="hero-card">
-        <div class="hc-header">
-          <div class="live-dot"></div>
-          KR Power Market · Live
+      <div class="forge-card">
+        <div class="fc-head">
+          <div class="fc-dot"></div>
+          <span class="fc-title">KR Power Market</span>
+          <span class="fc-badge">LIVE</span>
         </div>
-        <div class="hc-metrics">
-          <div class="hc-metric">
-            <div class="hc-label">SMP (육지)</div>
-            <div class="hc-value" id="heroSmp">—</div>
-            <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);margin-top:2px">원/kWh</div>
-          </div>
-          <div class="hc-metric">
-            <div class="hc-label">공급예비율</div>
-            <div class="hc-value" id="heroRes">—</div>
-            <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);margin-top:2px">%</div>
-          </div>
-          <div class="hc-metric">
-            <div class="hc-label">LNG (HH)</div>
-            <div class="hc-value muted" id="heroLng">—</div>
-            <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);margin-top:2px">USD/MMBtu</div>
-          </div>
-          <div class="hc-metric">
-            <div class="hc-label">USD/KRW</div>
-            <div class="hc-value muted" id="heroKrw">—</div>
-            <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);margin-top:2px">원</div>
-          </div>
+        <div class="fc-metrics">
+          <div class="fc-metric"><div class="fc-lbl">SMP (육지)</div><div class="fc-val" id="hSmp">—</div><div class="fc-unit">원/kWh</div></div>
+          <div class="fc-metric"><div class="fc-lbl">예비율</div><div class="fc-val" id="hRes">—</div><div class="fc-unit">%</div></div>
+          <div class="fc-metric"><div class="fc-lbl">LNG HH</div><div class="fc-val dim" id="hLng">—</div><div class="fc-unit">USD/MMBtu</div></div>
+          <div class="fc-metric"><div class="fc-lbl">USD/KRW</div><div class="fc-val dim" id="hKrw">—</div><div class="fc-unit">원</div></div>
         </div>
-        <div class="hc-bar-wrap">
-          <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:.08em;margin-bottom:6px;text-transform:uppercase">발전 연료원 구성</div>
-          <div class="hc-bar-row"><span class="hc-bar-label">원자력</span><div class="hc-bar-track"><div class="hc-bar-fill" id="bNuclear" style="width:28%;background:#60a5fa"></div></div><span class="hc-bar-pct" id="pNuclear">28%</span></div>
-          <div class="hc-bar-row"><span class="hc-bar-label">LNG</span><div class="hc-bar-track"><div class="hc-bar-fill" id="bLng" style="width:31%;background:#a78bfa"></div></div><span class="hc-bar-pct" id="pLng">31%</span></div>
-          <div class="hc-bar-row"><span class="hc-bar-label">석탄</span><div class="hc-bar-track"><div class="hc-bar-fill" id="bCoal" style="width:22%;background:#94a3b8"></div></div><span class="hc-bar-pct" id="pCoal">22%</span></div>
-          <div class="hc-bar-row"><span class="hc-bar-label">신재생</span><div class="hc-bar-track"><div class="hc-bar-fill" id="bRenew" style="width:19%;background:#4fffb0"></div></div><span class="hc-bar-pct" id="pRenew">19%</span></div>
+        <div class="fc-bars">
+          <div class="fc-barlbl">발전 연료원 구성</div>
+          <div class="fc-bar-row"><span class="fc-bar-name">원자력</span><div class="fc-bar-track"><div class="fc-bar-fill" id="bN" style="width:28%;background:#60a5fa"></div></div><span class="fc-bar-pct" id="pN">28%</span></div>
+          <div class="fc-bar-row"><span class="fc-bar-name">LNG</span><div class="fc-bar-track"><div class="fc-bar-fill" id="bL" style="width:31%;background:#c8902a"></div></div><span class="fc-bar-pct" id="pL">31%</span></div>
+          <div class="fc-bar-row"><span class="fc-bar-name">석탄</span><div class="fc-bar-track"><div class="fc-bar-fill" id="bC" style="width:22%;background:#6b7280"></div></div><span class="fc-bar-pct" id="pC">22%</span></div>
+          <div class="fc-bar-row"><span class="fc-bar-name">신재생</span><div class="fc-bar-track"><div class="fc-bar-fill" id="bR" style="width:19%;background:#16a34a"></div></div><span class="fc-bar-pct" id="pR">19%</span></div>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- CAREER -->
-<section id="career" class="fade-up">
-  <div class="sec-label">Career</div>
-  <h2 class="sec-title">경력 사항</h2>
-  <p class="sec-desc">전기전력공학을 기반으로 ESS·SCADA·EV 충전 인프라·LNG 전력사업까지 에너지 밸류체인 전반을 경험했습니다.</p>
+<div class="divider"></div>
 
+<!-- CAREER -->
+<section id="career">
+  <div class="sec-label">History</div>
+  <h2 class="sec-title">경력</h2>
+  <p class="sec-desc">전기전력공학으로 시작해서 ESS·SCADA·EV 충전·LNG 전력사업까지. 에너지 밸류체인을 위에서 아래까지 직접 파봤습니다.</p>
   <div class="career-list">
     <div class="career-item">
       <div class="career-period">2023 — 현재</div>
       <div>
         <div class="career-company">SK Innovation</div>
-        <div class="career-role">전력사업 개발·기획 (SK E&S)</div>
-        <div class="career-desc">LNG 발전소 부지 선정 PM, SMR·신재생에너지 사업 개발, 전력계통 분석 및 전략 기획.</div>
+        <div class="career-role">전력사업 개발·기획 · SK E&S</div>
+        <div class="career-desc">LNG 발전소 부지 선정 PM. 땅 보고, 계통 보고, 숫자 맞추는 일. SMR·신재생 사업 개발 병행 중.</div>
       </div>
     </div>
     <div class="career-item">
@@ -905,213 +634,87 @@ footer span { color: var(--accent); }
       <div>
         <div class="career-company">Tesla</div>
         <div class="career-role">Supercharger Deployment Manager</div>
-        <div class="career-desc">한국 내 슈퍼차저 네트워크 구축 및 운영 총괄. 부지 발굴·인허가·시공 관리.</div>
+        <div class="career-desc">한국 슈퍼차저 네트워크 구축 총괄. 부지 발굴부터 인허가·시공까지 직접 끝냄.</div>
       </div>
     </div>
     <div class="career-item">
       <div class="career-period">2016 — 2021</div>
       <div>
         <div class="career-company">LS일렉트릭</div>
-        <div class="career-role">해외영업 PM · SCADA/ESS</div>
-        <div class="career-desc">SCADA 시스템 및 에너지저장장치(ESS) 해외 영업·PM. 중동·동남아 프로젝트 수행.</div>
+        <div class="career-role">해외영업 PM · SCADA / ESS</div>
+        <div class="career-desc">SCADA·ESS 해외 영업과 PM. 중동·동남아에서 프로젝트 직접 수행. 현장이 답이라는 걸 여기서 배웠습니다.</div>
       </div>
     </div>
     <div class="career-item">
-      <div class="career-period">학력</div>
+      <div class="career-period">Foundation</div>
       <div>
-        <div class="career-company">전기전력공학 전공</div>
+        <div class="career-company">전기전력공학</div>
         <div class="career-role">B.S. Electrical Engineering</div>
-        <div class="career-desc">전력시스템·제어공학·전력전자 전공.</div>
+        <div class="career-desc">전력시스템·제어공학·전력전자. 기초는 여기서 왔습니다.</div>
       </div>
     </div>
   </div>
 </section>
+
+<div class="divider"></div>
 
 <!-- DASHBOARD -->
-<section id="dashboard" class="fade-up">
-  <div class="sec-label">Live Data</div>
+<section id="dashboard">
+  <div class="sec-label">Grid · Live Data</div>
   <h2 class="sec-title">전력시장 대시보드</h2>
-  <p class="sec-desc">맥미니 서버에서 실시간으로 수집되는 한국 전력시장 핵심 지표입니다. SMP·REC·예비율·글로벌 연료가를 한눈에 확인.</p>
-
-  <div class="dashboard-card">
-    <div class="dc-header">
-      <div class="dc-title-wrap">
-        <div class="dc-dot"></div>
-        <span class="dc-title">Korea Power Market Intelligence</span>
-      </div>
+  <p class="sec-desc">집에 있는 맥미니가 24시간 돌면서 데이터를 긁어옵니다. 필요한 숫자는 직접 만들어서 봅니다.</p>
+  <div class="dash-card">
+    <div class="dc-head">
+      <div class="dc-head-l"><div class="dc-dot"></div><span class="dc-title">Korea Power Market Intelligence</span></div>
       <span class="dc-badge">LIVE</span>
     </div>
-    <div class="dc-preview">
-      <div class="dc-stat">
-        <div class="dc-stat-label">SMP (육지)</div>
-        <div class="dc-stat-value" id="dashSmp" style="color:var(--accent)">—</div>
-        <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);margin-top:3px">원/kWh</div>
-      </div>
-      <div class="dc-stat">
-        <div class="dc-stat-label">공급 예비율</div>
-        <div class="dc-stat-value" id="dashRes" style="color:#fbbf24">—</div>
-        <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);margin-top:3px">%</div>
-      </div>
-      <div class="dc-stat">
-        <div class="dc-stat-label">REC 평균가</div>
-        <div class="dc-stat-value" id="dashRec" style="color:#60a5fa">—</div>
-        <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);margin-top:3px">원/REC</div>
-      </div>
-      <div class="dc-stat">
-        <div class="dc-stat-label">LNG HH</div>
-        <div class="dc-stat-value" id="dashLng" style="color:#a78bfa">—</div>
-        <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);margin-top:3px">USD/MMBtu</div>
-      </div>
-      <div class="dc-stat">
-        <div class="dc-stat-label">두바이유</div>
-        <div class="dc-stat-value" id="dashDubai" style="color:#fb923c">—</div>
-        <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);margin-top:3px">USD/bbl</div>
-      </div>
-      <div class="dc-stat">
-        <div class="dc-stat-label">USD/KRW</div>
-        <div class="dc-stat-value" id="dashKrw" style="color:#f87171">—</div>
-        <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);margin-top:3px">원</div>
-      </div>
+    <div class="dc-grid">
+      <div class="dc-stat"><div class="dc-stat-lbl">SMP (육지)</div><div class="dc-stat-val" id="dSmp" style="color:var(--accent)">—</div><div class="dc-stat-unit">원/kWh</div></div>
+      <div class="dc-stat"><div class="dc-stat-lbl">공급 예비율</div><div class="dc-stat-val" id="dRes" style="color:#e8a830">—</div><div class="dc-stat-unit">%</div></div>
+      <div class="dc-stat"><div class="dc-stat-lbl">REC 평균가</div><div class="dc-stat-val" id="dRec" style="color:#60a5fa">—</div><div class="dc-stat-unit">원/REC</div></div>
+      <div class="dc-stat"><div class="dc-stat-lbl">LNG HH</div><div class="dc-stat-val" id="dLng" style="color:#a78bfa">—</div><div class="dc-stat-unit">USD/MMBtu</div></div>
+      <div class="dc-stat"><div class="dc-stat-lbl">두바이유</div><div class="dc-stat-val" id="dDubai" style="color:#fb923c">—</div><div class="dc-stat-unit">USD/bbl</div></div>
+      <div class="dc-stat"><div class="dc-stat-lbl">USD/KRW</div><div class="dc-stat-val" id="dKrw" style="color:#f87171">—</div><div class="dc-stat-unit">원</div></div>
     </div>
     <div class="dc-footer">
-      <span class="dc-desc">전체 차트 및 상세 분석 →</span>
-      <!-- 실제 도메인으로 교체하세요: href="https://dashboard.yourdomain.com" -->
-      <a href="http://localhost:3000" target="_blank" class="dc-link">
-        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 6h10M7 2l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        대시보드 열기
-      </a>
+      <span class="dc-footer-txt">SMP · REC · 예비율 · LNG · 우라늄 · 탄소배출권</span>
+      <a href="https://dashboard.mav-ash.com" target="_blank" class="dc-link">Enter Grid →</a>
     </div>
   </div>
 </section>
+
+<div class="divider"></div>
 
 <!-- PROJECTS -->
-<section id="projects" class="fade-up">
-  <div class="sec-label">Projects & Tools</div>
-  <h2 class="sec-title">보유 프로젝트</h2>
-  <p class="sec-desc">업무 자동화와 데이터 기반 의사결정을 위해 직접 개발·운영 중인 도구들입니다.</p>
-
-  <div class="projects-grid">
-    <div class="proj-card">
-      <div class="proj-icon">⚡</div>
-      <div>
-        <div class="proj-name">Power Market Dashboard</div>
-        <div class="proj-desc">SMP·REC·예비율·LNG·우라늄 등 전력시장 핵심 지표를 실시간으로 수집·시각화. 맥미니 서버 상시 운영.</div>
-      </div>
-      <div class="proj-tags">
-        <span class="proj-tag">Node.js</span>
-        <span class="proj-tag">SQLite</span>
-        <span class="proj-tag">KPX API</span>
-        <span class="proj-tag">Chart.js</span>
-      </div>
-    </div>
-
-    <div class="proj-card">
-      <div class="proj-icon">🧠</div>
-      <div>
-        <div class="proj-name">Executive Signal Analyzer</div>
-        <div class="proj-desc">임원 메시지(Teams·이메일)를 AI로 분석해 전략 방향을 예측하는 내부 도구. Claude API 기반.</div>
-      </div>
-      <div class="proj-tags">
-        <span class="proj-tag">Claude API</span>
-        <span class="proj-tag">NLP</span>
-        <span class="proj-tag">신호 분석</span>
-      </div>
-    </div>
-
-    <div class="proj-card">
-      <div class="proj-icon">📋</div>
-      <div>
-        <div class="proj-name">Meeting Minutes Automation</div>
-        <div class="proj-desc">회의 녹취 파일을 자동으로 구조화된 회의록으로 변환. n8n + Gemini/Ollama + Obsidian 연동.</div>
-      </div>
-      <div class="proj-tags">
-        <span class="proj-tag">n8n</span>
-        <span class="proj-tag">Gemini</span>
-        <span class="proj-tag">Obsidian</span>
-        <span class="proj-tag">자동화</span>
-      </div>
-    </div>
-
-    <div class="proj-card">
-      <div class="proj-icon">📈</div>
-      <div>
-        <div class="proj-name">Magic Split</div>
-        <div class="proj-desc">자동화된 주식 투자 시스템. 분할매매 전략 기반으로 실운영 중.</div>
-      </div>
-      <div class="proj-tags">
-        <span class="proj-tag">투자 자동화</span>
-        <span class="proj-tag">퀀트</span>
-        <span class="proj-tag">실운영</span>
-      </div>
-    </div>
-
-    <div class="proj-card">
-      <div class="proj-icon">🏭</div>
-      <div>
-        <div class="proj-name">LNG 발전소 부지 선정</div>
-        <div class="proj-desc">대규모 LNG 발전소 건설 적합 산업단지 발굴 프로젝트 PM. GIS 분석·인허가 검토·파트너사 관리.</div>
-      </div>
-      <div class="proj-tags">
-        <span class="proj-tag">PM</span>
-        <span class="proj-tag">LNG</span>
-        <span class="proj-tag">GIS</span>
-        <span class="proj-tag">SK E&S</span>
-      </div>
-    </div>
-
-    <div class="proj-card">
-      <div class="proj-icon">🏠</div>
-      <div>
-        <div class="proj-name">Home Automation Stack</div>
-        <div class="proj-desc">맥미니 기반 홈 서버. n8n 워크플로우·Obsidian·자동화 파이프라인 통합 운영.</div>
-      </div>
-      <div class="proj-tags">
-        <span class="proj-tag">Mac Mini</span>
-        <span class="proj-tag">n8n</span>
-        <span class="proj-tag">셀프호스팅</span>
-      </div>
-    </div>
+<section id="projects">
+  <div class="sec-label">Works · Forged</div>
+  <h2 class="sec-title">직접 만든 것들</h2>
+  <p class="sec-desc">필요해서 만들었고, 지금도 돌아가고 있습니다.</p>
+  <div class="proj-grid">
+    <div class="proj-card"><div class="proj-icon">⚡</div><div><div class="proj-name">Power Market Dashboard</div><div class="proj-desc">SMP·REC·예비율·LNG·우라늄. 맥미니가 5분마다 수집. 필요한 지표를 한 화면에.</div></div><div class="proj-tags"><span class="proj-tag">Node.js</span><span class="proj-tag">SQLite</span><span class="proj-tag">KPX API</span><span class="proj-tag">Chart.js</span></div></div>
+    <div class="proj-card"><div class="proj-icon">🧠</div><div><div class="proj-name">Executive Signal Analyzer</div><div class="proj-desc">임원 메시지를 붙여넣으면 AI가 전략 방향을 읽어냅니다. 회의 전에 미리 파악하는 용도.</div></div><div class="proj-tags"><span class="proj-tag">Claude API</span><span class="proj-tag">NLP</span><span class="proj-tag">신호 분석</span></div></div>
+    <div class="proj-card"><div class="proj-icon">📋</div><div><div class="proj-name">Meeting Minutes Automation</div><div class="proj-desc">녹취 파일 넣으면 구조화된 회의록이 나옵니다. n8n이 흘러가고 Obsidian에 쌓입니다.</div></div><div class="proj-tags"><span class="proj-tag">n8n</span><span class="proj-tag">Gemini</span><span class="proj-tag">Obsidian</span></div></div>
+    <div class="proj-card"><div class="proj-icon">📈</div><div><div class="proj-name">Magic Split</div><div class="proj-desc">분할매매 자동화 시스템. 지금도 실운영 중. 감이 아니라 규칙으로 삽니다.</div></div><div class="proj-tags"><span class="proj-tag">투자 자동화</span><span class="proj-tag">퀀트</span><span class="proj-tag">실운영</span></div></div>
+    <div class="proj-card"><div class="proj-icon">🏭</div><div><div class="proj-name">LNG 발전소 부지 선정</div><div class="proj-desc">대규모 LNG 발전소 들어갈 땅 찾는 PM. GIS 분석·인허가·파트너사 관리. 현재 진행 중.</div></div><div class="proj-tags"><span class="proj-tag">PM</span><span class="proj-tag">LNG</span><span class="proj-tag">GIS</span><span class="proj-tag">SK E&S</span></div></div>
+    <div class="proj-card"><div class="proj-icon">🏠</div><div><div class="proj-name">Home Automation Stack</div><div class="proj-desc">맥미니 한 대로 서버·자동화·데이터 수집을 전부 돌립니다. 내 것이 더 믿음직합니다.</div></div><div class="proj-tags"><span class="proj-tag">Mac Mini</span><span class="proj-tag">n8n</span><span class="proj-tag">셀프호스팅</span></div></div>
   </div>
 </section>
 
+<div class="divider"></div>
+
 <!-- CONTACT -->
-<section id="contact" class="fade-up">
+<section id="contact">
   <div class="sec-label">Contact</div>
   <h2 class="sec-title">연락하기</h2>
-
-  <div class="contact-grid">
+  <div class="contact-wrap">
     <div>
-      <p style="font-size:15px;color:var(--text2);font-weight:300;line-height:1.8;margin-bottom:1.5rem">
-        에너지·전력 사업 개발, 협업 제안, 또는 기술적인 이야기를 나누고 싶으시면 편하게 연락주세요.
-      </p>
-      <p style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);letter-spacing:.04em">
-        Seongnam, Gyeonggi-do · Korea
-      </p>
+      <p style="font-size:14px;color:var(--text2);font-weight:300;line-height:1.9;margin-bottom:1.5rem">에너지·전력 사업 개발 얘기, 협업 제안,<br>기술적으로 흥미로운 얘기라면 연락 주세요.<br>짧고 직접적일수록 좋습니다.</p>
+      <p style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase">⬥ Seongnam, Gyeonggi-do · Korea</p>
     </div>
-
     <div class="contact-links">
-      <!-- 실제 링크로 교체하세요 -->
-      <a href="mailto:your@email.com" class="contact-link">
-        <div class="cl-icon">✉</div>
-        <div>
-          <span class="cl-label">이메일</span>
-          <span class="cl-sub">your@email.com</span>
-        </div>
-      </a>
-      <a href="https://linkedin.com/in/yourprofile" target="_blank" class="contact-link">
-        <div class="cl-icon">in</div>
-        <div>
-          <span class="cl-label">LinkedIn</span>
-          <span class="cl-sub">linkedin.com/in/yourprofile</span>
-        </div>
-      </a>
-      <a href="https://github.com/yourusername" target="_blank" class="contact-link">
-        <div class="cl-icon" style="font-family:'DM Mono',monospace;font-size:12px">gh</div>
-        <div>
-          <span class="cl-label">GitHub</span>
-          <span class="cl-sub">github.com/yourusername</span>
-        </div>
-      </a>
+      <a href="/cdn-cgi/l/email-protection#61180e141321040c00080d4f020e0c" class="contact-link"><div class="cl-icon">✉</div><div><span class="cl-label">이메일</span><span class="cl-sub"><span class="__cf_email__" data-cfemail="daa3b5afa89abfb7bbb3b6f4b9b5b7">[email&#160;protected]</span></span></div></a>
+      <a href="https://linkedin.com/in/yourprofile" target="_blank" class="contact-link"><div class="cl-icon">in</div><div><span class="cl-label">LinkedIn</span><span class="cl-sub">linkedin.com/in/yourprofile</span></div></a>
+      <a href="https://github.com/kimchi-taco" target="_blank" class="contact-link"><div class="cl-icon">gh</div><div><span class="cl-label">GitHub</span><span class="cl-sub">github.com/kimchi-taco</span></div></a>
     </div>
   </div>
 </section>
@@ -1119,97 +722,127 @@ footer span { color: var(--accent); }
 </main>
 
 <footer>
-  <span>AHN.SANGHO</span> · Built with ♥ · <span id="year"></span>
+  <span>⬥ FORGE MAVERICK ⬥</span> · mav-ash.com · <span id="yr"></span>
 </footer>
 
-<script>
-// ── 테마 전환 ─────────────────────────────────────────────
-const btn = document.getElementById('themeBtn');
-function toggleTheme() {
-  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-  document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
-  btn.textContent = isDark ? '☽' : '☀';
-  localStorage.setItem('theme', isDark ? 'light' : 'dark');
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+/* ══════════════════════════════════════════
+   1. 테마 전환
+══════════════════════════════════════════ */
+const themeBtn = document.getElementById('theme-btn');
+let isDark = true;
+
+function applyTheme(dark) {
+  isDark = dark;
+  if (dark) {
+    document.body.classList.remove('day');
+    themeBtn.textContent = '☀️';
+  } else {
+    document.body.classList.add('day');
+    themeBtn.textContent = '🌙';
+  }
+  localStorage.setItem('fm-theme', dark ? 'dark' : 'light');
+  drawStars(); // 별 재렌더
 }
-const saved = localStorage.getItem('theme') || 'dark';
-document.documentElement.setAttribute('data-theme', saved);
-btn.textContent = saved === 'dark' ? '☀' : '☽';
 
-// ── 연도 ─────────────────────────────────────────────────
-document.getElementById('year').textContent = new Date().getFullYear();
+themeBtn.addEventListener('click', function() {
+  applyTheme(!isDark);
+});
 
-// ── 스크롤 애니메이션 ─────────────────────────────────────
-const obs = new IntersectionObserver(entries => {
-  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-}, { threshold: 0.08 });
-document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
+// 초기
+const saved = localStorage.getItem('fm-theme');
+applyTheme(saved !== 'light');
 
-// ── 대시보드 데이터 연동 ──────────────────────────────────
-// 실제 운영 시 아래 BASE_URL을 맥미니 Tunnel 주소로 교체하세요
-// 예: const BASE_URL = 'https://dashboard.yourdomain.com';
-const BASE_URL = 'http://localhost:3000';
+/* ══════════════════════════════════════════
+   2. 별 캔버스
+══════════════════════════════════════════ */
+function drawStars() {
+  const canvas = document.getElementById('star-canvas');
+  const ctx    = canvas.getContext('2d');
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  if (!isDark) return;
 
-async function fetchDashData() {
-  try {
-    const res  = await fetch(`${BASE_URL}/api/summary`, { signal: AbortSignal.timeout(5000) });
-    const json = await res.json();
-    const d    = json.data;
-    if (!d) return;
-
-    const comms = d.commodities || [];
-    const find  = sym => comms.find(c => c.symbol === sym);
-
-    // Hero 카드
-    if (d.smpNow) {
-      document.getElementById('heroSmp').textContent = parseFloat(d.smpNow.price).toFixed(1);
-      document.getElementById('dashSmp').textContent = parseFloat(d.smpNow.price).toFixed(1);
+  const count = 220;
+  for (let i = 0; i < count; i++) {
+    const x  = Math.random() * canvas.width;
+    const y  = Math.random() * canvas.height * 0.7;
+    const r  = Math.random() * 1.2 + 0.3;
+    const op = Math.random() * 0.6 + 0.2;
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(240,225,180,${op})`;
+    ctx.fill();
+    // 큰 별은 십자 글로우
+    if (r > 1.1) {
+      ctx.strokeStyle = `rgba(240,225,180,${op * 0.4})`;
+      ctx.lineWidth = 0.5;
+      ctx.beginPath(); ctx.moveTo(x - r * 3, y); ctx.lineTo(x + r * 3, y); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x, y - r * 3); ctx.lineTo(x, y + r * 3); ctx.stroke();
     }
-    if (d.grid?.reserve_rate) {
-      const rr = parseFloat(d.grid.reserve_rate).toFixed(1);
-      document.getElementById('heroRes').textContent  = rr;
-      document.getElementById('dashRes').textContent  = rr;
-      document.getElementById('dashRes').style.color  = rr < 10 ? '#f87171' : rr < 15 ? '#fbbf24' : '#4fffb0';
-    }
-    if (d.rec) {
-      document.getElementById('dashRec').textContent = Math.round(d.rec.avg_price).toLocaleString();
-    }
-    const lng = find('LNG_HH');
-    if (lng) {
-      document.getElementById('heroLng').textContent = parseFloat(lng.price).toFixed(2);
-      document.getElementById('dashLng').textContent = parseFloat(lng.price).toFixed(2);
-    }
-    const krw = find('USDKRW');
-    if (krw) {
-      document.getElementById('heroKrw').textContent = Math.round(krw.price).toLocaleString();
-      document.getElementById('dashKrw').textContent = Math.round(krw.price).toLocaleString();
-    }
-    const dubai = find('DUBAI');
-    if (dubai) document.getElementById('dashDubai').textContent = parseFloat(dubai.price).toFixed(2);
-
-    // 연료 믹스
-    if (d.fuel) {
-      const f = d.fuel;
-      setBar('bNuclear','pNuclear', f.nuclear);
-      setBar('bLng',    'pLng',     f.lng);
-      setBar('bCoal',   'pCoal',    f.coal);
-      setBar('bRenew',  'pRenew',   f.renewable);
-    }
-  } catch(e) {
-    // 로컬 서버 미연결 시 조용히 실패 (홈페이지 자체는 정상 동작)
-    console.log('[Dashboard] 연결 대기 중...');
   }
 }
 
-function setBar(barId, pctId, val) {
-  const v = parseFloat(val || 0).toFixed(1);
-  const bar = document.getElementById(barId);
-  const pct = document.getElementById(pctId);
-  if (bar) bar.style.width = v + '%';
-  if (pct) pct.textContent = v + '%';
+window.addEventListener('resize', drawStars);
+
+/* ══════════════════════════════════════════
+   3. 패럴랙스
+══════════════════════════════════════════ */
+const parallaxLayers = [
+  { el: document.getElementById('rock-far'),  speed: 0.08 },
+  { el: document.getElementById('rock-mid'),  speed: 0.18 },
+  { el: document.getElementById('rock-near'), speed: 0.30 },
+  { el: document.getElementById('glow-layer'),speed: 0.38 },
+];
+
+let rafPending = false;
+window.addEventListener('scroll', function() {
+  if (rafPending) return;
+  rafPending = true;
+  requestAnimationFrame(function() {
+    const sy = window.scrollY;
+    parallaxLayers.forEach(function(l) {
+      if (l.el) l.el.style.transform = 'translateY(' + (sy * l.speed) + 'px)';
+    });
+    rafPending = false;
+  });
+});
+
+/* ══════════════════════════════════════════
+   4. 연도
+══════════════════════════════════════════ */
+document.getElementById('yr').textContent = new Date().getFullYear();
+
+/* ══════════════════════════════════════════
+   5. 대시보드 데이터
+══════════════════════════════════════════ */
+const BASE = 'https://dashboard.mav-ash.com';
+
+function s(id, v) { var e = document.getElementById(id); if (e) e.textContent = v; }
+function setBar(bid, pid, val) {
+  var v = parseFloat(val || 0).toFixed(1);
+  var b = document.getElementById(bid); if (b) b.style.width = v + '%';
+  var p = document.getElementById(pid); if (p) p.textContent = v + '%';
 }
 
-fetchDashData();
-setInterval(fetchDashData, 5 * 60 * 1000);
-</script>
-</body>
-</html>
+async function fetchDash() {
+  try {
+    var res  = await fetch(BASE + '/api/summary', { signal: AbortSignal.timeout(5000) });
+    var json = await res.json();
+    var d    = json.data;
+    if (!d) return;
+    var comms = d.commodities || [];
+    var fc    = function(sym) { return comms.find(function(c) { return c.symbol === sym; }); };
+
+    if (d.smpNow) { var sv = parseFloat(d.smpNow.price).toFixed(1); s('hSmp', sv); s('dSmp', sv); }
+    if (d.grid && d.grid.reserve_rate) {
+      var rr = parseFloat(d.grid.reserve_rate).toFixed(1);
+      s('hRes', rr); s('dRes', rr);
+      document.getElementById('dRes').style.color = rr < 10 ? '#c0402a' : rr < 15 ? '#e8a830' : '#c8902a';
+    }
+    if (d.rec) s('dRec', Math.round(d.rec.avg_price).toLocaleString());
+    var lng = fc('LNG_HH');    if (lng)   { s('hLng',  parseFloat(lng.price).toFixed(2));   s('dLng',  parseFloat(lng.price).toFixed(2)); }
+    var krw = fc('USDKRW');   if (krw)   { s('hKrw',  Math.round(krw.price).toLocaleString()); s('dKrw', Math.round(krw.price).toLocaleString()); }
+    var dub = fc('DUBAI');    if (dub)   s('dDubai', parseFloat(dub.price).toFixed(2));
+    if (d.fuel) { setBar('bN','pN',d.fuel.nuclear); setB
