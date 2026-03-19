@@ -1,0 +1,1215 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SangHo Ahn — Energy & Power</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=Pretendard:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ── Reset & Root ─────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --ease: cubic-bezier(.16,1,.3,1);
+  --t: .3s;
+}
+
+[data-theme="dark"] {
+  --bg:      #080b0f;
+  --bg2:     #0e1319;
+  --bg3:     #141b24;
+  --surface: #1a2330;
+  --border:  rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.13);
+  --text:    #dde4ef;
+  --text2:   #7f8fa6;
+  --text3:   #3d4f63;
+  --accent:  #4fffb0;
+  --accent2: #00d977;
+  --accent-dim: rgba(79,255,176,0.08);
+  --accent-glow: rgba(79,255,176,0.15);
+  --card-bg: #0e1319;
+  --tag-bg:  rgba(79,255,176,0.08);
+  --tag-text:#4fffb0;
+  --shadow:  0 0 0 1px rgba(255,255,255,0.05), 0 8px 32px rgba(0,0,0,0.4);
+}
+
+[data-theme="light"] {
+  --bg:      #f7f8fa;
+  --bg2:     #ffffff;
+  --bg3:     #f0f2f5;
+  --surface: #ffffff;
+  --border:  rgba(0,0,0,0.07);
+  --border2: rgba(0,0,0,0.13);
+  --text:    #0f1923;
+  --text2:   #5a6a7e;
+  --text3:   #9aaabb;
+  --accent:  #00925a;
+  --accent2: #007a4c;
+  --accent-dim: rgba(0,146,90,0.08);
+  --accent-glow: rgba(0,146,90,0.12);
+  --card-bg: #ffffff;
+  --tag-bg:  rgba(0,146,90,0.08);
+  --tag-text:#00925a;
+  --shadow:  0 0 0 1px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.08);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Pretendard', sans-serif;
+  font-size: 15px;
+  line-height: 1.7;
+  transition: background var(--t), color var(--t);
+  overflow-x: hidden;
+}
+
+/* ── Noise texture overlay ────────────────────────────────── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9998;
+  opacity: .4;
+}
+
+/* ── Nav ─────────────────────────────────────────────────── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  padding: 0 2rem;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  border-bottom: 1px solid var(--border);
+  background: color-mix(in srgb, var(--bg) 80%, transparent);
+  transition: background var(--t), border-color var(--t);
+}
+
+.nav-logo {
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--accent);
+  letter-spacing: .06em;
+  text-decoration: none;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  list-style: none;
+}
+
+.nav-links a {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--text2);
+  text-decoration: none;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  transition: color .2s;
+}
+
+.nav-links a:hover { color: var(--text); }
+
+.theme-btn {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  border: 1px solid var(--border2);
+  background: transparent;
+  color: var(--text2);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+  transition: all .2s;
+  margin-left: .5rem;
+}
+
+.theme-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ── Layout ───────────────────────────────────────────────── */
+main { padding-top: 56px; }
+
+section {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 7rem 2rem;
+}
+
+section + section { padding-top: 0; }
+
+/* ── Hero ─────────────────────────────────────────────────── */
+#hero {
+  min-height: calc(100vh - 56px);
+  display: flex;
+  align-items: center;
+  position: relative;
+  padding: 7rem 2rem 5rem;
+}
+
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5rem;
+  align-items: center;
+  width: 100%;
+}
+
+.hero-eyebrow {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--accent);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.hero-eyebrow::before {
+  content: '';
+  display: inline-block;
+  width: 24px; height: 1px;
+  background: var(--accent);
+}
+
+.hero-name {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(2.8rem, 5vw, 4.2rem);
+  font-weight: 400;
+  line-height: 1.1;
+  color: var(--text);
+  margin-bottom: .75rem;
+  letter-spacing: -.02em;
+}
+
+.hero-name em {
+  font-style: italic;
+  color: var(--accent);
+}
+
+.hero-role {
+  font-size: 17px;
+  color: var(--text2);
+  margin-bottom: 2rem;
+  font-weight: 300;
+  line-height: 1.6;
+}
+
+.hero-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 2.5rem;
+}
+
+.tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  padding: 5px 12px;
+  border-radius: 4px;
+  background: var(--tag-bg);
+  color: var(--tag-text);
+  border: 1px solid rgba(79,255,176,0.15);
+  letter-spacing: .04em;
+  transition: background .2s;
+}
+
+[data-theme="light"] .tag { border-color: rgba(0,146,90,0.2); }
+
+.hero-cta {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 24px;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #080b0f;
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: .04em;
+  text-decoration: none;
+  transition: all .2s;
+}
+
+.btn-primary:hover { background: var(--accent2); transform: translateY(-1px); }
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 24px;
+  border-radius: 8px;
+  border: 1px solid var(--border2);
+  color: var(--text2);
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: .04em;
+  text-decoration: none;
+  transition: all .2s;
+  background: transparent;
+}
+
+.btn-secondary:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-1px); }
+
+/* Hero 우측 — 애니메이션 카드 */
+.hero-visual {
+  position: relative;
+}
+
+.hero-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: var(--shadow);
+  transition: background var(--t);
+}
+
+.hc-header {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--text3);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.live-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: pulse 2s ease infinite;
+}
+
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.8)} }
+
+.hc-metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.hc-metric {
+  background: var(--bg3);
+  border-radius: 8px;
+  padding: 12px;
+  transition: background var(--t);
+}
+
+.hc-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  color: var(--text3);
+  letter-spacing: .08em;
+  margin-bottom: 5px;
+  text-transform: uppercase;
+}
+
+.hc-value {
+  font-family: 'DM Mono', monospace;
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--accent);
+}
+
+.hc-value.muted { color: var(--text2); font-size: 16px; }
+
+.hc-bar-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hc-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.hc-bar-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--text3);
+  min-width: 36px;
+}
+
+.hc-bar-track {
+  flex: 1;
+  height: 4px;
+  background: var(--surface);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.hc-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  animation: barIn 1.2s var(--ease) forwards;
+  transform-origin: left;
+}
+
+@keyframes barIn { from{transform:scaleX(0)} to{transform:scaleX(1)} }
+
+.hc-bar-pct {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--text2);
+  min-width: 28px;
+  text-align: right;
+}
+
+/* 배경 glow */
+.hero-glow {
+  position: absolute;
+  width: 500px; height: 500px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(79,255,176,0.06) 0%, transparent 70%);
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* ── Section header ──────────────────────────────────────── */
+.sec-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--accent);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sec-label::before {
+  content: '';
+  display: inline-block;
+  width: 20px; height: 1px;
+  background: var(--accent);
+}
+
+.sec-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(1.8rem, 3vw, 2.4rem);
+  font-weight: 400;
+  color: var(--text);
+  line-height: 1.2;
+  margin-bottom: .75rem;
+  letter-spacing: -.01em;
+}
+
+.sec-desc {
+  font-size: 15px;
+  color: var(--text2);
+  max-width: 560px;
+  margin-bottom: 3rem;
+  font-weight: 300;
+}
+
+/* ── Career ───────────────────────────────────────────────── */
+.career-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  position: relative;
+}
+
+.career-list::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 8px; bottom: 8px;
+  width: 1px;
+  background: linear-gradient(to bottom, var(--accent), transparent);
+}
+
+.career-item {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 2rem;
+  padding: 1.75rem 0 1.75rem 2rem;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+  transition: all .2s;
+}
+
+.career-item::before {
+  content: '';
+  position: absolute;
+  left: -4px; top: 2rem;
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 2px solid var(--accent);
+  transition: background .2s;
+}
+
+.career-item:hover::before { background: var(--accent); }
+.career-item:last-child { border-bottom: none; }
+
+.career-period {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--text3);
+  letter-spacing: .04em;
+  padding-top: 3px;
+}
+
+.career-company {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 3px;
+}
+
+.career-role {
+  font-size: 14px;
+  color: var(--accent);
+  font-family: 'DM Mono', monospace;
+  margin-bottom: 8px;
+  letter-spacing: .02em;
+}
+
+.career-desc {
+  font-size: 14px;
+  color: var(--text2);
+  font-weight: 300;
+  line-height: 1.7;
+}
+
+/* ── Dashboard section ───────────────────────────────────── */
+.dashboard-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: all .3s var(--ease);
+}
+
+.dashboard-card:hover {
+  border-color: var(--border2);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow), 0 0 40px var(--accent-glow);
+}
+
+.dc-header {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg3);
+  transition: background var(--t);
+}
+
+.dc-title-wrap { display: flex; align-items: center; gap: 10px; }
+
+.dc-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: pulse 2s ease infinite;
+}
+
+.dc-title {
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text);
+  letter-spacing: .04em;
+}
+
+.dc-badge {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  padding: 3px 10px;
+  border-radius: 4px;
+  background: var(--accent-dim);
+  color: var(--accent);
+  border: 1px solid rgba(79,255,176,0.2);
+  letter-spacing: .06em;
+}
+
+.dc-preview {
+  padding: 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 1rem;
+}
+
+.dc-stat {
+  background: var(--bg3);
+  border-radius: 8px;
+  padding: 14px;
+  text-align: center;
+  transition: background var(--t);
+}
+
+.dc-stat-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  color: var(--text3);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.dc-stat-value {
+  font-family: 'DM Mono', monospace;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.dc-footer {
+  padding: 0 1.5rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dc-desc {
+  font-size: 13px;
+  color: var(--text2);
+  font-weight: 300;
+}
+
+.dc-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--accent);
+  text-decoration: none;
+  letter-spacing: .04em;
+  padding: 8px 16px;
+  border: 1px solid rgba(79,255,176,0.25);
+  border-radius: 6px;
+  transition: all .2s;
+  white-space: nowrap;
+}
+
+.dc-link:hover {
+  background: var(--accent-dim);
+  border-color: var(--accent);
+}
+
+/* ── Projects ─────────────────────────────────────────────── */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.proj-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  transition: all .25s var(--ease);
+  box-shadow: var(--shadow);
+  cursor: default;
+}
+
+.proj-card:hover {
+  border-color: var(--border2);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow), 0 0 24px var(--accent-glow);
+}
+
+.proj-icon {
+  width: 40px; height: 40px;
+  border-radius: 10px;
+  background: var(--accent-dim);
+  border: 1px solid rgba(79,255,176,0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.proj-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.proj-desc {
+  font-size: 13px;
+  color: var(--text2);
+  font-weight: 300;
+  line-height: 1.65;
+  flex: 1;
+}
+
+.proj-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.proj-tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: 3px;
+  background: var(--bg3);
+  color: var(--text3);
+  letter-spacing: .03em;
+  transition: background var(--t);
+}
+
+/* ── Contact ──────────────────────────────────────────────── */
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: start;
+}
+
+.contact-links {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.contact-link {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  text-decoration: none;
+  transition: all .2s;
+  background: var(--card-bg);
+}
+
+.contact-link:hover {
+  border-color: var(--accent);
+  background: var(--accent-dim);
+  transform: translateX(4px);
+}
+
+.cl-icon {
+  width: 36px; height: 36px;
+  border-radius: 8px;
+  background: var(--bg3);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+  transition: background var(--t);
+}
+
+.cl-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  display: block;
+  margin-bottom: 1px;
+}
+
+.cl-sub {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--text3);
+  letter-spacing: .03em;
+}
+
+/* ── Footer ───────────────────────────────────────────────── */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 2rem;
+  text-align: center;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--text3);
+  letter-spacing: .04em;
+  transition: border-color var(--t);
+}
+
+footer span { color: var(--accent); }
+
+/* ── Animations ────────────────────────────────────────────── */
+.fade-up {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity .7s var(--ease), transform .7s var(--ease);
+}
+
+.fade-up.visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* ── Responsive ───────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .hero-grid { grid-template-columns: 1fr; gap: 3rem; }
+  .hero-visual { display: none; }
+  .career-item { grid-template-columns: 1fr; gap: .5rem; }
+  .career-list::before { display: none; }
+  .career-item { padding-left: 0; }
+  .career-item::before { display: none; }
+  .projects-grid { grid-template-columns: 1fr 1fr; }
+  .contact-grid { grid-template-columns: 1fr; }
+  .dc-preview { grid-template-columns: repeat(3,1fr); }
+}
+
+@media (max-width: 600px) {
+  section { padding: 4rem 1.25rem; }
+  .projects-grid { grid-template-columns: 1fr; }
+  .dc-preview { grid-template-columns: 1fr 1fr; }
+  .nav-links { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">AHN<span style="color:var(--text3)">.</span>SANGHO</a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#career">Career</a></li>
+    <li><a href="#dashboard">Dashboard</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <button class="theme-btn" onclick="toggleTheme()" id="themeBtn" title="테마 전환">☀</button>
+</nav>
+
+<main>
+
+<!-- HERO -->
+<section id="about">
+  <div class="hero-grid">
+    <div>
+      <p class="hero-eyebrow">Energy & Power Professional</p>
+      <h1 class="hero-name">안상호<br><em>Maverick</em></h1>
+      <p class="hero-role">
+        SK Innovation · 전력사업 개발/기획<br>
+        LNG · SMR · 신재생에너지 · 계통 분석
+      </p>
+      <div class="hero-tags">
+        <span class="tag">LNG Power</span>
+        <span class="tag">SMR</span>
+        <span class="tag">Renewable</span>
+        <span class="tag">Grid Analysis</span>
+        <span class="tag">ESS</span>
+        <span class="tag">SCADA</span>
+        <span class="tag">EV Charging</span>
+      </div>
+      <div class="hero-cta">
+        <a href="#dashboard" class="btn-primary">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 10L5 5.5L8 8.5L11 3.5L13 5.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          전력 대시보드
+        </a>
+        <a href="#career" class="btn-secondary">
+          커리어 보기 →
+        </a>
+      </div>
+    </div>
+
+    <div class="hero-visual">
+      <div class="hero-glow"></div>
+      <div class="hero-card">
+        <div class="hc-header">
+          <div class="live-dot"></div>
+          KR Power Market · Live
+        </div>
+        <div class="hc-metrics">
+          <div class="hc-metric">
+            <div class="hc-label">SMP (육지)</div>
+            <div class="hc-value" id="heroSmp">—</div>
+            <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);margin-top:2px">원/kWh</div>
+          </div>
+          <div class="hc-metric">
+            <div class="hc-label">공급예비율</div>
+            <div class="hc-value" id="heroRes">—</div>
+            <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);margin-top:2px">%</div>
+          </div>
+          <div class="hc-metric">
+            <div class="hc-label">LNG (HH)</div>
+            <div class="hc-value muted" id="heroLng">—</div>
+            <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);margin-top:2px">USD/MMBtu</div>
+          </div>
+          <div class="hc-metric">
+            <div class="hc-label">USD/KRW</div>
+            <div class="hc-value muted" id="heroKrw">—</div>
+            <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);margin-top:2px">원</div>
+          </div>
+        </div>
+        <div class="hc-bar-wrap">
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:.08em;margin-bottom:6px;text-transform:uppercase">발전 연료원 구성</div>
+          <div class="hc-bar-row"><span class="hc-bar-label">원자력</span><div class="hc-bar-track"><div class="hc-bar-fill" id="bNuclear" style="width:28%;background:#60a5fa"></div></div><span class="hc-bar-pct" id="pNuclear">28%</span></div>
+          <div class="hc-bar-row"><span class="hc-bar-label">LNG</span><div class="hc-bar-track"><div class="hc-bar-fill" id="bLng" style="width:31%;background:#a78bfa"></div></div><span class="hc-bar-pct" id="pLng">31%</span></div>
+          <div class="hc-bar-row"><span class="hc-bar-label">석탄</span><div class="hc-bar-track"><div class="hc-bar-fill" id="bCoal" style="width:22%;background:#94a3b8"></div></div><span class="hc-bar-pct" id="pCoal">22%</span></div>
+          <div class="hc-bar-row"><span class="hc-bar-label">신재생</span><div class="hc-bar-track"><div class="hc-bar-fill" id="bRenew" style="width:19%;background:#4fffb0"></div></div><span class="hc-bar-pct" id="pRenew">19%</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CAREER -->
+<section id="career" class="fade-up">
+  <div class="sec-label">Career</div>
+  <h2 class="sec-title">경력 사항</h2>
+  <p class="sec-desc">전기전력공학을 기반으로 ESS·SCADA·EV 충전 인프라·LNG 전력사업까지 에너지 밸류체인 전반을 경험했습니다.</p>
+
+  <div class="career-list">
+    <div class="career-item">
+      <div class="career-period">2023 — 현재</div>
+      <div>
+        <div class="career-company">SK Innovation</div>
+        <div class="career-role">전력사업 개발·기획 (SK E&S)</div>
+        <div class="career-desc">LNG 발전소 부지 선정 PM, SMR·신재생에너지 사업 개발, 전력계통 분석 및 전략 기획.</div>
+      </div>
+    </div>
+    <div class="career-item">
+      <div class="career-period">2021 — 2023</div>
+      <div>
+        <div class="career-company">Tesla</div>
+        <div class="career-role">Supercharger Deployment Manager</div>
+        <div class="career-desc">한국 내 슈퍼차저 네트워크 구축 및 운영 총괄. 부지 발굴·인허가·시공 관리.</div>
+      </div>
+    </div>
+    <div class="career-item">
+      <div class="career-period">2016 — 2021</div>
+      <div>
+        <div class="career-company">LS일렉트릭</div>
+        <div class="career-role">해외영업 PM · SCADA/ESS</div>
+        <div class="career-desc">SCADA 시스템 및 에너지저장장치(ESS) 해외 영업·PM. 중동·동남아 프로젝트 수행.</div>
+      </div>
+    </div>
+    <div class="career-item">
+      <div class="career-period">학력</div>
+      <div>
+        <div class="career-company">전기전력공학 전공</div>
+        <div class="career-role">B.S. Electrical Engineering</div>
+        <div class="career-desc">전력시스템·제어공학·전력전자 전공.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DASHBOARD -->
+<section id="dashboard" class="fade-up">
+  <div class="sec-label">Live Data</div>
+  <h2 class="sec-title">전력시장 대시보드</h2>
+  <p class="sec-desc">맥미니 서버에서 실시간으로 수집되는 한국 전력시장 핵심 지표입니다. SMP·REC·예비율·글로벌 연료가를 한눈에 확인.</p>
+
+  <div class="dashboard-card">
+    <div class="dc-header">
+      <div class="dc-title-wrap">
+        <div class="dc-dot"></div>
+        <span class="dc-title">Korea Power Market Intelligence</span>
+      </div>
+      <span class="dc-badge">LIVE</span>
+    </div>
+    <div class="dc-preview">
+      <div class="dc-stat">
+        <div class="dc-stat-label">SMP (육지)</div>
+        <div class="dc-stat-value" id="dashSmp" style="color:var(--accent)">—</div>
+        <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);margin-top:3px">원/kWh</div>
+      </div>
+      <div class="dc-stat">
+        <div class="dc-stat-label">공급 예비율</div>
+        <div class="dc-stat-value" id="dashRes" style="color:#fbbf24">—</div>
+        <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);margin-top:3px">%</div>
+      </div>
+      <div class="dc-stat">
+        <div class="dc-stat-label">REC 평균가</div>
+        <div class="dc-stat-value" id="dashRec" style="color:#60a5fa">—</div>
+        <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);margin-top:3px">원/REC</div>
+      </div>
+      <div class="dc-stat">
+        <div class="dc-stat-label">LNG HH</div>
+        <div class="dc-stat-value" id="dashLng" style="color:#a78bfa">—</div>
+        <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);margin-top:3px">USD/MMBtu</div>
+      </div>
+      <div class="dc-stat">
+        <div class="dc-stat-label">두바이유</div>
+        <div class="dc-stat-value" id="dashDubai" style="color:#fb923c">—</div>
+        <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);margin-top:3px">USD/bbl</div>
+      </div>
+      <div class="dc-stat">
+        <div class="dc-stat-label">USD/KRW</div>
+        <div class="dc-stat-value" id="dashKrw" style="color:#f87171">—</div>
+        <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);margin-top:3px">원</div>
+      </div>
+    </div>
+    <div class="dc-footer">
+      <span class="dc-desc">전체 차트 및 상세 분석 →</span>
+      <!-- 실제 도메인으로 교체하세요: href="https://dashboard.yourdomain.com" -->
+      <a href="http://localhost:3000" target="_blank" class="dc-link">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 6h10M7 2l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        대시보드 열기
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects" class="fade-up">
+  <div class="sec-label">Projects & Tools</div>
+  <h2 class="sec-title">보유 프로젝트</h2>
+  <p class="sec-desc">업무 자동화와 데이터 기반 의사결정을 위해 직접 개발·운영 중인 도구들입니다.</p>
+
+  <div class="projects-grid">
+    <div class="proj-card">
+      <div class="proj-icon">⚡</div>
+      <div>
+        <div class="proj-name">Power Market Dashboard</div>
+        <div class="proj-desc">SMP·REC·예비율·LNG·우라늄 등 전력시장 핵심 지표를 실시간으로 수집·시각화. 맥미니 서버 상시 운영.</div>
+      </div>
+      <div class="proj-tags">
+        <span class="proj-tag">Node.js</span>
+        <span class="proj-tag">SQLite</span>
+        <span class="proj-tag">KPX API</span>
+        <span class="proj-tag">Chart.js</span>
+      </div>
+    </div>
+
+    <div class="proj-card">
+      <div class="proj-icon">🧠</div>
+      <div>
+        <div class="proj-name">Executive Signal Analyzer</div>
+        <div class="proj-desc">임원 메시지(Teams·이메일)를 AI로 분석해 전략 방향을 예측하는 내부 도구. Claude API 기반.</div>
+      </div>
+      <div class="proj-tags">
+        <span class="proj-tag">Claude API</span>
+        <span class="proj-tag">NLP</span>
+        <span class="proj-tag">신호 분석</span>
+      </div>
+    </div>
+
+    <div class="proj-card">
+      <div class="proj-icon">📋</div>
+      <div>
+        <div class="proj-name">Meeting Minutes Automation</div>
+        <div class="proj-desc">회의 녹취 파일을 자동으로 구조화된 회의록으로 변환. n8n + Gemini/Ollama + Obsidian 연동.</div>
+      </div>
+      <div class="proj-tags">
+        <span class="proj-tag">n8n</span>
+        <span class="proj-tag">Gemini</span>
+        <span class="proj-tag">Obsidian</span>
+        <span class="proj-tag">자동화</span>
+      </div>
+    </div>
+
+    <div class="proj-card">
+      <div class="proj-icon">📈</div>
+      <div>
+        <div class="proj-name">Magic Split</div>
+        <div class="proj-desc">자동화된 주식 투자 시스템. 분할매매 전략 기반으로 실운영 중.</div>
+      </div>
+      <div class="proj-tags">
+        <span class="proj-tag">투자 자동화</span>
+        <span class="proj-tag">퀀트</span>
+        <span class="proj-tag">실운영</span>
+      </div>
+    </div>
+
+    <div class="proj-card">
+      <div class="proj-icon">🏭</div>
+      <div>
+        <div class="proj-name">LNG 발전소 부지 선정</div>
+        <div class="proj-desc">대규모 LNG 발전소 건설 적합 산업단지 발굴 프로젝트 PM. GIS 분석·인허가 검토·파트너사 관리.</div>
+      </div>
+      <div class="proj-tags">
+        <span class="proj-tag">PM</span>
+        <span class="proj-tag">LNG</span>
+        <span class="proj-tag">GIS</span>
+        <span class="proj-tag">SK E&S</span>
+      </div>
+    </div>
+
+    <div class="proj-card">
+      <div class="proj-icon">🏠</div>
+      <div>
+        <div class="proj-name">Home Automation Stack</div>
+        <div class="proj-desc">맥미니 기반 홈 서버. n8n 워크플로우·Obsidian·자동화 파이프라인 통합 운영.</div>
+      </div>
+      <div class="proj-tags">
+        <span class="proj-tag">Mac Mini</span>
+        <span class="proj-tag">n8n</span>
+        <span class="proj-tag">셀프호스팅</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" class="fade-up">
+  <div class="sec-label">Contact</div>
+  <h2 class="sec-title">연락하기</h2>
+
+  <div class="contact-grid">
+    <div>
+      <p style="font-size:15px;color:var(--text2);font-weight:300;line-height:1.8;margin-bottom:1.5rem">
+        에너지·전력 사업 개발, 협업 제안, 또는 기술적인 이야기를 나누고 싶으시면 편하게 연락주세요.
+      </p>
+      <p style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);letter-spacing:.04em">
+        Seongnam, Gyeonggi-do · Korea
+      </p>
+    </div>
+
+    <div class="contact-links">
+      <!-- 실제 링크로 교체하세요 -->
+      <a href="mailto:your@email.com" class="contact-link">
+        <div class="cl-icon">✉</div>
+        <div>
+          <span class="cl-label">이메일</span>
+          <span class="cl-sub">your@email.com</span>
+        </div>
+      </a>
+      <a href="https://linkedin.com/in/yourprofile" target="_blank" class="contact-link">
+        <div class="cl-icon">in</div>
+        <div>
+          <span class="cl-label">LinkedIn</span>
+          <span class="cl-sub">linkedin.com/in/yourprofile</span>
+        </div>
+      </a>
+      <a href="https://github.com/yourusername" target="_blank" class="contact-link">
+        <div class="cl-icon" style="font-family:'DM Mono',monospace;font-size:12px">gh</div>
+        <div>
+          <span class="cl-label">GitHub</span>
+          <span class="cl-sub">github.com/yourusername</span>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <span>AHN.SANGHO</span> · Built with ♥ · <span id="year"></span>
+</footer>
+
+<script>
+// ── 테마 전환 ─────────────────────────────────────────────
+const btn = document.getElementById('themeBtn');
+function toggleTheme() {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  btn.textContent = isDark ? '☽' : '☀';
+  localStorage.setItem('theme', isDark ? 'light' : 'dark');
+}
+const saved = localStorage.getItem('theme') || 'dark';
+document.documentElement.setAttribute('data-theme', saved);
+btn.textContent = saved === 'dark' ? '☀' : '☽';
+
+// ── 연도 ─────────────────────────────────────────────────
+document.getElementById('year').textContent = new Date().getFullYear();
+
+// ── 스크롤 애니메이션 ─────────────────────────────────────
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.08 });
+document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
+
+// ── 대시보드 데이터 연동 ──────────────────────────────────
+// 실제 운영 시 아래 BASE_URL을 맥미니 Tunnel 주소로 교체하세요
+// 예: const BASE_URL = 'https://dashboard.yourdomain.com';
+const BASE_URL = 'http://localhost:3000';
+
+async function fetchDashData() {
+  try {
+    const res  = await fetch(`${BASE_URL}/api/summary`, { signal: AbortSignal.timeout(5000) });
+    const json = await res.json();
+    const d    = json.data;
+    if (!d) return;
+
+    const comms = d.commodities || [];
+    const find  = sym => comms.find(c => c.symbol === sym);
+
+    // Hero 카드
+    if (d.smpNow) {
+      document.getElementById('heroSmp').textContent = parseFloat(d.smpNow.price).toFixed(1);
+      document.getElementById('dashSmp').textContent = parseFloat(d.smpNow.price).toFixed(1);
+    }
+    if (d.grid?.reserve_rate) {
+      const rr = parseFloat(d.grid.reserve_rate).toFixed(1);
+      document.getElementById('heroRes').textContent  = rr;
+      document.getElementById('dashRes').textContent  = rr;
+      document.getElementById('dashRes').style.color  = rr < 10 ? '#f87171' : rr < 15 ? '#fbbf24' : '#4fffb0';
+    }
+    if (d.rec) {
+      document.getElementById('dashRec').textContent = Math.round(d.rec.avg_price).toLocaleString();
+    }
+    const lng = find('LNG_HH');
+    if (lng) {
+      document.getElementById('heroLng').textContent = parseFloat(lng.price).toFixed(2);
+      document.getElementById('dashLng').textContent = parseFloat(lng.price).toFixed(2);
+    }
+    const krw = find('USDKRW');
+    if (krw) {
+      document.getElementById('heroKrw').textContent = Math.round(krw.price).toLocaleString();
+      document.getElementById('dashKrw').textContent = Math.round(krw.price).toLocaleString();
+    }
+    const dubai = find('DUBAI');
+    if (dubai) document.getElementById('dashDubai').textContent = parseFloat(dubai.price).toFixed(2);
+
+    // 연료 믹스
+    if (d.fuel) {
+      const f = d.fuel;
+      setBar('bNuclear','pNuclear', f.nuclear);
+      setBar('bLng',    'pLng',     f.lng);
+      setBar('bCoal',   'pCoal',    f.coal);
+      setBar('bRenew',  'pRenew',   f.renewable);
+    }
+  } catch(e) {
+    // 로컬 서버 미연결 시 조용히 실패 (홈페이지 자체는 정상 동작)
+    console.log('[Dashboard] 연결 대기 중...');
+  }
+}
+
+function setBar(barId, pctId, val) {
+  const v = parseFloat(val || 0).toFixed(1);
+  const bar = document.getElementById(barId);
+  const pct = document.getElementById(pctId);
+  if (bar) bar.style.width = v + '%';
+  if (pct) pct.textContent = v + '%';
+}
+
+fetchDashData();
+setInterval(fetchDashData, 5 * 60 * 1000);
+</script>
+</body>
+</html>
