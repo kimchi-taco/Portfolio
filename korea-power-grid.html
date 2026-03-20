@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>대한민국 전력 인프라 지도</title>
+<link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet">
+<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+:root{
+  --v765:#ff1744;--v345:#ff6d00;--v154:#ffd600;--v66:#00e5ff;--v22:#448aff;--vunk:#546e7a;
+  --sub:#ab47bc;--plant:#2979ff;
+  /* 연료별 발전소 색상 */
+  --f-lng:#ff9100;--f-coal:#795548;--f-nuc:#76ff03;--f-solar:#ffd600;
+  --f-wind:#00e5ff;--f-hydro:#2196f3;--f-other:#90a4ae;
+  --bg:#0a0e17;--panel:rgba(10,14,23,.93);--border:rgba(255,255,255,.07);
+  --t1:#e0e3ed;--t2:#6b7a8d;--acc:#00b0ff;--danger:#ff5252;--ok:#66bb6a;--r:10px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans KR',system-ui;background:var(--bg);color:var(--t1);overflow:hidden}
+#map{position:absolute;inset:0}
+
+/* Status Bar */
+.sbar{position:absolute;bottom:40px;left:0;right:0;z-index:30;transition:transform .4s}
+.sbar.hide{transform:translateY(calc(100% + 40px))}
+.dl-tog{position:absolute;bottom:10px;right:14px;z-index:31;background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:5px 10px;color:var(--t1);font-size:13px;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .2s;user-select:none}
+.dl-tog:hover{border-color:var(--acc);color:var(--acc)}
+.dl-tog kbd{font-size:10px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:3px;padding:1px 5px;font-family:'IBM Plex Mono',monospace;color:var(--t2)}
+.sr{display:flex;align-items:center;gap:8px;padding:4px 14px;background:var(--panel);backdrop-filter:blur(16px);border-top:1px solid var(--border);font-size:11px}
+.sr .ic{width:16px;text-align:center;flex-shrink:0}.sr .lb{flex:1;color:var(--t2)}
+.sr .ss{font-family:'IBM Plex Mono',monospace;font-size:10px;min-width:90px;text-align:right}
+.ss.ld{color:var(--acc)}.ss.ok{color:var(--ok)}.ss.er{color:var(--danger)}
+.sr .rt{background:rgba(0,176,255,.1);border:1px solid rgba(0,176,255,.2);color:var(--acc);font-size:10px;padding:2px 8px;border-radius:4px;cursor:pointer;font-family:'Noto Sans KR'}
+.sr .cl{background:none;border:none;color:var(--t2);cursor:pointer;font-size:12px}
+.spb{height:2px;background:rgba(255,255,255,.04);overflow:hidden}
+.spf{height:100%;background:linear-gradient(90deg,var(--acc),#4fc3f7);width:0%;transition:width .5s}
+
+/* Top */
+.top{position:absolute;top:0;left:0;right:0;height:48px;background:linear-gradient(180deg,rgba(10,14,23,.96),rgba(10,14,23,.4) 90%,transparent);display:flex;align-items:center;padding:0 16px;z-index:20;pointer-events:none}
+.top h1{font-size:14px;font-weight:900;background:linear-gradient(135deg,#e8eaf6,#64b5f6);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.top .sep{width:1px;height:18px;background:var(--border);margin:0 12px}
+.top .sub{font-size:10px;color:var(--t2);font-weight:300}
+.top .zb{margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--acc);background:rgba(0,176,255,.06);border:1px solid rgba(0,176,255,.1);padding:2px 8px;border-radius:4px;pointer-events:auto}
+
+.P{background:var(--panel);backdrop-filter:blur(20px);border:1px solid var(--border);border-radius:var(--r);box-shadow:0 8px 32px rgba(0,0,0,.45);z-index:20}
+
+/* Left */
+.lp{position:absolute;top:58px;left:14px;width:260px;max-height:calc(100vh - 80px);overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.08) transparent}
+.lp::-webkit-scrollbar{width:4px}.lp::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px}
+.sc{padding:12px 14px;border-bottom:1px solid var(--border)}.sc:last-child{border-bottom:none}
+.sh{display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none}
+.st2{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:#b0bec5}
+.sa{font-size:16px;color:#90a4ae;transition:transform .2s}
+.sh.fold .sa{transform:rotate(-90deg)}
+.sb{margin-top:8px}.sb.hid{display:none}
+
+.cr{display:flex;align-items:center;gap:8px;padding:4px 2px;border-radius:5px;cursor:pointer;transition:background .15s}
+.cr:hover{background:rgba(255,255,255,.03)}
+.cr input[type=checkbox]{display:none}
+.cb{width:16px;height:16px;border-radius:4px;border:2px solid var(--t2);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;font-size:10px;color:transparent}
+.cr input:checked~.cb{border-color:var(--cc,var(--acc));background:var(--cc,var(--acc));color:#fff}
+.cl2{width:22px;height:3px;border-radius:2px;flex-shrink:0}
+.cd{width:9px;height:9px;border-radius:50%;flex-shrink:0;border:2px solid}
+.cn{font-size:13px;flex:1}.cv{font-family:'IBM Plex Mono',monospace;font-size:12px;color:#b0bec5;font-weight:600}
+.at{font-size:11px;color:var(--acc);cursor:pointer;border:none;background:none;font-family:'Noto Sans KR';padding:2px 0;margin-bottom:4px}.at:hover{text-decoration:underline}
+.qb{display:block;width:100%;text-align:left;background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:6px;padding:7px 10px;color:var(--t1);font-size:13px;font-family:'Noto Sans KR';cursor:pointer;transition:all .12s;margin-bottom:3px}
+.qb:hover{background:rgba(0,176,255,.06);border-color:rgba(0,176,255,.12)}
+.qb span{font-size:9px;color:var(--t2);margin-left:4px}
+
+.mr{display:flex;align-items:center;gap:8px;padding:4px 2px;cursor:pointer;border-radius:5px;font-size:13px}
+.mr:hover{background:rgba(255,255,255,.03)}
+.mr input{display:none}
+.mr .md{width:14px;height:14px;border-radius:50%;border:2px solid var(--t2);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.mr .md::after{content:'';width:6px;height:6px;border-radius:50%;background:transparent;transition:background .15s}
+.mr input:checked~.md{border-color:var(--acc)}.mr input:checked~.md::after{background:var(--acc)}
+
+.cbt{display:block;width:100%;padding:7px;background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:5px;color:var(--t2);font-size:10px;font-family:'Noto Sans KR';cursor:pointer;text-align:center}
+.cbt:hover{background:rgba(255,68,68,.06);color:var(--danger)}
+
+/* Right */
+.rc{position:absolute;top:58px;right:14px;display:flex;flex-direction:column;gap:4px;z-index:20}
+.rb{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;transition:all .15s}
+.rb.on{background:rgba(0,176,255,.12)!important;border-color:rgba(0,176,255,.25)!important;color:var(--acc)!important}
+
+/* Info — 우측 상단으로 이동 (상태바에 안 가림) */
+.ip{position:absolute;top:58px;right:60px;min-width:260px;max-width:330px;display:none;overflow:hidden;z-index:25}
+.ip.vis{display:block}
+.ip .it{font-size:13px;font-weight:700;padding:12px 14px 8px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.ip .vb2{font-family:'IBM Plex Mono',monospace;font-size:10px;padding:2px 7px;border-radius:3px;font-weight:600}
+.ip .ib2{padding:0 14px 12px;max-height:300px;overflow-y:auto}
+.ir{display:flex;justify-content:space-between;font-size:11px;padding:4px 0;border-bottom:1px solid var(--border)}.ir:last-child{border:none}
+.ik{color:var(--t2)}.iv2{font-weight:500}
+.ip .ix{position:absolute;top:10px;right:10px;background:none;border:none;color:var(--t2);font-size:13px;cursor:pointer}
+
+.zd{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--t2);z-index:20;padding:4px 10px;border-radius:5px}
+.fl{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:250;transition:opacity .15s}.fl.go{opacity:.3}
+.toast2{position:absolute;bottom:50px;left:14px;padding:8px 32px 8px 14px;border-radius:8px;font-size:12px;z-index:250;opacity:0;transition:all .3s;pointer-events:none;max-width:280px}.toast2.show{opacity:1;pointer-events:auto}
+.toast2 .tx{cursor:pointer;position:absolute;top:4px;right:8px;font-size:14px;color:rgba(255,255,255,.5);background:none;border:none;line-height:1}.toast2 .tx:hover{color:#fff}
+.ac{display:inline-block;width:10px;height:10px;border-radius:3px;flex-shrink:0}
+.maplibregl-ctrl-attrib{font-size:8px!important;background:rgba(10,14,23,.5)!important;color:var(--t2)!important}
+.maplibregl-ctrl-attrib a{color:var(--acc)!important}
+.maplibregl-ctrl-group{display:none!important}
+.manual-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);z-index:9999;justify-content:center;align-items:center;backdrop-filter:blur(4px)}
+.manual-overlay.vis{display:flex}
+.manual-box{background:#151a28;border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:28px 32px;max-width:640px;width:90vw;max-height:85vh;overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.1) transparent;color:#cfd8e8;font-size:13px;line-height:1.7;position:relative}
+.manual-close{position:absolute;top:14px;right:18px;background:none;border:none;color:#90a4ae;font-size:20px;cursor:pointer}
+.manual-close:hover{color:#fff}
+.m-sec{margin-bottom:14px}
+.m-sec h3{font-size:14px;color:#e0e3ed;margin-bottom:4px}
+.m-sec p{margin:2px 0;color:#a0aec0}
+.m-sec ul{margin:4px 0 4px 16px;color:#a0aec0}
+.m-sec li{margin:2px 0}
+</style>
+</head>
+<body>
+<div id="map"></div>
+<div class="fl" id="flash"></div>
+<div class="toast2 P" id="toast"><span id="toastMsg"></span><button class="tx" onclick="document.getElementById('toast').classList.remove('show')">✕</button></div>
+
+<div class="top">
+  <h1>⚡ 대한민국 전력 인프라 지도</h1><div class="sep"></div>
+  <span class="sub">변전소 · 송전선로 · 행정구역</span>
+  <span class="zb" id="zb">Z7</span>
+</div>
+
+<div class="lp P">
+  <div class="sc">
+    <div class="sh" onclick="togS(this)"><span class="st2">배경지도</span><span class="sa">▾</span></div>
+    <div class="sb">
+      <label class="mr"><input type="radio" name="bm" value="osm" checked onchange="setBM('osm')"><span class="md"></span>OSM 표준 (한국어)</label>
+      <label class="mr"><input type="radio" name="bm" value="sil" onchange="setBM('sil')"><span class="md"></span>실루엣 (최소화)</label>
+      <label class="mr"><input type="radio" name="bm" value="dark" onchange="setBM('dark')"><span class="md"></span>다크</label>
+      <label class="mr"><input type="radio" name="bm" value="sat" onchange="setBM('sat')"><span class="md"></span>위성</label>
+    </div>
+  </div>
+
+  <div class="sc">
+    <div class="sh" onclick="togS(this)"><span class="st2">지도 가리기</span><span class="sa">▾</span></div>
+    <div class="sb">
+      <label class="mr"><input type="radio" name="mm" value="semi" checked onchange="setMaskMode('semi')"><span class="md"></span>반투명 (주변 희미하게)</label>
+      <label class="mr"><input type="radio" name="mm" value="opaque" onchange="setMaskMode('opaque')"><span class="md"></span>불투명 (완전 가리기)</label>
+    </div>
+  </div>
+
+  <div class="sc">
+    <div class="sh" onclick="togS(this)"><span class="st2">송전선로 (전압별)</span><span class="sa">▾</span></div>
+    <div class="sb" id="secL">
+      <button class="at" onclick="togAllL()">전체 선택/해제</button>
+      <label class="cr" style="--cc:var(--v765)"><input type="checkbox" checked data-vc="765" onchange="togV(765,this.checked)"><span class="cb">✓</span><span class="cl2" style="background:var(--v765);box-shadow:0 0 6px var(--v765)"></span><span class="cn">765 kV</span><span class="cv" id="c765">…</span></label>
+      <label class="cr" style="--cc:var(--v345)"><input type="checkbox" checked data-vc="345" onchange="togV(345,this.checked)"><span class="cb">✓</span><span class="cl2" style="background:var(--v345);box-shadow:0 0 4px var(--v345)"></span><span class="cn">345 kV</span><span class="cv" id="c345">…</span></label>
+      <label class="cr" style="--cc:var(--v154)"><input type="checkbox" checked data-vc="154" onchange="togV(154,this.checked)"><span class="cb">✓</span><span class="cl2" style="background:var(--v154)"></span><span class="cn">154 kV</span><span class="cv" id="c154">…</span></label>
+    </div>
+  </div>
+
+  <div class="sc">
+    <div class="sh" onclick="togS(this)"><span class="st2">시설물</span><span class="sa">▾</span></div>
+    <div class="sb">
+      <label class="cr" style="--cc:var(--sub)"><input type="checkbox" checked onchange="togF('sub',this.checked)"><span class="cb">✓</span><span class="cd" style="background:rgba(171,71,188,.25);border-color:var(--sub)"></span><span class="cn">변전소</span><span class="cv" id="csub">…</span></label>
+      <label class="cr" style="--cc:var(--plant)"><input type="checkbox" checked onchange="togF('plt',this.checked)"><span class="cb">✓</span><span class="cd" style="background:rgba(41,121,255,.25);border-color:var(--plant)"></span><span class="cn">발전소 (전체)</span><span class="cv" id="cplt">…</span></label>
+    </div>
+  </div>
+
+  <div class="sc">
+    <div class="sh" onclick="togS(this)"><span class="st2">발전소 연료별</span><span class="sa">▾</span></div>
+    <div class="sb" id="secFuel">
+      <button class="at" onclick="togAllFuel()">전체 선택/해제</button>
+      <label class="cr" style="--cc:var(--f-lng)"><input type="checkbox" checked data-fuel="gas" onchange="togFuel('gas',this.checked)"><span class="cb">✓</span><span class="cd" style="background:rgba(255,145,0,.25);border-color:var(--f-lng)"></span><span class="cn">LNG/가스</span><span class="cv" id="cf-gas">…</span></label>
+      <label class="cr" style="--cc:var(--f-coal)"><input type="checkbox" checked data-fuel="coal" onchange="togFuel('coal',this.checked)"><span class="cb">✓</span><span class="cd" style="background:rgba(121,85,72,.25);border-color:var(--f-coal)"></span><span class="cn">석탄/화력</span><span class="cv" id="cf-coal">…</span></label>
+      <label class="cr" style="--cc:var(--f-nuc)"><input type="checkbox" checked data-fuel="nuclear" onchange="togFuel('nuclear',this.checked)"><span class="cb">✓</span><span class="cd" style="background:rgba(118,255,3,.25);border-color:var(--f-nuc)"></span><span class="cn">원자력</span><span class="cv" id="cf-nuclear">…</span></label>
+      <label class="cr" style="--cc:var(--f-solar)"><input type="checkbox" checked data-fuel="solar" onchange="togFuel('solar',this.checked)"><span class="cb">✓</span><span class="cd" style="background:rgba(255,214,0,.25);border-color:var(--f-solar)"></span><span class="cn">태양광</span><span class="cv" id="cf-solar">…</span></label>
+      <label class="cr" style="--cc:var(--f-wind)"><input type="checkbox" checked data-fuel="wind" onchange="togFuel('wind',this.checked)"><span class="cb">✓</span><span class="cd" style="background:rgba(0,229,255,.25);border-color:var(--f-wind)"></span><span class="cn">풍력</span><span class="cv" id="cf-wind">…</span></label>
+      <label class="cr" style="--cc:var(--f-hydro)"><input type="checkbox" checked data-fuel="hydro" onchange="togFuel('hydro',this.checked)"><span class="cb">✓</span><span class="cd" style="background:rgba(33,150,243,.25);border-color:var(--f-hydro)"></span><span class="cn">수력</span><span class="cv" id="cf-hydro">…</span></label>
+      <label class="cr" style="--cc:var(--f-other)"><input type="checkbox" checked data-fuel="other" onchange="togFuel('other',this.checked)"><span class="cb">✓</span><span class="cd" style="background:rgba(144,164,174,.25);border-color:var(--f-other)"></span><span class="cn">기타/미분류</span><span class="cv" id="cf-other">…</span></label>
+    </div>
+  </div>
+
+  <div class="sc">
+    <div class="sh" onclick="togS(this)"><span class="st2">행정구역 (시·도)</span><span class="sa">▾</span></div>
+    <div class="sb" id="secA">
+      <button class="at" onclick="togAllA()">전체 선택/해제</button>
+      <div id="aList"><span style="font-size:10px;color:var(--t2)">로딩 중…</span></div>
+    </div>
+  </div>
+
+  <div class="sc">
+    <div class="sh" onclick="togS(this)"><span class="st2">주요 도시</span><span class="sa">▾</span></div>
+    <div class="sb" id="secC">
+      <button class="at" onclick="togAllC()">전체 선택/해제</button>
+      <div id="cList"><span style="font-size:10px;color:var(--t2)">로딩 중…</span></div>
+    </div>
+  </div>
+
+  <div class="sc">
+    <div class="sh" onclick="togS(this)"><span class="st2">빠른 이동</span><span class="sa">▾</span></div>
+    <div class="sb">
+      <button class="qb" onclick="fly(37.57,126.98,10)">수도권 <span>서울·경기·인천</span></button>
+      <button class="qb" onclick="fly(35.18,129.08,10)">동남권 <span>부산·울산·경남</span></button>
+      <button class="qb" onclick="fly(35.87,128.60,10)">대구·경북</button>
+      <button class="qb" onclick="fly(36.35,127.38,10)">충청권</button>
+      <button class="qb" onclick="fly(35.16,126.85,10)">호남권</button>
+      <button class="qb" onclick="fly(33.49,126.50,10)">제주</button>
+      <button class="qb" onclick="fly(36.5,127.8,7)">🇰🇷 전국</button>
+    </div>
+  </div>
+  <div class="sc">
+    <div class="sh" onclick="togS(this)"><span class="st2">통계</span><span class="sa">▾</span></div>
+    <div class="sb" id="statsBody">
+      <div style="font-size:11px;color:var(--t2)">데이터 로드 후 표시</div>
+    </div>
+  </div>
+  <div class="sc">
+    <button class="cbt" style="margin-bottom:6px;color:var(--acc);border-color:rgba(0,176,255,.2)" onclick="exportStandalone()">💾 오프라인 HTML 내보내기</button>
+    <button class="cbt" onclick="clearCache()">🔄 캐시 삭제 후 새로고침</button>
+  </div>
+</div>
+
+<div class="rc">
+  <div class="P rb" onclick="togManual()" style="font-size:14px" title="사용 매뉴얼">📖</div>
+  <div class="P rb" onclick="map.zoomIn()">+</div>
+  <div class="P rb" onclick="map.zoomOut()">−</div>
+  <div class="P rb" id="b3d" onclick="t3d()">◇</div>
+  <div class="P rb" onclick="captureMap()" style="font-size:12px">📷</div>
+  <div class="P rb" onclick="captureArea()" style="font-size:11px">✂️</div>
+</div>
+
+<!-- 매뉴얼 모달 -->
+<div class="manual-overlay" id="manualOv" onclick="if(event.target===this)togManual()">
+<div class="manual-box">
+  <button class="manual-close" onclick="togManual()">✕</button>
+  <h2 style="margin-bottom:16px;font-size:18px;color:#fff">📖 대한민국 전력 인프라 지도 — 사용 매뉴얼</h2>
+
+  <div class="m-sec">
+    <h3>🗺️ 배경지도</h3>
+    <p>좌측 패널 최상단에서 4종의 배경지도를 선택할 수 있습니다.</p>
+    <ul>
+      <li><b>OSM 표준 (한국어)</b> — 한글 지명이 포함된 기본 지도</li>
+      <li><b>실루엣 (최소화)</b> — 인프라 가시성을 높인 최소 배경 + 행정구역 경계선</li>
+      <li><b>다크</b> — 어두운 톤, 야간 프레젠테이션에 적합</li>
+      <li><b>위성</b> — ArcGIS 위성 이미지</li>
+    </ul>
+  </div>
+
+  <div class="m-sec">
+    <h3>⚡ 송전선로</h3>
+    <p>765kV(빨강), 345kV(주황), 154kV(골드) 3단계로 표시됩니다.</p>
+    <p>체크박스로 전압별 개별 ON/OFF 가능. 검은 casing이 적용되어 어떤 배경에서도 선명합니다.</p>
+  </div>
+
+  <div class="m-sec">
+    <h3>🏗️ 시설물</h3>
+    <ul>
+      <li><b>변전소</b> (보라색) — 전국 변전소 위치. 줌인 시 이름 라벨 표시</li>
+      <li><b>발전소 (전체)</b> (파란색) — 모든 발전소를 통합 표시</li>
+    </ul>
+    <p>"발전소 전체"와 "연료별" 레이어는 독립적으로 동작합니다. 전체를 끄고 연료별만 볼 수도 있습니다.</p>
+  </div>
+
+  <div class="m-sec">
+    <h3>🔥 발전소 연료별</h3>
+    <p>발전소를 연료원별로 색상 구분하여 표시합니다.</p>
+    <ul>
+      <li>🟠 <b>LNG/가스</b> — 주황</li>
+      <li>🟤 <b>석탄/화력</b> — 갈색</li>
+      <li>💚 <b>원자력</b> — 형광 녹색</li>
+      <li>🟡 <b>태양광</b> — 골드</li>
+      <li>🔷 <b>풍력</b> — 시안</li>
+      <li>🔵 <b>수력</b> — 파랑</li>
+      <li>⚪ <b>기타/미분류</b> — 회색</li>
+    </ul>
+    <p>각 연료 옆에 해당 연료의 발전소 수가 표시됩니다.</p>
+  </div>
+
+  <div class="m-sec">
+    <h3>🗾 행정구역 (시·도)</h3>
+    <p>17개 시·도를 체크박스로 개별 하이라이트할 수 있습니다.</p>
+    <p>선택한 지역은 밝게, 나머지는 어둡게 마스킹됩니다.</p>
+  </div>
+
+  <div class="m-sec">
+    <h3>🏙️ 주요 도시</h3>
+    <p>용인, 청주, 평택, 이천, 파주, 울산, 광양, 포항, 보령 등 LNG 사업 관련 주요 도시의 경계를 하이라이트합니다.</p>
+    <p>행정구역과 동일하게 마스크 hole로 적용됩니다.</p>
+  </div>
+
+  <div class="m-sec">
+    <h3>🌓 지도 가리기</h3>
+    <ul>
+      <li><b>반투명</b> — 선택하지 않은 지역을 반투명 검정으로 덮어 주변 맥락을 유지</li>
+      <li><b>불투명</b> — 완전 검정으로 가려 프레젠테이션/캡쳐에 적합</li>
+    </ul>
+  </div>
+
+  <div class="m-sec">
+    <h3>📷 캡쳐</h3>
+    <ul>
+      <li><b>📷 전체 캡쳐</b> — 현재 화면 전체를 PNG로 저장</li>
+      <li><b>✂️ 영역 캡쳐</b> — 드래그로 원하는 영역만 선택하여 PNG 저장</li>
+    </ul>
+  </div>
+
+  <div class="m-sec">
+    <h3>💾 오프라인 HTML 내보내기</h3>
+    <p>현재 로드된 모든 데이터를 HTML 파일 안에 내장하여 저장합니다.</p>
+    <p><b>사용법:</b> 인터넷 환경에서 데이터 로드 완료 → "💾 오프라인 HTML 내보내기" 클릭 → 다운로드된 HTML을 VDI에 복사하여 사용</p>
+    <p>오프라인 파일은 네트워크 없이 즉시 모든 인프라 데이터를 표시합니다. (배경지도 타일만 인터넷 필요)</p>
+  </div>
+
+  <div class="m-sec">
+    <h3>🔍 클릭 상세 정보</h3>
+    <p>지도 위 시설물(송전선로, 변전소, 발전소)을 클릭하면 우측에 상세 정보 패널이 표시됩니다.</p>
+    <p>전압, 연료 타입, 운영사 등이 배지와 속성 테이블로 표시됩니다.</p>
+  </div>
+
+  <div class="m-sec">
+    <h3>⌨️ 단축키</h3>
+    <ul>
+      <li><b>D</b> — 다운로드 상태창 열기/닫기</li>
+      <li><b>ESC</b> — 정보 패널 닫기 / 영역 캡쳐 취소 / 매뉴얼 닫기</li>
+      <li><b>3</b> — 3D 기울기 토글</li>
+    </ul>
+  </div>
+
+  <div class="m-sec">
+    <h3>📊 통계</h3>
+    <p>좌측 패널 하단 "통계" 섹션에서 전압별 선로 수, 연료별 발전소 수를 확인할 수 있습니다.</p>
+  </div>
+
+  <div class="m-sec" style="margin-top:16px;padding-top:12px;border-top:1px solid rgba(255,255,255,.1)">
+    <p style="color:var(--t2);font-size:11px">데이터 출처: OpenStreetMap (Overpass API) · 행정구역: 통계청 · 배경지도: OSM/ArcGIS<br>
+    IndexedDB에 7일간 캐시되며, "🔄 캐시 삭제 후 새로고침"으로 최신 데이터를 받을 수 있습니다.</p>
+  </div>
+</div>
+</div>
+
+<div class="ip P" id="info"><button class="ix" onclick="closeI()">✕</button><div class="it" id="iT"></div><div class="ib2" id="iB"></div></div>
+<div class="zd P" id="zd">Z7</div>
+
+<div class="sbar" id="sbar">
+  <div class="spb"><div class="spf" id="spf"></div></div>
+  <div class="sr" id="sr-l"><span class="ic">⚡</span><span class="lb">송전선로</span><span class="ss ld" id="ss-l">대기</span></div>
+  <div class="sr" id="sr-s"><span class="ic">🔲</span><span class="lb">변전소</span><span class="ss ld" id="ss-s">대기</span></div>
+  <div class="sr" id="sr-p"><span class="ic">🏭</span><span class="lb">발전소</span><span class="ss ld" id="ss-p">대기</span></div>
+  <div class="sr" id="sr-a"><span class="ic">🗺️</span><span class="lb">행정구역</span><span class="ss ld" id="ss-a">대기</span></div>
+  <div class="sr" id="sr-c"><span class="ic">🏙️</span><span class="lb">주요 도시</span><span class="ss ld" id="ss-c">대기</span></div>
+</div>
+<div class="dl-tog" id="dlTog" onclick="togSbar()" title="다운로드 상태 (D)">📥 <kbd>D</kbd></div>
+
+<canvas id="selCv" style="position:absolute;inset:0;z-index:100;cursor:crosshair;display:none"></canvas>
+
+<script>
+/* ═══════ HELPERS ═══════ */
+const KO=['coalesce',['get','name:ko'],['get','name'],['literal','']];
+const BX='33.1,125.0,38.6,130.0'; /* 남한만 — 북한/중국/일본 제외 */
+const EMP={type:'FeatureCollection',features:[]};
+
+/*
+ * ★ 핵심 수정: 전압 파싱
+ * OSM 한국 데이터는 voltage를 '볼트' 단위로 저장 (765000, 345000, 154000 등)
+ * → 1000 이상이면 볼트이므로 kV로 변환
+ */
+function parseKV(raw) {
+  if (!raw) return 0;
+  const s = String(raw).split(';')[0].trim();
+  let v = parseInt(s);
+  if (isNaN(v)) return 0;
+  if (v > 1000) v = Math.round(v / 1000); // 볼트 → kV 변환
+  return v;
+}
+
+function vClass(kv) {
+  if (kv >= 700) return 765;
+  if (kv >= 300) return 345;
+  if (kv >= 100) return 154;
+  if (kv >= 22)  return 66;
+  if (kv >= 1)   return 22;
+  return 0;
+}
+function vColor(kv) {
+  if (kv >= 700) return '#ff1744';
+  if (kv >= 300) return '#ff6d00';
+  if (kv >= 100) return '#ffd600';
+  if (kv >= 22)  return '#00e5ff';
+  if (kv >= 1)   return '#448aff';
+  return '#546e7a';
+}
+
+/* ═══════ CACHE ═══════ */
+const DB='kr10',VER=1,ST_='d',TTL=30*864e5; /* ★ 30일 캐시 — Overpass 요청 최소화 */
+function idb(){return new Promise((y,n)=>{const r=indexedDB.open(DB,VER);r.onupgradeneeded=()=>{if(!r.result.objectStoreNames.contains(ST_))r.result.createObjectStore(ST_)};r.onsuccess=()=>y(r.result);r.onerror=()=>n(r.error)})}
+async function cG(k){try{const d=await idb();return new Promise(y=>{const q=d.transaction(ST_).objectStore(ST_).get(k);q.onsuccess=()=>y(q.result);q.onerror=()=>y(null)})}catch(e){return null}}
+async function cS(k,v){try{const d=await idb();return new Promise(y=>{const t=d.transaction(ST_,'readwrite');t.objectStore(ST_).put(v,k);t.oncomplete=()=>y()})}catch(e){}}
+function clearCache(){indexedDB.deleteDatabase(DB);location.reload()}
+
+/* ═══════ OVERPASS ═══════ */
+async function OP(q,ms=150000,onProg){
+  const eps=['https://overpass.osm.jp/api/interpreter','https://overpass-api.de/api/interpreter','https://overpass.kumi.systems/api/interpreter'];
+  let lastErr='';
+  for(let i=0;i<eps.length;i++){
+    const ep=eps[i];const c=new AbortController();const t=setTimeout(()=>c.abort(),ms);
+    if(onProg)onProg(`서버 ${i+1}/${eps.length} 시도…`);
+    try{
+      const r=await fetch(ep,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'data='+encodeURIComponent(q),signal:c.signal});
+      clearTimeout(t);
+      if(r.status===429||r.status===504){
+        lastErr=`서버 ${i+1}: ${r.status} (요청 제한)`;
+        if(onProg)onProg(`⏳ 서버 제한, ${10*(i+1)}초 후 재시도…`);
+        await new Promise(r=>setTimeout(r,10000*(i+1)));/* 10/20/30초 대기 */
+        continue;
+      }
+      if(!r.ok){lastErr=`서버 ${i+1}: HTTP ${r.status}`;continue}
+      if(!onProg||!r.body){return await r.json()}
+      /* ★ 스트리밍 */
+      const total=parseInt(r.headers.get('content-length')||'0');
+      const reader=r.body.getReader();
+      const chunks=[];let loaded=0;
+      while(true){
+        const{done,value}=await reader.read();
+        if(done)break;
+        chunks.push(value);loaded+=value.length;
+        const mb=(loaded/1048576).toFixed(1);
+        if(total){const pct=Math.min(99,Math.round(loaded/total*100));onProg(`${pct}% (${mb}MB)`)}
+        else{onProg(`⬇ ${mb}MB`)}
+      }
+      const buf=new Uint8Array(loaded);let pos=0;
+      for(const ch of chunks){buf.set(ch,pos);pos+=ch.length}
+      return JSON.parse(new TextDecoder().decode(buf));
+    }catch(e){clearTimeout(t);lastErr=e.name==='AbortError'?`서버 ${i+1}: 타임아웃`:`서버 ${i+1}: ${e.message}`}}
+  throw new Error(lastErr||'모든 서버 실패');
+}
+
+/*
+ * GeoJSON 변환 — 전압을 kV 단위로 정규화
+ */
+function toGJ(els, type) {
+  const fs = [];
+  for (const e of els) {
+    let g = null;
+    if (e.type === 'way' && e.geometry) {
+      /* out geom → 전체 좌표 있음 (송전선로용) */
+      const c = e.geometry.map(p => [p.lon, p.lat]);
+      if (type === 'line') {
+        g = { type:'LineString', coordinates:c };
+      } else if (c.length > 2) {
+        const a=c[0], b=c[c.length-1];
+        if (a[0]!==b[0]||a[1]!==b[1]) c.push([...a]);
+        g = { type:'Polygon', coordinates:[c] };
+      }
+    } else if (e.type === 'node' && e.lon != null) {
+      g = { type:'Point', coordinates:[e.lon, e.lat] };
+    } else if (e.center) {
+      /* ★ out center → way와 relation 모두 center 속성으로 응답 */
+      g = { type:'Point', coordinates:[e.center.lon, e.center.lat] };
+    }
+    if (!g) continue;
+    const tags = e.tags || {};
+    const kv = parseKV(tags.voltage);  // ★ kV 단위로 변환
+    const fuel = classifyFuel(tags);   // ★ 연료 분류
+    fs.push({
+      type: 'Feature', geometry: g,
+      properties: { ...tags, _kv: kv, _vc: vClass(kv), _fuel: fuel }
+    });
+  }
+  return fs;
+}
+
+/* 발전소 연료 분류 */
+function classifyFuel(tags){
+  const src = (tags['plant:source']||tags['generator:source']||tags.source||'').toLowerCase();
+  if(src.includes('gas')||src.includes('lng')||src.includes('natural'))return 'gas';
+  if(src.includes('coal')||src.includes('oil')||src.includes('fossil'))return 'coal';
+  if(src.includes('nuclear'))return 'nuclear';
+  if(src.includes('solar')||src.includes('photovoltaic'))return 'solar';
+  if(src.includes('wind'))return 'wind';
+  if(src.includes('hydro')||src.includes('water'))return 'hydro';
+  if(src)return 'other';
+  return 'other';
+}
+
+/* ═══════ STATUS ═══════ */
+let pD=0;
+function sS(k,t,c){const e=document.getElementById('ss-'+k);e.textContent=t;e.className='ss '+c;if(c==='ok'||c==='er'){pD++;document.getElementById('spf').style.width=(pD/5*100)+'%';if(pD>=5)setTimeout(()=>document.getElementById('sbar').classList.add('hide'),3000)}}
+function addRt(k,fn){const r=document.getElementById('sr-'+k);if(r.querySelector('.rt'))return;const b=document.createElement('button');b.className='rt';b.textContent='재시도';b.onclick=fn;r.appendChild(b)}
+function rmRt(k){const b=document.getElementById('sr-'+k).querySelector('.rt');if(b)b.remove()}
+
+/* ═══════ VOLTAGE STYLE (kV 단위 기준) ═══════ */
+const VC = ['step',['get','_kv'],
+  '#546e7a',   // 0 = 미분류
+  1, '#448aff', // 1-21 kV (인디고 블루)
+  22,'#00e5ff', // 22-99 kV (시안/청록 — 녹지와 구분)
+  100,'#ffd600',// 100-299 kV (154 kV 골드)
+  300,'#ff6d00',// 300-699 kV (345 kV 오렌지)
+  700,'#ff1744' // 700+ kV (765 kV 레드)
+];
+/* ★ 최소 굵기 대폭 상향: 줌 아웃에서도 모든 전압 등급 확인 가능 */
+const VW = ['step',['get','_kv'], 1.5, 1,2, 22,2.5, 100,3.5, 300,4.5, 700,6];
+const VG = ['step',['get','_kv'], 4,   1,5, 22,7,   100,9,   300,12,  700,16];
+
+/* ═══════ MAP ═══════ */
+let curBM='osm';
+let maskMode='semi'; /* 'semi' = 반투명, 'opaque' = 불투명 */
+const TILES={
+  osm:'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+  sil:'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+  dark:'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+  sat:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
+};
+const PAINT={
+  osm: {'raster-brightness-max':1,'raster-brightness-min':0,'raster-saturation':0,'raster-contrast':0,'raster-opacity':1},
+  sil: {'raster-brightness-max':.04,'raster-brightness-min':0,'raster-saturation':-1,'raster-contrast':0,'raster-opacity':.08},
+  dark:{'raster-brightness-max':.45,'raster-brightness-min':0,'raster-saturation':-.5,'raster-contrast':.35,'raster-opacity':.9},
+  sat: {'raster-brightness-max':1,'raster-brightness-min':0,'raster-saturation':.1,'raster-contrast':.2,'raster-opacity':1}
+};
+
+const map=new maplibregl.Map({
+  container:'map',preserveDrawingBuffer:true,
+  style:{version:8,
+    sources:{basemap:{type:'raster',tiles:[TILES.osm],tileSize:256,maxzoom:19,
+      attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'}},
+    layers:[{id:'bm',type:'raster',source:'basemap',paint:PAINT.osm}]
+  },
+  center:[127.8,36.5],zoom:7,minZoom:5,maxZoom:18,maxBounds:[[122,32],[133,43]]
+});
+
+function setBM(id){
+  curBM=id;
+  map.getSource('basemap').setTiles([TILES[id]]);
+  for(const[k,v]of Object.entries(PAINT[id]))map.setPaintProperty('bm',k,v);
+  try{map.setLayoutProperty('sil-line','visibility',id==='sil'?'visible':'none')}catch(e){}
+  try{map.setLayoutProperty('sil-lbl','visibility',id==='sil'?'visible':'none')}catch(e){}
+  updMask();
+}
+
+map.on('zoom',ud);map.on('move',ud);
+function ud(){const z=Math.round(map.getZoom()),c=map.getCenter();document.getElementById('zb').textContent='Z'+z;document.getElementById('zd').textContent=`Z${z} · ${c.lat.toFixed(2)}°N ${c.lng.toFixed(2)}°E`}
+
+/* ═══════ LAYERS ═══════ */
+map.on('load',async()=>{
+  map.addSource('lines',{type:'geojson',data:EMP,buffer:64});
+  map.addSource('sub-pt',{type:'geojson',data:EMP});
+  map.addSource('sub-poly',{type:'geojson',data:EMP});
+  map.addSource('plants',{type:'geojson',data:EMP});
+  map.addSource('mask',{type:'geojson',data:EMP});
+
+  /* mask는 인프라 레이어 위에 추가 (아래 참조) */
+
+  /* Lines — 검은 외곽선(casing)으로 어떤 배경에서도 선명하게 */
+  map.addLayer({id:'ln-cas',type:'line',source:'lines',
+    paint:{'line-color':'#000','line-width':['interpolate',['linear'],['zoom'],5,['*',VW,.6],10,['*',VW,.9],16,['*',VW,1.4]],'line-opacity':.4},
+    layout:{'line-cap':'round','line-join':'round'}});
+  map.addLayer({id:'ln-g',type:'line',source:'lines',
+    paint:{'line-color':VC,'line-width':['interpolate',['linear'],['zoom'],5,['*',VG,.3],10,['*',VG,.6],16,VG],'line-opacity':.2,'line-blur':['interpolate',['linear'],['zoom'],5,3,14,7]},
+    layout:{'line-cap':'round','line-join':'round'}});
+  map.addLayer({id:'ln-c',type:'line',source:'lines',
+    paint:{'line-color':VC,'line-width':['interpolate',['linear'],['zoom'],5,['*',VW,.5],10,['*',VW,.8],16,VW],'line-opacity':['interpolate',['linear'],['zoom'],5,.75,10,.9,16,.95]},
+    layout:{'line-cap':'round','line-join':'round'}});
+
+  /* Substations — 보라색 */
+  map.addLayer({id:'sf',type:'fill',source:'sub-poly',minzoom:8,paint:{'fill-color':'#ab47bc','fill-opacity':.15}});
+  map.addLayer({id:'so',type:'line',source:'sub-poly',minzoom:8,paint:{'line-color':'#ab47bc','line-width':1.5,'line-opacity':.6}});
+  map.addLayer({id:'sg',type:'circle',source:'sub-pt',minzoom:5,paint:{'circle-radius':['interpolate',['linear'],['zoom'],5,4,10,8,16,16],'circle-color':'#ab47bc','circle-opacity':.12,'circle-blur':1}});
+  map.addLayer({id:'sc',type:'circle',source:'sub-pt',minzoom:5,paint:{'circle-radius':['interpolate',['linear'],['zoom'],5,2.5,10,5,16,9],'circle-color':'#ab47bc','circle-opacity':.8,'circle-stroke-color':'#ce93d8','circle-stroke-width':1,'circle-stroke-opacity':.8}});
+
+  /* Plants — 전체 토글용 (채도 높은 파란색) */
+  map.addLayer({id:'pg',type:'circle',source:'plants',minzoom:4,paint:{'circle-radius':['interpolate',['linear'],['zoom'],4,4,8,7,14,14],'circle-color':'#2979ff','circle-opacity':.2,'circle-blur':1}});
+  map.addLayer({id:'pc',type:'circle',source:'plants',minzoom:4,paint:{'circle-radius':['interpolate',['linear'],['zoom'],4,3,8,5,14,10],'circle-color':'#2979ff','circle-opacity':.9,'circle-stroke-color':'#448aff','circle-stroke-width':1.5,'circle-stroke-opacity':.7}});
+
+  /* Plants — 연료별 (별도 소스, 독립 제어) */
+  map.addSource('plants-fuel',{type:'geojson',data:EMP});
+  const FC=['match',['coalesce',['get','_fuel'],'other'],'gas','#ff9100','coal','#795548','nuclear','#76ff03','solar','#ffd600','wind','#00e5ff','hydro','#2196f3','#90a4ae'];
+  map.addLayer({id:'pfg',type:'circle',source:'plants-fuel',minzoom:4,paint:{'circle-radius':['interpolate',['linear'],['zoom'],4,4,8,8,14,16],'circle-color':FC,'circle-opacity':.12,'circle-blur':1}});
+  map.addLayer({id:'pfc',type:'circle',source:'plants-fuel',minzoom:4,paint:{'circle-radius':['interpolate',['linear'],['zoom'],4,3,8,6,14,12],'circle-color':FC,'circle-opacity':.85,'circle-stroke-color':FC,'circle-stroke-width':1.5,'circle-stroke-opacity':.6}});
+
+  /* Labels */
+  map.addLayer({id:'slbl',type:'symbol',source:'sub-pt',minzoom:9,layout:{'text-field':KO,'text-size':['interpolate',['linear'],['zoom'],9,9,14,12],'text-offset':[0,1.2],'text-anchor':'top','text-font':['Noto Sans Regular'],'text-max-width':10,'text-allow-overlap':false,'text-optional':true},paint:{'text-color':'#ce93d8','text-halo-color':'rgba(10,14,23,.85)','text-halo-width':2}});
+  map.addLayer({id:'plbl',type:'symbol',source:'plants',minzoom:8,layout:{'text-field':KO,'text-size':['interpolate',['linear'],['zoom'],8,10,14,13],'text-offset':[0,1.4],'text-anchor':'top','text-font':['Noto Sans Regular'],'text-max-width':10,'text-allow-overlap':false,'text-optional':true},paint:{'text-color':'#82b1ff','text-halo-color':'rgba(10,14,23,.9)','text-halo-width':2}});
+
+  /* ★ 마스크를 모든 인프라 레이어 위에 배치 → 선택 안 된 지역의 선로/변전소/발전소 완전히 가림 */
+  map.addLayer({id:'mask',type:'fill',source:'mask',paint:{'fill-color':'#000','fill-opacity':0}});
+
+  /* Click */
+  const CL=['ln-c','sc','sf','pc','pfc'];
+  map.on('click',e=>{const f=map.queryRenderedFeatures(e.point,{layers:CL});f.length?showI(f[0]):closeI()});
+  CL.forEach(l=>{map.on('mouseenter',l,()=>map.getCanvas().style.cursor='pointer');map.on('mouseleave',l,()=>map.getCanvas().style.cursor='')});
+
+  /* ★ 임베디드 데이터가 있으면 네트워크 없이 즉시 적용 */
+
+  if(window.__EMBEDDED__){
+    const E=window.__EMBEDDED__;
+    if(E.lines){apL(E.lines);sS('l',E.lines.length.toLocaleString()+'개 (내장)','ok')}
+    if(E.subs){apS(E.subs);sS('s',E.subs.length.toLocaleString()+'개 (내장)','ok')}
+    if(E.plants){apP(E.plants);sS('p',E.plants.length.toLocaleString()+'개 (내장)','ok')}
+    if(E.admin){apA(E.admin);sS('a',E.admin.features.length+'개 (내장)','ok')}
+    if(E.cities){apC(E.cities);sS('c',E.cities.features.length+'개 (내장)','ok')}
+    setTimeout(()=>document.getElementById('sbar').classList.add('hide'),1500);
+  }else{
+    /* ★ 순차 실행 — Overpass 요청 제한 방지 (동시 1개만) */
+    try{await ldLines()}catch(e){}
+    try{await ldSubPlant()}catch(e){}
+    try{await ldAdmin()}catch(e){}
+    try{await ldCities()}catch(e){}
+  }
+});
+
+/* ═══════ DATA LOADERS ═══════ */
+async function ldLines(){
+  sS('l','다운로드 중…','ld');
+  const c=await cG('ln5');
+  if(c&&Date.now()-c.t<TTL){apL(c.d);sS('l',c.d.length.toLocaleString()+'개','ok');return}
+  try{
+    const j=await OP(`[out:json][timeout:90][bbox:${BX}];way["power"="line"]["voltage"];out geom;`,60000,
+      p=>sS('l','⬇ '+p,'ld'));
+    sS('l','처리 중…','ld');
+    const all=toGJ(j.elements,'line');
+    const fs=all.filter(f=>f.properties._kv>=100);
+    apL(fs);sS('l',fs.length.toLocaleString()+'개','ok');
+    cS('ln5',{d:fs,t:Date.now()});
+  }catch(e){sS('l','❌ '+e.message,'er');addRt('l',()=>{rmRt('l');pD--;ldLines()})}
+}
+
+/*
+ * ★ 변전소+발전소 통합 쿼리 (1회 호출로 2개 처리)
+ */
+async function ldSubPlant(){
+  sS('s','다운로드 중…','ld');sS('p','다운로드 중…','ld');
+  const cs=await cG('sb');const cp=await cG('pl3');
+  if(cs&&Date.now()-cs.t<TTL&&cp&&Date.now()-cp.t<TTL){
+    apS(cs.d);sS('s',cs.d.length.toLocaleString()+'개','ok');
+    apP(cp.d);sS('p',cp.d.length.toLocaleString()+'개','ok');return}
+  try{
+    const j=await OP(`[out:json][timeout:120][bbox:${BX}];(nwr["power"="substation"];nwr["power"="plant"];);out center tags;`,90000,
+      p=>{sS('s','⬇ '+p,'ld');sS('p','⬇ '+p,'ld')});
+    const subs=[],plants=[];
+    for(const e of j.elements){
+      const pw=(e.tags||{}).power;
+      if(pw==='substation')subs.push(e);
+      else if(pw==='plant')plants.push(e);
+    }
+    const sf=toGJ(subs,'sub'),pf=toGJ(plants,'plant');
+    apS(sf);sS('s',sf.length.toLocaleString()+'개','ok');
+    apP(pf);sS('p',pf.length.toLocaleString()+'개','ok');
+    cS('sb',{d:sf,t:Date.now()});cS('pl3',{d:pf,t:Date.now()});/* 캐시는 백그라운드 */
+  }catch(e){
+    sS('s','❌ '+e.message,'er');sS('p','❌','er');
+    addRt('s',()=>{rmRt('s');pD-=2;ldSubPlant()});
+  }
+}
+
+const ADM=['https://raw.githubusercontent.com/southkorea/southkorea-maps/master/kostat/2018/json/skorea-provinces-2018-geo.json'];
+const ACOL=['#ef5350','#ec407a','#ab47bc','#7e57c2','#5c6bc0','#42a5f5','#26c6da','#26a69a','#66bb6a','#9ccc65','#d4e157','#ffa726','#ff7043','#8d6e63','#78909c','#4dd0e1','#ffee58'];
+let AS={},admGJ=null;
+let CS={},cityGJ=null; /* 주요 도시 state */
+const CITY_NAMES=['용인시','청주시','평택시','이천시','파주시','울산광역시','광양시','포항시','보령시'];
+
+async function ldAdmin(){
+  sS('a','다운로드 중…','ld');
+  const c=await cG('ad');
+  if(c&&Date.now()-c.t<TTL){apA(c.d);sS('a',c.d.features.length+'개','ok');return}
+  let gj=null;
+  for(const u of ADM){try{const ct=new AbortController();const tm=setTimeout(()=>ct.abort(),20000);const r=await fetch(u,{signal:ct.signal});clearTimeout(tm);if(r.ok){gj=await r.json();break}}catch(e){}}
+  if(!gj){sS('a','실패','er');addRt('a',()=>{rmRt('a');pD--;ldAdmin()});return}
+  apA(gj);sS('a',gj.features.length+'개','ok');
+  cS('ad',{d:gj,t:Date.now()});
+}
+
+/* ═══════ APPLY ═══════ */
+let _allPlants=[];
+let _exportData={lines:null,subs:null,plants:null}; /* ★ 내보내기용 데이터 저장 */
+function apL(fs){
+  _exportData.lines=fs;
+  map.getSource('lines').setData({type:'FeatureCollection',features:fs});
+  const cn={765:0,345:0,154:0,66:0,22:0,0:0};
+  fs.forEach(f=>{const vc=f.properties._vc;cn[vc]=(cn[vc]||0)+1});
+  for(const[k,v]of Object.entries(cn)){const e=document.getElementById('c'+k);if(e)e.textContent=v.toLocaleString()}
+  try{updateStats()}catch(e){}
+}
+function apS(fs){
+  _exportData.subs=fs;
+  /* out center → 전부 Point */
+  map.getSource('sub-pt').setData({type:'FeatureCollection',features:fs.filter(f=>f.geometry.type==='Point')});
+  map.getSource('sub-poly').setData({type:'FeatureCollection',features:fs.filter(f=>f.geometry.type!=='Point')});
+  const e=document.getElementById('csub');if(e)e.textContent=fs.length.toLocaleString();
+}
+function apP(fs){
+  _exportData.plants=fs;
+  _allPlants=fs;
+  const gj={type:'FeatureCollection',features:fs};
+  map.getSource('plants').setData(gj);
+  /* 연료별 레이어에도 동일 데이터 */
+  try{map.getSource('plants-fuel').setData(gj)}catch(e){}
+  const e=document.getElementById('cplt');if(e)e.textContent=fs.length.toLocaleString();
+  const fc={gas:0,coal:0,nuclear:0,solar:0,wind:0,hydro:0,other:0};
+  fs.forEach(f=>{const fuel=f.properties._fuel||'other';fc[fuel]=(fc[fuel]||0)+1});
+  for(const[k,v]of Object.entries(fc)){const el=document.getElementById('cf-'+k);if(el)el.textContent=v.toLocaleString()}
+  try{updateStats()}catch(e){}
+}
+
+function apA(gj){
+  admGJ=gj;const el=document.getElementById('aList');let h='';
+  const maskPoly={type:'Feature',geometry:{type:'Polygon',coordinates:[[[122,32],[134,32],[134,44],[122,44],[122,32]]]},properties:{}};
+  map.getSource('mask').setData({type:'FeatureCollection',features:[maskPoly]});
+
+  /* ★ 실루엣 모드용 — 전체 행정구역 경계를 하나의 소스에 합침 */
+  if(!map.getSource('adm-all')){
+    map.addSource('adm-all',{type:'geojson',data:gj});
+    map.addLayer({id:'sil-line',type:'line',source:'adm-all',
+      paint:{'line-color':'#ddd','line-width':['interpolate',['linear'],['zoom'],5,1.2,10,2.5],'line-opacity':.85},
+      layout:{visibility:'none'}});
+    map.addLayer({id:'sil-lbl',type:'symbol',source:'adm-all',
+      layout:{'text-field':['coalesce',['get','_nm'],['get','name:ko'],['get','name'],['get','CTP_KOR_NM']],'text-size':['interpolate',['linear'],['zoom'],5,11,9,15],
+        'text-font':['Noto Sans Regular'],'text-allow-overlap':false,'text-optional':true,visibility:'none'},
+      paint:{'text-color':'#ccc','text-halo-color':'rgba(0,0,0,.9)','text-halo-width':2,'text-opacity':.9}});
+  }
+
+  gj.features.forEach((f,i)=>{
+    const nm=f.properties['name:ko']||f.properties.name||f.properties.CTP_KOR_NM||'?';
+    f.properties._nm=nm;
+    AS[nm]={idx:i,vis:false,color:'#fff'};
+    const sid='a'+i;
+    if(!map.getSource(sid)){
+      map.addSource(sid,{type:'geojson',data:{type:'FeatureCollection',features:[f]}});
+      if(f.geometry.type!=='Point'){
+        /* 하이라이트 fill/line → 인프라 레이어 아래에 깔림 (송전선 가독성 유지) */
+        map.addLayer({id:sid+'f',type:'fill',source:sid,paint:{'fill-color':'#fff','fill-opacity':.35},layout:{visibility:'none'}},'ln-cas');
+        map.addLayer({id:sid+'l',type:'line',source:sid,paint:{'line-color':'#fff','line-width':['interpolate',['linear'],['zoom'],5,1.5,10,3],'line-opacity':.7},layout:{visibility:'none'}},'ln-cas');
+      }
+      /* 라벨만 마스크 위 (최상위) */
+      map.addLayer({id:sid+'t',type:'symbol',source:sid,layout:{'text-field':nm,'text-size':['interpolate',['linear'],['zoom'],5,12,9,17],'text-font':['Noto Sans Regular'],'text-allow-overlap':true,visibility:'none'},paint:{'text-color':'#fff','text-halo-color':'rgba(0,0,0,.9)','text-halo-width':2.5}});
+    }
+    h+=`<label class="cr" style="--cc:var(--acc)"><input type="checkbox" onchange="togA('${nm.replace(/'/g,"\\'")}')"><span class="cb">✓</span><span class="cn">${nm}</span></label>`;
+  });
+
+  /* ★ 실루엣 모드용 소스 데이터도 _nm 반영 */
+  map.getSource('adm-all').setData(gj);
+
+  el.innerHTML=h;
+}
+
+/* ═══════ CITY LOADER ═══════ */
+async function ldCities(){
+  sS('c','다운로드 중…','ld');
+  const c=await cG('ct2');
+  if(c&&Date.now()-c.t<TTL){apC(c.d);sS('c',c.d.features.length+'개','ok');return}
+  try{
+    const nameRegex=CITY_NAMES.map(n=>n.replace('시','')).join('|');
+    const j=await OP(`[out:json][timeout:120][bbox:${BX}];relation["admin_level"~"[4-7]"]["boundary"="administrative"]["name"~"${nameRegex}"];out geom;`,120000,
+      p=>sS('c','⬇ '+p,'ld'));
+    /* relation → polygon 변환 */
+    const features=[];
+    for(const e of j.elements){
+      if(e.type!=='relation')continue;
+      const name=(e.tags||{})['name:ko']||(e.tags||{}).name||'?';
+      if(!CITY_NAMES.some(cn=>name.includes(cn.replace('시',''))))continue;
+
+      /* ★ 이천: 경기도 이천만 (북한 이천 제외 — 위도 37.5 이상이면 스킵) */
+      if(name.includes('이천')){
+        const pts=(e.members||[]).filter(m=>m.geometry).flatMap(m=>m.geometry);
+        const avgLat=pts.reduce((s,p)=>s+p.lat,0)/pts.length;
+        if(avgLat>37.5||avgLat<37.0)continue; /* 경기 이천은 ~37.27 */
+      }
+
+      /* outer 세그먼트 가져오기 */
+      const outers=(e.members||[]).filter(m=>m.role==='outer'&&m.geometry);
+      if(!outers.length)continue;
+
+      /* ★ 해안도시(보령/포항): coastline 세그먼트 제거 → 육지 경계만 */
+      const isCoastal=name.includes('보령')||name.includes('포항');
+      let segs;
+      if(isCoastal){
+        /* coastline 판별: 세그먼트가 바다 방향으로 돌출하면 제외 */
+        /* 실용적 방법: inner/coastline role 또는 type=coastline 태그 있는 멤버 제외 */
+        /* Overpass out geom에서 멤버 태그 없으므로, 좌표 기반 필터: */
+        /* 보령: lon<126.3인 점이 많으면 해안 세그먼트 */
+        /* 포항: lon>129.55인 점이 많으면 해안 세그먼트 */
+        segs=outers.map(m=>{
+          const coords=m.geometry.map(p=>[p.lon,p.lat]);
+          if(name.includes('보령')){
+            const seaPts=coords.filter(c=>c[0]<126.35);
+            if(seaPts.length>coords.length*0.3)return null;/* 해안 세그먼트 제외 */
+          }
+          if(name.includes('포항')){
+            const seaPts=coords.filter(c=>c[0]>129.50);
+            if(seaPts.length>coords.length*0.3)return null;
+          }
+          return coords;
+        }).filter(Boolean);
+      }else{
+        segs=outers.map(m=>m.geometry.map(p=>[p.lon,p.lat]));
+      }
+      if(!segs.length)continue;
+
+      /* merge segments */
+      const rem=segs.map(s=>[...s]);const rings=[];
+      while(rem.length){let cur=rem.shift();let ch=true;
+        while(ch){ch=false;for(let i=0;i<rem.length;i++){const s=rem[i];
+          const ce=cur[cur.length-1],cs=cur[0];
+          if(Math.abs(ce[0]-s[0][0])<1e-4&&Math.abs(ce[1]-s[0][1])<1e-4){cur=cur.concat(s.slice(1));rem.splice(i,1);ch=true;break}
+          else if(Math.abs(ce[0]-s[s.length-1][0])<1e-4&&Math.abs(ce[1]-s[s.length-1][1])<1e-4){cur=cur.concat(s.reverse().slice(1));rem.splice(i,1);ch=true;break}
+          else if(Math.abs(cs[0]-s[s.length-1][0])<1e-4&&Math.abs(cs[1]-s[s.length-1][1])<1e-4){cur=s.concat(cur.slice(1));rem.splice(i,1);ch=true;break}
+          else if(Math.abs(cs[0]-s[0][0])<1e-4&&Math.abs(cs[1]-s[0][1])<1e-4){cur=s.reverse().concat(cur.slice(1));rem.splice(i,1);ch=true;break}
+        }}
+        const a=cur[0],b=cur[cur.length-1];if(a[0]!==b[0]||a[1]!==b[1])cur.push([...a]);rings.push(cur);
+      }
+
+      /* ★ 해안도시: 가장 큰 링만 사용 (작은 섬 제외) */
+      let useRings=rings;
+      if(isCoastal&&rings.length>1){
+        useRings=[rings.reduce((best,r)=>r.length>best.length?r:best,rings[0])];
+      }
+
+      let g;
+      if(useRings.length===1)g={type:'Polygon',coordinates:useRings};
+      else g={type:'MultiPolygon',coordinates:useRings.map(r=>[r])};
+      features.push({type:'Feature',geometry:g,properties:{name,_nm:name}});
+    }
+    const gj={type:'FeatureCollection',features};
+    apC(gj);sS('c',features.length+'개','ok');
+    cS('ct2',{d:gj,t:Date.now()});
+  }catch(e){sS('c','❌ '+e.message,'er');addRt('c',()=>{rmRt('c');pD--;ldCities()})}
+}
+
+function apC(gj){
+  cityGJ=gj;const el=document.getElementById('cList');let h='';
+  gj.features.forEach((f,i)=>{
+    const nm=f.properties._nm||f.properties.name;
+    CS[nm]={idx:i,vis:false};
+    const sid='c'+i;
+    if(!map.getSource(sid)){
+      map.addSource(sid,{type:'geojson',data:{type:'FeatureCollection',features:[f]}});
+      if(f.geometry.type!=='Point'){
+        map.addLayer({id:sid+'f',type:'fill',source:sid,paint:{'fill-color':'#fff','fill-opacity':.35},layout:{visibility:'none'}},'ln-cas');
+        map.addLayer({id:sid+'l',type:'line',source:sid,paint:{'line-color':'#fff','line-width':['interpolate',['linear'],['zoom'],5,1.5,10,3],'line-opacity':.7},layout:{visibility:'none'}},'ln-cas');
+      }
+      map.addLayer({id:sid+'t',type:'symbol',source:sid,layout:{'text-field':nm,'text-size':['interpolate',['linear'],['zoom'],5,11,9,15],'text-font':['Noto Sans Regular'],'text-allow-overlap':true,visibility:'none'},paint:{'text-color':'#fff','text-halo-color':'rgba(0,0,0,.9)','text-halo-width':2.5}});
+    }
+    h+=`<label class="cr" style="--cc:var(--acc)"><input type="checkbox" onchange="togC('${nm.replace(/'/g,"\\'")}')"><span class="cb">✓</span><span class="cn">${nm}</span></label>`;
+  });
+  el.innerHTML=h||'<span style="font-size:10px;color:var(--t2)">데이터 없음</span>';
+}
+
+function togC(nm){const s=CS[nm];if(!s)return;s.vis=!s.vis;const v=s.vis?'visible':'none';const sid='c'+s.idx;[sid+'f',sid+'l',sid+'t'].forEach(id=>{try{map.setLayoutProperty(id,'visibility',v)}catch(e){}});updMask()}
+function togAllC(){const t=Object.values(CS).some(s=>!s.vis);Object.keys(CS).forEach(nm=>{const s=CS[nm];s.vis=t;const v=t?'visible':'none';const sid='c'+s.idx;[sid+'f',sid+'l',sid+'t'].forEach(id=>{try{map.setLayoutProperty(id,'visibility',v)}catch(e){}})});document.querySelectorAll('#cList input[type=checkbox]').forEach(cb=>cb.checked=t);updMask()}
+
+/* ═══════ MASK (행정구역 + 주요 도시 통합) ═══════ */
+function updMask(){
+  const anyAdm=Object.values(AS).some(s=>s.vis);
+  const anyCity=Object.values(CS).some(s=>s.vis);
+  if(!anyAdm&&!anyCity){map.setPaintProperty('mask','fill-opacity',0);return}
+
+  const outer=[[122,32],[134,32],[134,44],[122,44],[122,32]];
+  const holes=[];
+
+  /* 행정구역 holes */
+  if(admGJ)admGJ.features.forEach((f,i)=>{
+    const nm=f.properties._nm;if(!AS[nm]||!AS[nm].vis)return;
+    if(f.geometry.type==='Polygon')holes.push(f.geometry.coordinates[0]);
+    else if(f.geometry.type==='MultiPolygon')f.geometry.coordinates.forEach(p=>holes.push(p[0]));
+  });
+
+  /* 주요 도시 holes */
+  if(cityGJ)cityGJ.features.forEach((f,i)=>{
+    const nm=f.properties._nm;if(!CS[nm]||!CS[nm].vis)return;
+    if(f.geometry.type==='Polygon')holes.push(f.geometry.coordinates[0]);
+    else if(f.geometry.type==='MultiPolygon')f.geometry.coordinates.forEach(p=>holes.push(p[0]));
+  });
+
+  map.getSource('mask').setData({type:'FeatureCollection',features:[{type:'Feature',geometry:{type:'Polygon',coordinates:[outer,...holes]},properties:{}}]});
+  let op;
+  if(maskMode==='opaque'){op=1;}
+  else{op = curBM==='sil' ? .88 : curBM==='dark' ? .82 : .75;}
+  map.setPaintProperty('mask','fill-opacity',op);
+}
+
+function setMaskMode(mode){
+  maskMode=mode;
+  updMask();
+}
+
+/* ═══════ FILTERS ═══════ */
+let LF={765:true,345:true,154:true};
+
+function mkF(){
+  const a=[];
+  if(LF[765])a.push(['>=',['get','_kv'],700]);
+  if(LF[345])a.push(['all',['>=',['get','_kv'],300],['<',['get','_kv'],700]]);
+  if(LF[154])a.push(['all',['>=',['get','_kv'],100],['<',['get','_kv'],300]]);
+  if(!a.length)return['literal',false];
+  return a.length===1?a[0]:['any',...a];
+}
+
+function togV(c,on){LF[c]=on;const f=mkF();try{map.setFilter('ln-cas',f)}catch(e){}try{map.setFilter('ln-g',f)}catch(e){}try{map.setFilter('ln-c',f)}catch(e){}}
+function togAllL(){const t=Object.values(LF).some(v=>!v);Object.keys(LF).forEach(k=>LF[k]=t);document.querySelectorAll('#secL input[type=checkbox]').forEach(cb=>cb.checked=t);const f=mkF();try{map.setFilter('ln-cas',f)}catch(e){}try{map.setFilter('ln-g',f)}catch(e){}try{map.setFilter('ln-c',f)}catch(e){}}
+function togF(type,on){
+  const v=on?'visible':'none';
+  if(type==='sub')['sf','so','sg','sc','slbl'].forEach(id=>{try{map.setLayoutProperty(id,'visibility',v)}catch(e){}});
+  else if(type==='plt')['pg','pc','plbl'].forEach(id=>{try{map.setLayoutProperty(id,'visibility',v)}catch(e){}});
+}
+
+/* ═══════ FUEL TYPE FILTER (연료별 — 독립 레이어) ═══════ */
+let fuelFilters={gas:true,coal:true,nuclear:true,solar:true,wind:true,hydro:true,other:true};
+function buildFF(){
+  const a=[];
+  for(const[k,on]of Object.entries(fuelFilters)){if(on)a.push(['==',['coalesce',['get','_fuel'],'other'],k])}
+  if(!a.length)return['literal',false];
+  return a.length===1?a[0]:['any',...a];
+}
+function togFuel(f,on){fuelFilters[f]=on;const ff=buildFF();['pfg','pfc'].forEach(id=>{try{map.setFilter(id,ff)}catch(e){}})}
+function togAllFuel(){
+  const t=Object.values(fuelFilters).some(v=>!v);
+  Object.keys(fuelFilters).forEach(k=>fuelFilters[k]=t);
+  document.querySelectorAll('#secFuel input[type=checkbox]').forEach(cb=>cb.checked=t);
+  const ff=buildFF();['pfg','pfc'].forEach(id=>{try{map.setFilter(id,ff)}catch(e){}});
+}
+
+/* ═══════ STATS ═══════ */
+function updateStats(){
+  const sb=document.getElementById('statsBody');
+  const pData=_allPlants;
+  const lData=_exportData.lines||[];
+
+  /* 연료별 집계 */
+  const fc={gas:0,coal:0,nuclear:0,solar:0,wind:0,hydro:0,other:0};
+  pData.forEach(f=>{const fuel=f.properties._fuel||'other';fc[fuel]=(fc[fuel]||0)+1});
+  const fuelNames={gas:'LNG/가스',coal:'석탄/화력',nuclear:'원자력',solar:'태양광',wind:'풍력',hydro:'수력',other:'기타'};
+
+  /* 전압별 선로 수 */
+  const lc={765:0,345:0,154:0};
+  lData.forEach(f=>{const vc=f.properties._vc;if(lc[vc]!=null)lc[vc]++});
+
+  let h=`<div style="font-size:12px;line-height:1.8">`;
+  h+=`<div style="color:var(--t1);font-weight:700;margin-bottom:4px">📊 송전선로</div>`;
+  h+=`<div style="color:var(--v765)">765 kV: ${lc[765].toLocaleString()}개</div>`;
+  h+=`<div style="color:var(--v345)">345 kV: ${lc[345].toLocaleString()}개</div>`;
+  h+=`<div style="color:var(--v154)">154 kV: ${lc[154].toLocaleString()}개</div>`;
+  h+=`<div style="color:var(--t1);font-weight:700;margin:8px 0 4px">⚡ 발전소 (연료별)</div>`;
+  for(const[k,v]of Object.entries(fc)){if(v>0)h+=`<div style="color:var(--t2)">${fuelNames[k]}: ${v}개</div>`}
+  h+=`</div>`;
+  sb.innerHTML=h;
+}
+function togA(nm){const s=AS[nm];if(!s)return;s.vis=!s.vis;const v=s.vis?'visible':'none';const sid='a'+s.idx;[sid+'f',sid+'l',sid+'t'].forEach(id=>{try{map.setLayoutProperty(id,'visibility',v)}catch(e){}});updMask()}
+function togAllA(){const t=Object.values(AS).some(s=>!s.vis);Object.keys(AS).forEach(nm=>{const s=AS[nm];s.vis=t;const v=t?'visible':'none';const sid='a'+s.idx;[sid+'f',sid+'l',sid+'t'].forEach(id=>{try{map.setLayoutProperty(id,'visibility',v)}catch(e){}})});document.querySelectorAll('#aList input[type=checkbox]').forEach(cb=>cb.checked=t);updMask()}
+
+/* ═══════ UI ═══════ */
+function togS(h){h.classList.toggle('fold');h.nextElementSibling.classList.toggle('hid')}
+function fly(a,b,z){map.flyTo({center:[b,a],zoom:z,duration:1300})}
+let _3=false;function t3d(){_3=!_3;map.easeTo({pitch:_3?50:0,duration:500});document.getElementById('b3d').classList.toggle('on',_3)}
+
+function showI(f){
+  const p=f.properties, nm=p['name:ko']||p.name||p.ref||p.operator||'이름 없음';
+  const kv=p._kv||0, c=vColor(kv);
+  const fuel=p._fuel;
+  const fuelNames={gas:'LNG/가스',coal:'석탄/화력',nuclear:'원자력',solar:'태양광',wind:'풍력',hydro:'수력',other:'기타'};
+  const fuelColors={gas:'#ff9100',coal:'#795548',nuclear:'#76ff03',solar:'#ffd600',wind:'#00e5ff',hydro:'#2196f3',other:'#90a4ae'};
+
+  /* 타이틀 + 배지 */
+  let badges='';
+  if(kv) badges+=`<span class="vb2" style="background:${c}22;color:${c};border:1px solid ${c}44">${kv} kV</span>`;
+  if(fuel) badges+=`<span class="vb2" style="background:${fuelColors[fuel]||'#90a4ae'}22;color:${fuelColors[fuel]||'#90a4ae'};border:1px solid ${fuelColors[fuel]||'#90a4ae'}44">${fuelNames[fuel]||fuel}</span>`;
+  if(p.substance) badges+=`<span class="vb2" style="background:#00c85322;color:#00c853;border:1px solid #00c85344">${p.substance}</span>`;
+  if(p.type&&(p.type.includes('가스공사')||p.type.includes('민간')||p.type.includes('위성'))){
+    const tc=p.type==='민간'?'#ffd740':p.type==='위성기지'?'#81c784':'#00c853';
+    badges+=`<span class="vb2" style="background:${tc}22;color:${tc};border:1px solid ${tc}44">${p.type}</span>`;
+    if(p.status) badges+=`<span class="vb2" style="background:${p.status==='운영중'?'#00c853':'#ffa726'}22;color:${p.status==='운영중'?'#00c853':'#ffa726'};border:1px solid ${p.status==='운영중'?'#00c853':'#ffa726'}44">${p.status}</span>`;
+  }
+  if(!badges) badges=`<span class="vb2" style="background:#546e7a22;color:#546e7a;border:1px solid #546e7a44">미분류</span>`;
+
+  document.getElementById('iT').innerHTML=`<span>${nm}</span>${badges}`;
+
+  const sh={name:'이름','name:ko':'한국어명',operator:'운영사',type:'구분',status:'상태',tanks:'탱크',capacity:'저장용량',voltage:'전압(원본)',_kv:'전압(kV)',cables:'케이블',circuits:'회선',frequency:'주파수',output:'출력','plant:source':'발전원','plant:output:electricity':'발전용량','generator:source':'발전원(상세)',substation:'유형',substance:'물질',ref:'참조',_fuel:'연료분류'};
+  let h='';
+  for(const[k,lb]of Object.entries(sh)){
+    let val=p[k];
+    if(val!=null&&val!==''&&String(val)!=='null'){
+      if(k==='_kv')val=val+' kV';
+      if(k==='_fuel')val=fuelNames[val]||val;
+      h+=`<div class="ir"><span class="ik">${lb}</span><span class="iv2">${val}</span></div>`;
+    }
+  }
+  document.getElementById('iB').innerHTML=h||'<div class="ir"><span class="ik">상세 정보 없음</span></div>';
+  document.getElementById('info').classList.add('vis');
+}
+function closeI(){document.getElementById('info').classList.remove('vis')}
+let _toastTm;
+function toast(m,d=2500){const e=document.getElementById('toast');document.getElementById('toastMsg').textContent=m;e.classList.add('show');clearTimeout(_toastTm);_toastTm=setTimeout(()=>e.classList.remove('show'),d)}
+
+/* ═══════ CAPTURE ═══════ */
+function captureMap(){
+  const fl=document.getElementById('flash');fl.classList.add('go');setTimeout(()=>fl.classList.remove('go'),200);
+  setTimeout(()=>{const cv=map.getCanvas(),lk=document.createElement('a');lk.download=`전력인프라_${ts()}.png`;lk.href=cv.toDataURL('image/png');lk.click();toast('📷 캡쳐 저장')},100);
+}
+function ts(){const n=new Date();return`${n.getFullYear()}${Z(n.getMonth()+1)}${Z(n.getDate())}_${Z(n.getHours())}${Z(n.getMinutes())}`}
+function Z(v){return String(v).padStart(2,'0')}
+
+let am=false,se=null;
+function captureArea(){
+  if(am){cancelA();return}am=true;toast('📐 드래그로 영역 선택 (ESC 취소)',4000);
+  const c=document.getElementById('selCv');c.style.display='block';c.width=innerWidth;c.height=innerHeight;
+  const x=c.getContext('2d');x.clearRect(0,0,c.width,c.height);se=null;
+  c.onmousedown=e=>{se={x:e.clientX,y:e.clientY}};
+  c.onmousemove=e=>{if(!se)return;x.clearRect(0,0,c.width,c.height);x.fillStyle='rgba(0,0,0,.5)';x.fillRect(0,0,c.width,c.height);
+    const a=Math.min(se.x,e.clientX),b=Math.min(se.y,e.clientY),w=Math.abs(e.clientX-se.x),h=Math.abs(e.clientY-se.y);
+    x.clearRect(a,b,w,h);x.strokeStyle='rgba(0,176,255,.8)';x.lineWidth=2;x.setLineDash([6,3]);x.strokeRect(a,b,w,h);
+    x.fillStyle='rgba(0,176,255,.9)';x.font='12px "IBM Plex Mono"';x.setLineDash([]);x.fillText(`${w}×${h}`,a+4,b-6)};
+  c.onmouseup=e=>{if(!se)return;const a=Math.min(se.x,e.clientX),b=Math.min(se.y,e.clientY),w=Math.abs(e.clientX-se.x),h=Math.abs(e.clientY-se.y);
+    cancelA();if(w<20||h<20){toast('영역이 너무 작습니다');return}
+    const mc=map.getCanvas(),r=devicePixelRatio||1,cc=document.createElement('canvas');cc.width=w*r;cc.height=h*r;
+    cc.getContext('2d').drawImage(mc,a*r,b*r,w*r,h*r,0,0,w*r,h*r);
+    const fl=document.getElementById('flash');fl.classList.add('go');setTimeout(()=>fl.classList.remove('go'),200);
+    const lk=document.createElement('a');lk.download=`전력인프라_영역_${ts()}.png`;lk.href=cc.toDataURL('image/png');lk.click();toast(`📷 영역 캡쳐 (${w}×${h}px)`)};
+}
+function cancelA(){am=false;const c=document.getElementById('selCv');c.style.display='none';c.onmousedown=c.onmousemove=c.onmouseup=null;se=null}
+
+function togManual(){document.getElementById('manualOv').classList.toggle('vis')}
+function togSbar(){document.getElementById('sbar').classList.toggle('hide')}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){const m=document.getElementById('manualOv');if(m.classList.contains('vis')){m.classList.remove('vis');return}am?cancelA():closeI()}if(e.key==='3')t3d();if(e.key==='d'||e.key==='D')togSbar()});
+
+/* ═══════ OFFLINE EXPORT ═══════ */
+async function exportStandalone(){
+  toast('📦 오프라인 HTML 생성 중…',30000);
+  /* ★ setTimeout으로 한 프레임 양보 → toast가 먼저 렌더링 */
+  await new Promise(r=>setTimeout(r,100));
+  try{
+    const D=_exportData;
+    if(!D.lines?.length&&!D.subs?.length&&!D.plants?.length){
+      toast('❌ 데이터가 아직 로드되지 않았습니다.',4000);return;
+    }
+    const admin=await cG('ad');
+    const cities=await cG('ct2');
+    let html=document.documentElement.outerHTML;
+    const embedded=JSON.stringify({
+      lines:D.lines||[],subs:D.subs||[],plants:D.plants||[],
+      admin:admin?admin.d:null,cities:cities?cities.d:null
+    });
+    const dataScript=`<script>window.__EMBEDDED__=${embedded};<\/script>`;
+    html=html.replace('</head>',dataScript+'</head>');
+    const blob=new Blob(['<!DOCTYPE html><html>'+html.slice(html.indexOf('<head'))],{type:'text/html;charset=utf-8'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;a.download=`전력인프라_오프라인_${ts()}.html`;a.click();
+    URL.revokeObjectURL(url);
+    toast('✅ 오프라인 HTML 저장 완료!',3000);
+  }catch(e){
+    toast('❌ 내보내기 실패: '+e.message,5000);
+  }
+}
+</script>
+</body>
+</html>
