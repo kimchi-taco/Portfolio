@@ -50,10 +50,11 @@ body.day #glow{opacity:.15}
 nav,main,footer{position:relative;z-index:10}
 
 /* NAV */
-nav{position:fixed;top:0;left:0;right:0;z-index:200;height:52px;padding:0 2rem;display:flex;align-items:center;justify-content:space-between;background:var(--nav);backdrop-filter:blur(18px) saturate(1.4);border-bottom:1px solid var(--b2);transition:background .6s,border-color .6s}
+nav{position:fixed;top:0;left:0;right:0;z-index:200;height:52px;padding:0 2rem;display:flex;align-items:center;background:var(--nav);backdrop-filter:blur(18px) saturate(1.4);border-bottom:1px solid var(--b2);transition:background .6s,border-color .6s}
+.nav-right{display:flex;align-items:center;gap:6px;margin-left:auto}
 nav::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--ac) 30%,var(--ac2) 65%,transparent);opacity:.7}
 .logo{font-family:'Cinzel',serif;font-size:13px;font-weight:700;color:var(--ac);text-decoration:none;letter-spacing:.14em}
-.nlinks{display:flex;gap:1.75rem;list-style:none}
+.nlinks{display:flex;gap:1.75rem;list-style:none;position:absolute;left:50%;transform:translateX(-50%)}
 .nlinks a{font-family:'DM Mono',monospace;font-size:11px;color:var(--tx2);text-decoration:none;letter-spacing:.1em;text-transform:uppercase;transition:color .2s}
 .nlinks a:hover{color:var(--ac)}
 #tbtn{width:32px;height:32px;border-radius:4px;border:1px solid var(--b2);background:transparent;color:var(--tx2);cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;transition:border-color .2s,color .2s}
@@ -273,8 +274,10 @@ footer em{color:var(--ac);font-style:normal}
     <li><a href="#projects">Works</a></li>
     <li><a href="#contact">Contact</a></li>
   </ul>
-  <button id="lbtn" onclick="toggleLang()" style="width:36px;height:32px;border-radius:4px;border:1px solid var(--b2);background:transparent;color:var(--tx2);cursor:pointer;font-family:'DM Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.06em;margin-right:6px;transition:border-color .2s,color .2s" onmouseenter="this.style.borderColor='var(--ac)';this.style.color='var(--ac)'" onmouseleave="this.style.borderColor='var(--b2)';this.style.color='var(--tx2)'">KO</button>
-  <button id="tbtn">🌙</button>
+  <div class="nav-right">
+    <button id="lbtn" onclick="toggleLang()" style="width:36px;height:32px;border-radius:4px;border:1px solid var(--b2);background:transparent;color:var(--tx2);cursor:pointer;font-family:'DM Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.06em;transition:border-color .2s,color .2s" onmouseenter="this.style.borderColor='var(--ac)';this.style.color='var(--ac)'" onmouseleave="this.style.borderColor='var(--b2)';this.style.color='var(--tx2)'">KO</button>
+    <button id="tbtn">🌙</button>
+  </div>
 </nav>
 
 <main>
@@ -388,7 +391,7 @@ footer em{color:var(--ac);font-style:normal}
       <p style="font-family:'DM Mono',monospace;font-size:10px;color:var(--tx3);letter-spacing:.06em;text-transform:uppercase">⬥ Seongnam, Gyeonggi-do · Korea</p>
     </div>
     <div class="clinks">
-      <a href="mailto:drsean86@gmail.com" class="clink"><div class="cico">✉</div><div><span class="clb">이메일</span><span class="cls">drsean86@email.com</span></div></a>
+      <a href="/cdn-cgi/l/email-protection#b8dccacbddd9d6808ef8dfd5d9d1d496dbd7d5" class="clink"><div class="cico">✉</div><div><span class="clb">이메일</span><span class="cls"><span class="__cf_email__" data-cfemail="c0a4b2b3a5a1aef8f680a5ada1a9aceea3afad">[email&#160;protected]</span></span></div></a>
       <a href="https://linkedin.com/in/sanghoahn00" target="_blank" class="clink"><div class="cico">in</div><div><span class="clb">LinkedIn</span><span class="cls">linkedin.com/in/sanghoahn00/</span></div></a>
       <a href="https://github.com/kimchi-taco" target="_blank" class="clink"><div class="cico">gh</div><div><span class="clb">GitHub</span><span class="cls">github.com/kimchi-taco</span></div></a>
     </div>
@@ -399,7 +402,7 @@ footer em{color:var(--ac);font-style:normal}
 
 <footer><em>⬥ FORGE NEVER SLEEPS ⬥</em> · mav-ash.com · <em id="yr"></em></footer>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 var dark = true;
 var tbtn = document.getElementById('tbtn');
 
@@ -485,15 +488,15 @@ var T = {
     ko: '만들고, 분석하고, 직접 돌린다.<br>에너지 기업 · 전력사업 개발·기획.<br>LNG · SMR · 신재생 · 계통 분석.',
     en: 'Forge it. Chart it. Run the damn thing yourself.<br>Energy ventures &amp; power grid development.<br>LNG · SMR · Renewables · Grid sorcery.'
   },
-  career_title: { ko: '무용담', en: 'The Chronicles' },
+  career_title: { ko: '무용담', en: 'The Saga' },
   career_desc: {
     ko: '전기제어공학으로 시작해서 ESS·SCADA·EV 충전·신규 전력사업까지.<br>에너지 밸류체인을 위에서 아래까지 직접 파봤습니다.',
     en: 'Apprenticed in electrical runes, forged through ESS, SCADA, EV charging, and uncharted power ventures.<br>Dug the entire energy seam from summit to bedrock.'
   },
-  projects_title: { ko: '대장간의 단조물', en: 'Relics of the Forge' },
+  projects_title: { ko: '대장간의 단조물', en: 'The Forged' },
   projects_desc: {
     ko: '필요해서 만들었고, 지금도 돌아가고 있습니다.',
-    en: 'Hammered into existence out of necessity. Still burning in the furnace.'
+    en: 'Made because it had to exist. Still does.'
   },
   contact_title: { ko: '퀘스트 요청하기', en: 'Post a Quest' },
   contact_desc: {
@@ -502,11 +505,11 @@ var T = {
   },
   dashboard_desc: {
     ko: '집에 있는 황금거위가 24시간 돌면서 데이터를 긁어옵니다. 필요한 숫자는 직접 만들어서 봅니다.',
-    en: 'The golden goose toils through the night, mining data from the realm. If the runes you need don't exist — carve them yourself.'
+    en: 'The golden goose toils through the night, mining data from the realm. If the runes you need don\'t exist — carve them yourself.'
   },
   career_sk: {
     ko: '신규 에너지솔루션 사업 개발. 장표 보고, 계통 보고, 큰 그림 그리는 일. ORC를 아십니까.',
-    en: 'Charting new energy ventures for the guild. Reading scrolls, mapping the grid, drawing the grand design. Know what an ORC is?'
+    en: 'New ventures for the guild. Maps, scrolls, grand designs. Know what an ORC is? Didn\'t think so.'
   },
   career_tesla: {
     ko: '한국 슈퍼차저 네트워크 구축. 부지 발굴부터 인허가·시공 수행. 30개소 200대 설치.',
@@ -518,11 +521,58 @@ var T = {
   },
   career_ls: {
     ko: 'SCADA·ESS 해외 영업과 PM. 이라크, 쿠웨이트에서 프로젝트 직접 수행. 현장이 답이라는 걸 여기서 배웠습니다.',
-    en: 'Sold and ran SCADA & ESS beyond the borders. Executed campaigns in the desert realms. Learned that the field is where truth lives.'
+    en: 'Sold iron. Ran the machines. Desert campaigns, foreign lands. The field is where truth lives.'
   },
   career_uni: {
     ko: '전력시스템·전력시장경제·전력전자 그리고 술. 모든 것은 여기에서 시작되었습니다.',
     en: 'Power systems, grid economics, power electronics, and mead. Everything was forged here.'
+  },
+  // career periods
+  career_pd: {
+    ko: ['2023 — 현재','2021 — 2023','2018 — 2020','2016 — 2021','Foundation'],
+    en: ['2023 — Present','2021 — 2023','2018 — 2020','2016 — 2021','Foundation']
+  },
+  // career roles
+  career_ro: {
+    ko: ['전력사업 개발·기획 · SK E&S','Supercharger Deployment Manager','PMP 취득, 전략 프로젝트 관리','해외영업 PM · SCADA / ESS','B.S. Electrical & Control Engineering'],
+    en: ['Power Biz Dev & Planning · SK E&S','Supercharger Deployment Manager','PMP, Strategic Project Management','Overseas Sales PM · SCADA / ESS','B.S. Electrical & Control Engineering']
+  },
+  // project descriptions
+  proj_dawnwatch: {
+    ko: 'SMP·REC·예비율·LNG·원유. 황금거위가 정기적으로 수집. 필요한 지표를 한 화면에.',
+    en: 'SMP·REC·Reserve Rate·LNG·Crude. The golden goose collects it all. Every metric you need, one screen.'
+  },
+  proj_ironweb: {
+    ko: '전국 전력 인프라 현황을 지도로 예쁘게 보여줍니다. 장표 쓸 떄 누끼 안따도 됨',
+    en: 'Visualizes nationwide power infrastructure on an interactive map. No more clipping images for slides.'
+  },
+  proj_runekeeper: {
+    ko: '녹취 파일 넣으면 구조화된 회의록이 나옵니다. n8n이 흘러가고 Obsidian에 쌓입니다.',
+    en: 'Drop a recording, get structured meeting minutes. n8n pipelines it, Obsidian stores it.'
+  },
+  proj_goldhallow: {
+    ko: '분할매매 시스템용 종목 추천. 감이 아니라 규칙으로 삽니다.',
+    en: 'Stock picks for a split-trade system. Rules over gut feeling.'
+  },
+  proj_trailvein: {
+    ko: 'SNS 기반으로 백패킹 박지를 시즌별로 추천합니다.\nLeave No Trace!',
+    en: 'SNS-powered seasonal backpacking spot recommendations.\nLeave No Trace!'
+  },
+  proj_vaulthold: {
+    ko: '황금거위 한 마리로 서버·자동화·데이터 수집을 전부 돌립니다. 내 것이 더 믿음직합니다.',
+    en: 'One golden goose runs the server, automation, and data collection. Self-hosted is more trustworthy.'
+  },
+  // project tags
+  proj_tags: {
+    ko: [['Node.js','SQLite','KPX API','Chart.js'],['Claude API','NLP','신호 분석'],['n8n','Gemini','Obsidian'],['투자 자동화','퀀트','실운영'],['PM','LNG','GIS','SK E&S'],['Mac Mini','n8n','셀프호스팅']],
+    en: [['Node.js','SQLite','KPX API','Chart.js'],['Claude API','NLP','Signal Analysis'],['n8n','Gemini','Obsidian'],['Auto Trading','Quant','Live Ops'],['PM','LNG','GIS','SK E&S'],['Mac Mini','n8n','Self-hosted']]
+  },
+  // contact
+  contact_email_label: { ko: '이메일', en: 'Email' },
+  // career company names
+  career_co: {
+    ko: ['SK Innovation','Tesla Korea','왕십리 MBA','LS일렉트릭','왕십리 전기제어공학'],
+    en: ['SK Innovation','Tesla Korea','Royale Forge MBA','LS Electric','Royale Forge EE&CE']
   },
 };
 
@@ -545,10 +595,44 @@ function toggleLang() {
   var cot = document.querySelector('#contact .stit'); if(cot) cot.textContent = T.contact_title[l];
   var cod = document.querySelector('#contact p[style]'); if(cod) cod.innerHTML = T.contact_desc[l];
 
-  // career items
-  var cdes = document.querySelectorAll('.cde');
-  var keys = ['career_sk','career_tesla','career_mba','career_ls','career_uni'];
-  cdes.forEach(function(el, i){ if(keys[i]) el.innerHTML = T[keys[i]][l]; });
+  // career details
+  var items = document.querySelectorAll('.ci .cde');
+  var careerKeys = ['career_sk','career_tesla','career_mba','career_ls','career_uni'];
+  for(var i=0;i<items.length&&i<careerKeys.length;i++){
+    if(T[careerKeys[i]]) items[i].textContent = T[careerKeys[i]][l];
+  }
+  // career periods
+  var pds = document.querySelectorAll('.ci .cpd');
+  for(var i=0;i<pds.length&&i<T.career_pd[l].length;i++){
+    pds[i].textContent = T.career_pd[l][i];
+  }
+  // career roles
+  var ros = document.querySelectorAll('.ci .cro');
+  for(var i=0;i<ros.length&&i<T.career_ro[l].length;i++){
+    ros[i].textContent = T.career_ro[l][i];
+  }
+  // career company names
+  var cos = document.querySelectorAll('.ci .cco');
+  for(var i=0;i<cos.length&&i<T.career_co[l].length;i++){
+    cos[i].textContent = T.career_co[l][i];
+  }
+  // project descriptions
+  var projKeys = ['proj_dawnwatch','proj_ironweb','proj_runekeeper','proj_goldhallow','proj_trailvein','proj_vaulthold'];
+  var projDescs = document.querySelectorAll('.pc .pd');
+  for(var i=0;i<projDescs.length&&i<projKeys.length;i++){
+    if(T[projKeys[i]]) projDescs[i].textContent = T[projKeys[i]][l];
+  }
+  // project tags
+  var projCards = document.querySelectorAll('.pc .pts');
+  for(var i=0;i<projCards.length&&i<T.proj_tags[l].length;i++){
+    var tags = T.proj_tags[l][i];
+    projCards[i].innerHTML = tags.map(function(t){return '<span class="pt">'+t+'</span>';}).join('');
+  }
+  // contact email label
+  var eml = document.querySelector('.clink .clb');
+  if(eml && T.contact_email_label) eml.textContent = T.contact_email_label[l];
 }
-</script></body>
+</script>
+
+</body>
 </html>
