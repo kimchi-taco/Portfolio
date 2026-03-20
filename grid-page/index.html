@@ -132,8 +132,8 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
         <span class="badge badge-live"><span class="blink"></span>LIVE</span>
       </div>
       <div style="display:flex;align-items:center;gap:8px">
-        <span style="font-family:var(--mono);font-size:10px;color:var(--text3)" id="lastUpdate">—</span>
-        <button class="rbtn" onclick="loadAll()">↻ 새로고침</button>
+        <span style="font-family:var(--mono);font-size:11px;color:var(--text2);letter-spacing:.03em" id="lastUpdate">—</span>
+        <span onclick="loadAll()" style="font-family:var(--mono);font-size:11px;color:var(--text2);cursor:pointer;letter-spacing:.03em;transition:color .15s;user-select:none" onmouseenter="this.style.color='var(--green)'" onmouseleave="this.style.color='var(--text2)'">↻ 새로고침</span>
       </div>
     </div>
 
@@ -145,7 +145,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 
   <div>
     <div class="section-label">실시간 핵심 지표
-      <span style="font-size:9px;color:var(--text3);font-family:var(--mono);text-transform:none;letter-spacing:0;font-weight:400">— 카드 클릭 시 트렌드 차트</span>
+      <span style="font-size:9px;color:rgba(185,195,215,0.85);font-family:var(--mono);text-transform:none;letter-spacing:0;font-weight:400">— 카드 클릭 시 트렌드 차트</span>
     </div>
     <div class="kpi-row">
 
