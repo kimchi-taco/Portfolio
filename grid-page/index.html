@@ -326,9 +326,9 @@ let mSym='', mUnit='';
 
 const FC={nuclear:'#60a5fa',lng:'#a78bfa',coal:'#94a3b8',renewable:'#34d399',oil:'#fbbf24',pumped:'#f87171',other:'#64748b'};
 const FL={nuclear:'원자력',lng:'LNG',coal:'석탄',renewable:'신재생',oil:'석유',pumped:'양수',other:'기타'};
-const CC={LNG_HH:'#a78bfa',USDKRW:'#f87171',URANIUM:'#fbbf24',DUBAI:'#fb923c',COAL:'#94a3b8',KAU:'#34d399',GOLD:'#fcd34d',OIL_KRX:'#60a5fa'};
-const CL={LNG_HH:'LNG Henry Hub',USDKRW:'USD/KRW',URANIUM:'우라늄',COAL:'호주 석탄',DUBAI:'두바이유',KAU:'탄소배출권(KAU)',GOLD:'금 시세',OIL_KRX:'석유(경유)'};
-const CU={LNG_HH:'USD/MMBtu',USDKRW:'원',URANIUM:'USD/lb',COAL:'USD/ton',DUBAI:'USD/bbl',KAU:'원/톤',GOLD:'원/g',OIL_KRX:'원/L'};
+const CC={LNG_HH:'#a78bfa',USDKRW:'#f87171',URANIUM:'#fbbf24',BRENT:'#fb923c',COAL:'#94a3b8',KAU:'#34d399',GOLD:'#fcd34d',OIL_KRX:'#60a5fa'};
+const CL={LNG_HH:'LNG Henry Hub',USDKRW:'USD/KRW',URANIUM:'우라늄',BRENT:'Brent유',COAL:'호주 석탄',KAU:'탄소배출권(KAU)',GOLD:'금 시세',OIL_KRX:'석유(경유)'};
+const CU={LNG_HH:'USD/MMBtu',USDKRW:'원',URANIUM:'USD/lb',BRENT:'USD/bbl',COAL:'USD/ton',KAU:'원/톤',GOLD:'원/g',OIL_KRX:'원/L'};
 
 async function apiFetch(path){
   const r=await fetch(path);
@@ -398,6 +398,7 @@ function renderKpis(s){
     DUBAI:  {v:'v-dubai',  d:'d-dubai',   dec:2},
     COAL:   {v:'v-coal',   d:'d-coal',    dec:2},
     KAU:    {v:'v-kau',    d:'d-kau',     dec:0,comma:true},
+    BRENT:  {v:'v-brent',  d:'d-brent',   dec:2},
     GOLD:   {v:'v-gold',   d:'d-gold',    dec:0,comma:true},
     OIL_KRX:{v:'v-oil-krx',d:'d-oil-krx', dec:0,comma:true},
   };
