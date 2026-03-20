@@ -393,7 +393,7 @@ function renderKpis(s){
   if(g.reserve_rate!=null){
     const rr=parseFloat(g.reserve_rate).toFixed(1);
     set('v-res',rr);
-    document.getElementById('v-res').style.color=rr<10?'var(--red)':rr<15?'var(--amber)':'var(--green)';
+    document.getElementById('v-res').style.color=rr<10?'var(--red)':'var(--amber)';
   }
   if(g.reserve_mw)   set('v-resmw',Math.round(+g.reserve_mw).toLocaleString());
   if(g.current_load) set('v-load', Math.round(+g.current_load).toLocaleString());
