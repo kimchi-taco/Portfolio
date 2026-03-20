@@ -273,6 +273,7 @@ footer em{color:var(--ac);font-style:normal}
     <li><a href="#projects">Works</a></li>
     <li><a href="#contact">Contact</a></li>
   </ul>
+  <button id="lbtn" onclick="toggleLang()" style="width:36px;height:32px;border-radius:4px;border:1px solid var(--b2);background:transparent;color:var(--tx2);cursor:pointer;font-family:'DM Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.06em;margin-right:6px;transition:border-color .2s,color .2s" onmouseenter="this.style.borderColor='var(--ac)';this.style.color='var(--ac)'" onmouseleave="this.style.borderColor='var(--b2)';this.style.color='var(--tx2)'">KO</button>
   <button id="tbtn">🌙</button>
 </nav>
 
@@ -476,5 +477,78 @@ async function fetchDash(){
 fetchDash();
 setInterval(fetchDash,5*60*1000);
 </script>
-</body>
+
+<script>
+var lang = 'ko';
+var T = {
+  hero_desc: {
+    ko: '만들고, 분석하고, 직접 돌린다.<br>에너지 기업 · 전력사업 개발·기획.<br>LNG · SMR · 신재생 · 계통 분석.',
+    en: 'Forge it. Chart it. Run the damn thing yourself.<br>Energy ventures &amp; power grid development.<br>LNG · SMR · Renewables · Grid sorcery.'
+  },
+  career_title: { ko: '무용담', en: 'The Chronicles' },
+  career_desc: {
+    ko: '전기제어공학으로 시작해서 ESS·SCADA·EV 충전·신규 전력사업까지.<br>에너지 밸류체인을 위에서 아래까지 직접 파봤습니다.',
+    en: 'Apprenticed in electrical runes, forged through ESS, SCADA, EV charging, and uncharted power ventures.<br>Dug the entire energy seam from summit to bedrock.'
+  },
+  projects_title: { ko: '대장간의 단조물', en: 'Relics of the Forge' },
+  projects_desc: {
+    ko: '필요해서 만들었고, 지금도 돌아가고 있습니다.',
+    en: 'Hammered into existence out of necessity. Still burning in the furnace.'
+  },
+  contact_title: { ko: '퀘스트 요청하기', en: 'Post a Quest' },
+  contact_desc: {
+    ko: '에너지·전력 사업 개발 얘기, 협업 제안,<br>기술적으로 흥미로운 얘기라면 연락 주세요.<br>짧고 직접적일수록 좋습니다.',
+    en: 'Energy ventures, alliance proposals,<br>or any quest worth undertaking — send the raven.<br>Short and direct scrolls are preferred.'
+  },
+  dashboard_desc: {
+    ko: '집에 있는 황금거위가 24시간 돌면서 데이터를 긁어옵니다. 필요한 숫자는 직접 만들어서 봅니다.',
+    en: 'The golden goose toils through the night, mining data from the realm. If the runes you need don't exist — carve them yourself.'
+  },
+  career_sk: {
+    ko: '신규 에너지솔루션 사업 개발. 장표 보고, 계통 보고, 큰 그림 그리는 일. ORC를 아십니까.',
+    en: 'Charting new energy ventures for the guild. Reading scrolls, mapping the grid, drawing the grand design. Know what an ORC is?'
+  },
+  career_tesla: {
+    ko: '한국 슈퍼차저 네트워크 구축. 부지 발굴부터 인허가·시공 수행. 30개소 200대 설치.',
+    en: 'Built the lightning-post network across the kingdom. From claiming the land to driving the final bolt. 30 outposts, 200 chargers forged.'
+  },
+  career_mba: {
+    ko: '내돈내고 석사 다녀와서 아직도 학자금 대출 갚는 중.',
+    en: 'Paid for the arcane scrolls myself. Still repaying the debt to the moneylender.'
+  },
+  career_ls: {
+    ko: 'SCADA·ESS 해외 영업과 PM. 이라크, 쿠웨이트에서 프로젝트 직접 수행. 현장이 답이라는 걸 여기서 배웠습니다.',
+    en: 'Sold and ran SCADA & ESS beyond the borders. Executed campaigns in the desert realms. Learned that the field is where truth lives.'
+  },
+  career_uni: {
+    ko: '전력시스템·전력시장경제·전력전자 그리고 술. 모든 것은 여기에서 시작되었습니다.',
+    en: 'Power systems, grid economics, power electronics, and mead. Everything was forged here.'
+  },
+};
+
+function toggleLang() {
+  lang = lang === 'ko' ? 'en' : 'ko';
+  document.getElementById('lbtn').textContent = lang === 'ko' ? 'KO' : 'EN';
+  var l = lang;
+
+  // hero desc
+  var hd = document.querySelector('.hdesc'); if(hd) hd.innerHTML = T.hero_desc[l];
+  // dashboard desc
+  var dd = document.querySelector('#dashboard .sdsc'); if(dd) dd.innerHTML = T.dashboard_desc[l];
+  // career
+  var ct = document.querySelector('#career .stit'); if(ct) ct.textContent = T.career_title[l];
+  var cd = document.querySelector('#career .sdsc'); if(cd) cd.innerHTML = T.career_desc[l];
+  // projects
+  var pt = document.querySelector('#projects .stit'); if(pt) pt.textContent = T.projects_title[l];
+  var pd = document.querySelector('#projects .sdsc'); if(pd) pd.innerHTML = T.projects_desc[l];
+  // contact
+  var cot = document.querySelector('#contact .stit'); if(cot) cot.textContent = T.contact_title[l];
+  var cod = document.querySelector('#contact p[style]'); if(cod) cod.innerHTML = T.contact_desc[l];
+
+  // career items
+  var cdes = document.querySelectorAll('.cde');
+  var keys = ['career_sk','career_tesla','career_mba','career_ls','career_uni'];
+  cdes.forEach(function(el, i){ if(keys[i]) el.innerHTML = T[keys[i]][l]; });
+}
+</script></body>
 </html>
