@@ -338,7 +338,7 @@ footer em{color:var(--ac);font-style:normal}
       <div class="dcs"><div class="dcsl">공급 예비율</div><div class="dcsv" id="dRes" style="color:#5ae888">—</div><div class="dcsu">%</div></div>
       <div class="dcs"><div class="dcsl">REC 평균가</div><div class="dcsv" id="dRec" style="color:#60a5fa">—</div><div class="dcsu">원/REC</div></div>
       <div class="dcs"><div class="dcsl">LNG HH</div><div class="dcsv" id="dLng" style="color:#a78bfa">—</div><div class="dcsu">USD/MMBtu</div></div>
-      <div class="dcs"><div class="dcsl">두바이유</div><div class="dcsv" id="dDubai" style="color:#fb923c">—</div><div class="dcsu">USD/bbl</div></div>
+      <div class="dcs"><div class="dcsl">Brent유</div><div class="dcsv" id="dBrent" style="color:#fb923c">—</div><div class="dcsu">USD/bbl</div></div>
       <div class="dcs"><div class="dcsl">USD/KRW</div><div class="dcsv" id="dKrw" style="color:#f87171">—</div><div class="dcsu">원</div></div>
     </div>
     <div class="dcft"><span class="dcftx">SMP · REC · 예비율 · LNG · 우라늄 · 탄소배출권</span><a href="https://mav-ash.com/dash" target="_blank" class="dcln">Enter Grid →</a></div>
@@ -469,7 +469,7 @@ async function fetchDash(){
     if(d.rec)st('dRec',Math.round(d.rec.avg_price).toLocaleString());
     var lng=fc('LNG_HH');if(lng){st('hLng',parseFloat(lng.price).toFixed(2));st('dLng',parseFloat(lng.price).toFixed(2));}
     var krw=fc('USDKRW');if(krw){st('hKrw',Math.round(krw.price).toLocaleString());st('dKrw',Math.round(krw.price).toLocaleString());}
-    var dub=fc('DUBAI');if(dub)st('dDubai',parseFloat(dub.price).toFixed(2));
+    var dub=fc('BRENT');if(dub)st('dBrent',parseFloat(dub.price).toFixed(2));
     if(d.fuel){sb('bN','pN',d.fuel.nuclear);sb('bL','pL',d.fuel.lng);sb('bC','pC',d.fuel.coal);sb('bR','pR',d.fuel.renewable);}
   }catch(e){}
 }
