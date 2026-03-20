@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Korea Power Market Intelligence</title>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=IBM+Plex+Mono:wght@300;400;500&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -76,10 +76,10 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 
 .fuel-list{display:flex;flex-direction:column;gap:8px}
 .fuel-item{display:flex;align-items:center;gap:10px}
-.fuel-name{font-family:var(--mono);font-size:10px;color:var(--text2);min-width:48px}
-.fuel-bar-track{flex:1;height:6px;background:var(--bg3);border-radius:3px;overflow:hidden}
+.fuel-name{font-family:var(--mono);font-size:12px;color:var(--text);min-width:54px;font-weight:500}
+.fuel-bar-track{flex:1;height:8px;background:var(--bg3);border-radius:3px;overflow:hidden}
 .fuel-bar-fill{height:100%;border-radius:3px;transition:width .8s ease}
-.fuel-pct{font-family:var(--mono);font-size:10px;color:var(--text3);min-width:32px;text-align:right}
+.fuel-pct{font-family:var(--mono);font-size:12px;color:var(--text2);min-width:36px;text-align:right;font-weight:500}
 
 .gauge-wrap{display:flex;flex-direction:column;align-items:center}
 .gauge-arc{position:relative;width:160px;height:90px;overflow:hidden;margin-bottom:12px}
@@ -124,7 +124,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 <body>
 
 <div class="topbar">
-      <a href="https://mav-ash.com" style="text-decoration:none;color:inherit;font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.12em;display:flex;align-items:center;gap:6px">
+      <a href="https://mav-ash.com" style="text-decoration:none;font-family:'Cinzel',serif;font-size:12px;font-weight:700;letter-spacing:.14em;color:var(--green);display:flex;align-items:center;gap:6px">
         <span style="color:var(--green)">⬥</span> FORGE NEVER SLEEPS
       </a>
       <div style="position:absolute;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:8px">
@@ -447,7 +447,7 @@ function renderFuel(fuel){
   const ctx=document.getElementById('fuelDonut').getContext('2d');
   if(charts.fuel)charts.fuel.destroy();
   charts.fuel=new Chart(ctx,{type:'doughnut',data:{labels:keys.map(k=>FL[k]),datasets:[{data:vals,backgroundColor:keys.map(k=>FC[k]+'33'),borderColor:keys.map(k=>FC[k]),borderWidth:1.5}]},options:{responsive:true,maintainAspectRatio:false,cutout:'68%',plugins:{legend:{display:false},tooltip:{backgroundColor:'#1a1f2b',titleColor:'#7a8499',bodyColor:'#cdd3e0',borderColor:'rgba(255,255,255,.1)',borderWidth:1}}}});
-  document.getElementById('fuelList').innerHTML=keys.filter((_,i)=>vals[i]>0).map(k=>`<div class="fuel-item"><span class="fuel-name">${FL[k]}</span><div class="fuel-bar-track"><div class="fuel-bar-fill" style="width:${parseFloat(fuel[k]||0).toFixed(1)}%;background:${FC[k]}"></div></div><span class="fuel-pct">${parseFloat(fuel[k]||0).toFixed(1)}%</span></div>`).join('');
+  const _mx=Math.max(...vals);document.getElementById('fuelList').innerHTML=keys.filter((_,i)=>vals[i]>0).map(k=>{const v=parseFloat(fuel[k]||0);const rp=(v/_mx*100).toFixed(1);return `<div class="fuel-item"><span class="fuel-name">${FL[k]}</span><div class="fuel-bar-track"><div class="fuel-bar-fill" style="width:${rp}%;background:${FC[k]}"></div></div><span class="fuel-pct">${v.toFixed(1)}%</span></div>`;}).join('');
 }
 
 function renderGauge(grid){
