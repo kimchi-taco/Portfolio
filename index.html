@@ -90,9 +90,9 @@ section{max-width:1100px;margin:0 auto;padding:6rem 2rem}
 
 /* 드워프 */
 .hero-dwarf{display:flex;flex-direction:column;align-items:center;justify-self:center;filter:drop-shadow(0 0 16px rgba(62,207,112,.42)) drop-shadow(0 0 36px rgba(62,207,112,.16))}
-.dwarf-wrap{display:flex;flex-direction:column;align-items:center;width:100%;max-width:220px}
+.dwarf-wrap{display:flex;flex-direction:column;align-items:center;width:100%;max-width:320px}
 .dwarf-top{width:100%;image-rendering:pixelated;display:block;animation:dbreathe 3.5s ease-in-out infinite;transform-origin:bottom center}
-.dwarf-bot{width:100%;image-rendering:pixelated;display:block;margin-top:-2px}
+.dwarf-bot{width:100%;image-rendering:pixelated;display:block;margin-top:-6px}
 .dwarf-sh{width:90px;height:12px;margin-top:4px;background:radial-gradient(ellipse at center,rgba(62,207,112,.3) 0%,transparent 70%);border-radius:50%;animation:dsh 3.5s ease-in-out infinite}
 @keyframes dbreathe{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px) scaleY(1.012)}}
 @keyframes dsh{0%,100%{transform:scaleX(1);opacity:.4}50%{transform:scaleX(.72);opacity:.2}}
@@ -182,14 +182,14 @@ footer em{color:var(--ac);font-style:normal}
   .hero-txt{grid-column:1;grid-row:1}
   .hero-dwarf{grid-column:2;grid-row:1;align-self:center}
   .hero-card{grid-column:1/-1;grid-row:2}
-  .dwarf-wrap{max-width:180px}
+  .dwarf-wrap{max-width:260px}
 }
 @media(max-width:680px){
   .hero-grid{grid-template-columns:1fr;grid-template-rows:auto}
   .hero-txt{grid-column:1;grid-row:2}
   .hero-dwarf{grid-column:1;grid-row:1;margin-bottom:1rem}
   .hero-card{display:none}
-  .dwarf-wrap{max-width:150px}
+  .dwarf-wrap{max-width:220px}
   .pgrid{grid-template-columns:1fr 1fr}
   .cgrid{grid-template-columns:1fr;gap:2rem}
   .nlinks{display:none}
@@ -198,7 +198,7 @@ footer em{color:var(--ac);font-style:normal}
 }
 @media(max-width:420px){
   .pgrid{grid-template-columns:1fr}
-  .dwarf-wrap{max-width:130px}
+  .dwarf-wrap{max-width:180px}
 }
 </style>
 </head>
