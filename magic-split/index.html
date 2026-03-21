@@ -152,10 +152,10 @@ a{color:inherit;text-decoration:none}
 const API = 'https://api.mav-ash.com';
 
 const GRADE_CONFIG = {
-  'A+': { color:'#00d4aa', bg:'#00d4aa18', label:'90%+ · 최우선 편입' },
-  'A':  { color:'#4d9fff', bg:'#4d9fff18', label:'70%+ · 편입 권장' },
-  'B':  { color:'#ffd166', bg:'#ffd16618', label:'50%+ · 조건부 편입' },
-  'C':  { color:'#ff6b6b', bg:'#ff6b6b18', label:'30%+ · 편입 보류' },
+  'A+': { color:'#00d4aa', bg:'#00d4aa18', label:'최우선 편입' },
+  'A':  { color:'#4d9fff', bg:'#4d9fff18', label:'편입 권장' },
+  'B':  { color:'#ffd166', bg:'#ffd16618', label:'조건부 편입' },
+  'C':  { color:'#ff6b6b', bg:'#ff6b6b18', label:'편입 보류' },
 };
 const GATE_CONFIG = {
   GO_BONUS:   { color:'#00d4aa', label:'✅ OPTIMAL — 최적 작동',    action:'정상 스캔 · 보너스 +5pt' },
@@ -165,17 +165,13 @@ const GATE_CONFIG = {
   STOP:       { color:'#ff6b6b', label:'🛑 PANIC — 전면 중단',     action:'신규 편입 금지' },
 };
 const CRITERIA_LIST = [
-  {key:'market_cap',color:'#00d4aa'},{key:'price_range',color:'#00d4aa'},{key:'per',color:'#00d4aa'},
-  {key:'pbr',color:'#00d4aa'},{key:'roe',color:'#00d4aa'},{key:'op_margin',color:'#00d4aa'},
-  {key:'pos_from_52w_low',color:'#4d9fff'},{key:'pos_from_52w_high',color:'#4d9fff'},
-  {key:'debt_ratio',color:'#4d9fff'},{key:'current_ratio',color:'#4d9fff'},{key:'rev_growth',color:'#4d9fff'},
-  {key:'hist_vol',color:'#ff6b6b'},{key:'dir_changes',color:'#ff6b6b'},
+  {key:'market_cap',color:'#00d4aa'},{key:'debt_ratio',color:'#00d4aa'},{key:'operating_profit',color:'#00d4aa'},
+  {key:'position_52w',color:'#4d9fff'},{key:'lr_slope',color:'#4d9fff'},{key:'ma200_dev',color:'#4d9fff'},
+  {key:'hist_vol',color:'#ff6b6b'},{key:'dir_changes',color:'#ff6b6b'},{key:'rsi_range',color:'#ff6b6b'},
 ];
 const BONUS_LIST = [
-  {key:'checklist',   label:'체크리스트 통과'},
-  {key:'vix_optimal', label:'VIX OPTIMAL'},
-  {key:'rsi_dip',     label:'RSI 매수 타이밍'},
-  {key:'near_52w_low',label:'52주 저가 근접'},
+  {key:'dividend',label:'배당 이력'},{key:'kospi200',label:'KOSPI200'},
+  {key:'foreign_ownership',label:'외국인 보유율'},{key:'trading_volume',label:'일평균 거래대금'},
 ];
 const VIX_ZONES = [
   {label:'DEAD CALM',vix:'< 12',vkospi:'< 13',color:'#6b8aaa',action:'PAUSE',   desc:'변동성 소멸 — 매수 기회 희박'},
@@ -188,6 +184,7 @@ const VIX_ZONES = [
 let currentTab = 'dashboard';
 let scanData = null;
 let historyData = [];
+let stockList = [];
 
 // ── Init ───────────────────────────────────────────────────
 async function init() {
@@ -272,7 +269,7 @@ function gateBannerHTML(gate) {
 }
 
 // ── Stock Card ─────────────────────────────────────────────
-function stockCardHTML(s) {
+function stockCardHTML(s, idx) {
   const g = GRADE_CONFIG[s.grade] || GRADE_CONFIG['A'];
   const base = Object.values(s.criteria_detail||{}).reduce((a,c)=>a+(c.score||0),0);
   const bonus = Object.values(s.bonus_detail||{}).reduce((a,b)=>a+(b.score||0),0);
@@ -285,7 +282,7 @@ function stockCardHTML(s) {
   <div class="stock-card" style="border:1px solid ${g.color}25" 
     onmouseenter="this.style.borderColor='${g.color}65';this.style.background='${g.bg}'"
     onmouseleave="this.style.borderColor='${g.color}25';this.style.background='#0d1224'"
-    onclick="openModal(${JSON.stringify(JSON.stringify(s))})">
+    onclick="openModal(${idx})">
     <div class="grade-tag" style="background:${g.bg};color:${g.color}">${s.grade} · ${g.label}</div>
     <div class="stock-header">
       <div class="stock-rank" style="background:${g.color}1e;color:${g.color}">#${s.rank}</div>
@@ -301,9 +298,9 @@ function stockCardHTML(s) {
         <div class="price-chg" style="color:${isUp?'#ff6b6b':'#4d9fff'}">${isUp?'▲':'▼'} ${Math.abs(s.price_change_pct||0).toFixed(1)}%</div>
       </div>
       <div style="text-align:right">
-        <div style="color:#4d6a8a;font-size:10px;margin-bottom:2px">체크리스트</div>
-        <span style="color:${g.color};font-weight:700;font-size:15px">${s.passed_count||'?'}</span>
-        <span style="color:#4d6a8a;font-size:11px"> / 21</span>
+        <div style="color:#4d6a8a;font-size:9px;margin-bottom:2px">기본 + 보너스</div>
+        <span style="color:${g.color};font-weight:700;font-size:11px">${base}pt</span>
+        <span style="color:#ffd166;font-size:11px"> +${bonus}pt</span>
       </div>
     </div>
     <div class="criteria-bars">${bars}</div>
@@ -315,14 +312,16 @@ function stockCardHTML(s) {
 // ── Dashboard ──────────────────────────────────────────────
 function renderDashboard(data) {
   if (!data) { showEmpty('pane-dashboard'); return; }
+  stockList = data.recommendations || [];
   const el = document.getElementById('pane-dashboard');
   el.innerHTML = gateBannerHTML(data.market_gate||{}) +
-    `<div class="stock-grid">${(data.recommendations||[]).map(stockCardHTML).join('')}</div>`;
+    `<div class="stock-grid">${stockList.map((s,i) => stockCardHTML(s,i)).join('')}</div>`;
 }
 
 // ── Modal ──────────────────────────────────────────────────
-function openModal(jsonStr) {
-  const s = JSON.parse(jsonStr);
+function openModal(idx) {
+  const s = stockList[idx];
+  if (!s) return;
   const g = GRADE_CONFIG[s.grade] || GRADE_CONFIG['A'];
   const base = Object.values(s.criteria_detail||{}).reduce((a,c)=>a+(c.score||0),0);
   const bonus = Object.values(s.bonus_detail||{}).reduce((a,b)=>a+(b.score||0),0);
@@ -375,39 +374,26 @@ function openModal(jsonStr) {
         <div style="color:${g.color};font-size:12px;font-weight:700;margin-bottom:5px">💡 핵심 추천 이유</div>
         <div style="color:#c0d4e8;font-size:12px;line-height:1.85">${s.summary||''}</div>
       </div>
-      <div style="background:#0d1224;border:1px solid #1e2d4a;border-radius:10px;padding:16px;margin-bottom:14px">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
-          <div style="color:#e0e6f0;font-size:13px;font-weight:700">📋 저자 체크리스트 21항목</div>
-          <div style="background:${g.color}22;color:${g.color};font-size:14px;font-weight:700;padding:4px 14px;border-radius:20px">
-            ${s.passed_count||0} / 21 통과
-          </div>
-        </div>
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:7px">
-          ${Object.entries(s.criteria_detail||{}).map(([k,d])=>{
-            const colMap={
-              market_cap:'#00d4aa',price_range:'#00d4aa',per:'#00d4aa',pbr:'#00d4aa',
-              psr:'#00d4aa',roe:'#00d4aa',op_margin:'#00d4aa',roa:'#00d4aa',net_margin:'#00d4aa',
-              pos_from_52w_low:'#4d9fff',pos_from_52w_high:'#4d9fff',debt_ratio:'#4d9fff',
-              current_ratio:'#4d9fff',rev_growth:'#4d9fff',net_inc_growth:'#4d9fff',
-              dividend_yield:'#ffd166',foreign_ownership:'#ffd166',pcr:'#ffd166',peg:'#ffd166',
-              hist_vol:'#ff6b6b',dir_changes:'#ff6b6b'
-            };
-            const labelMap={
-              market_cap:'시가총액',price_range:'주가범위',per:'PER',pbr:'PBR',psr:'PSR',
-              pcr:'PCR',peg:'PEG',roe:'ROE',roa:'ROA',op_margin:'영업이익률',net_margin:'순이익률',
-              rev_growth:'매출액증가율',net_inc_growth:'순이익증가율',debt_ratio:'부채비율',
-              current_ratio:'유동비율',dividend_yield:'배당수익률',foreign_ownership:'외국인보유',
-              pos_from_52w_low:'52주저가대비',pos_from_52w_high:'52주고가대비',
-              hist_vol:'역사적변동성',dir_changes:'방향전환횟수'
-            };
-            const col=colMap[k]||'#6b8aaa';
-            return '<div style="background:'+(d.pass?col+'18':'#060912')+';border:1px solid '+(d.pass?col+'45':'#1e2d4a')+';border-radius:8px;padding:9px 10px">'
-              +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">'
-              +'<span style="color:#8aa4c4;font-size:10px;font-weight:600">'+(labelMap[k]||k)+'</span>'
-              +'<span style="color:'+(d.pass?col:'#2e4060')+';font-size:12px;font-weight:700">'+(d.pass?'✓':'✗')+'</span>'
-              +'</div>'
-              +'<div style="color:'+(d.pass?'#e0e6f0':'#4d6a8a')+';font-size:13px;font-weight:700">'+d.value+'</div>'
-              +'</div>';
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+        ${criteriaSection('🏦 재무 건전성',['market_cap','debt_ratio','operating_profit'],'#00d4aa')}
+        ${criteriaSection('📊 추세 중립성',['position_52w','lr_slope','ma200_dev'],'#4d9fff')}
+      </div>
+      <div style="background:#0d1224;border:1px solid #ff6b6b18;border-radius:10px;padding:14px;margin-bottom:14px">
+        <div style="color:#ff6b6b;font-size:12px;font-weight:700;margin-bottom:10px">〰️ 오실레이션 품질</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+          ${['hist_vol','dir_changes','rsi_range'].map(k=>{
+            const d = (s.criteria_detail||{})[k];
+            if(!d) return '';
+            return `<div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+                <span style="font-size:10px;font-weight:700">${d.value}</span>
+                <span style="color:${d.pass?'#ff6b6b':'#4d6a8a'};font-size:10px">${d.score}pt</span>
+              </div>
+              <div style="background:#1e2d4a;border-radius:3px;height:4px">
+                <div style="background:${d.pass?'#ff6b6b':'#2e4060'};height:100%;width:${(d.score/d.max_score)*100}%;border-radius:3px"></div>
+              </div>
+              ${d.reason?`<div style="color:#4d6a8a;font-size:9px;margin-top:2px">${d.reason}</div>`:''}
+            </div>`;
           }).join('')}
         </div>
       </div>
