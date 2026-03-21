@@ -77,6 +77,7 @@ a{color:inherit;text-decoration:none}
 .bonus-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 .bonus-item{border-radius:8px;padding:9px 10px;text-align:center}
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.modal-2col{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
 .two-col-section{border-radius:10px;padding:13px}
 
 /* History */
@@ -112,19 +113,52 @@ a{color:inherit;text-decoration:none}
 .btn-primary{background:linear-gradient(135deg,#00d4aa,#00a882);border:none;color:#0a0e1a;font-weight:700;padding:9px 20px;border-radius:8px;font-size:12px;cursor:pointer;font-family:inherit}
 .btn-primary:disabled{background:#1e2d4a;color:#4d6a8a;cursor:not-allowed}
 .btn-danger{background:#ff6b6b10;border:1px solid #ff6b6b32;color:#ff6b6b;padding:6px 12px;font-size:10px}
+
+/* Mobile responsive */
+@media(max-width:768px){
+  .hide-mobile{display:none!important}
+  .topbar{grid-template-columns:auto 1fr auto;padding:0 12px}
+  .topbar-center{justify-content:center}
+  .tabs{padding:0 10px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .tab{padding:10px 12px;font-size:11px;white-space:nowrap}
+  .content{padding:14px 12px}
+  .stock-grid{grid-template-columns:1fr!important}
+  .gate-banner{flex-direction:column;align-items:stretch;padding:12px 14px}
+  .gate-badges{flex-wrap:wrap;justify-content:center}
+  .kpi-grid{grid-template-columns:repeat(2,1fr)}
+  .history-stats{grid-template-columns:repeat(2,1fr)}
+  .hist-row{grid-template-columns:24px 1fr 50px 50px;font-size:10px;padding:8px 10px}
+  .hist-row>div:nth-child(5),.hist-row>div:nth-child(6){display:none}
+  .vix-zones{grid-template-columns:repeat(2,1fr)}
+  .criteria-5col{grid-template-columns:1fr!important}
+  .resp-2col{grid-template-columns:1fr!important}
+  .modal-overlay{padding:10px 8px}
+  .modal-header{flex-wrap:wrap;padding:14px 16px;gap:8px}
+  .modal-body{padding:14px}
+  .modal-body .two-col{grid-template-columns:1fr}
+  .modal-2col{grid-template-columns:1fr}
+  .bonus-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:480px){
+  .topbar-center span:first-child{font-size:11px}
+  .stock-name{font-size:13px}
+  .stock-price{font-size:14px}
+  .criteria-bars{gap:1px}
+  .criteria-bar{width:18px;height:14px;font-size:7px}
+}
 </style>
 </head>
 <body>
 
 <div class="topbar">
-  <a href="https://mav-ash.com" class="topbar-logo">⬥ FORGE NEVER SLEEPS</a>
+  <a href="https://mav-ash.com" class="topbar-logo">⬥ FORGE<span class="hide-mobile"> NEVER SLEEPS</span></a>
   <div class="topbar-center">
     <span>GOLDHALLOW</span>
     <span class="badge-live"><span class="blink"></span>LIVE</span>
   </div>
   <div class="topbar-right">
     <span style="font-size:10px;color:#4d6a8a" id="lastScan">—</span>
-    <a href="https://mav-ash.com/dash" class="btn">⚡ 전력 대시보드</a>
+    <a href="https://mav-ash.com/dash" class="btn hide-mobile">⚡ 전력 대시보드</a>
   </div>
 </div>
 
@@ -405,11 +439,11 @@ function openModal(idx) {
         <div style="color:${g.color};font-size:12px;font-weight:700;margin-bottom:5px">💡 핵심 추천 이유</div>
         <div style="color:#c0d4e8;font-size:12px;line-height:1.85">${s.summary||''}</div>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+      <div class="modal-2col">
         ${criteriaSection('💰 가치 지표',['per','pbr','psr','pcr','peg'],'#00d4aa')}
         ${criteriaSection('📈 수익성·성장성',['roe','roa','op_margin','net_margin','rev_growth','net_inc_growth'],'#4d9fff')}
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+      <div class="modal-2col">
         ${criteriaSection('🏦 재무 안정성',['market_cap','price_range','debt_ratio','current_ratio'],'#ffd166')}
         ${criteriaSection('📍 주가 위치',['pos_from_52w_low','pos_from_52w_high','dividend_yield','foreign_ownership'],'#a78bfa')}
       </div>
@@ -625,7 +659,7 @@ function renderCriteria() {
     + '"일지 않는 안전한 주식"의 저자 기준을 그대로 반영합니다. '
     + '21개 중 <span style="color:#00d4aa;font-weight:700">16개 이상</span> 통과 시 일지 않을 확률 90%+. '
     + '매일 08:30 맥미니 스캐너가 자동으로 전 종목을 체크합니다.</div>'
-    + '<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px">'
+    + '<div class="criteria-5col" style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px">'
     + CHECKLIST.map(sec =>
         '<div style="background:#060912;border:1px solid ' + sec.color + '25;border-radius:10px;padding:14px">'
         + '<div style="color:' + sec.color + ';font-size:13px;font-weight:700;margin-bottom:3px">' + sec.cat + '</div>'
@@ -646,7 +680,7 @@ function renderCriteria() {
       ).join('')
     + '</div></div>'
 
-    + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:13px">'
+    + '<div class="resp-2col" style="display:grid;grid-template-columns:1fr 1fr;gap:13px">'
     + '<div style="background:#0d1224;border:1px solid #1e2d4a;border-radius:12px;padding:18px">'
     + '<div style="color:#e0e6f0;font-size:14px;font-weight:700;margin-bottom:12px">📊 등급 기준</div>'
     + gradeRows.map(row => {
@@ -717,7 +751,7 @@ function renderVix() {
       ).join('')
     + '</div>'
 
-    + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:13px">'
+    + '<div class="resp-2col" style="display:grid;grid-template-columns:1fr 1fr;gap:13px">'
     + '<div style="background:#060912;border:1px solid #1e2d4a;border-radius:12px;padding:16px">'
     + '<div style="color:#4d9fff;font-size:14px;font-weight:700;margin-bottom:12px">🖥️ 자동화 구조</div>'
     + '<div style="display:flex;flex-direction:column;gap:8px">'
