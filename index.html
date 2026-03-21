@@ -71,7 +71,7 @@ section{max-width:1100px;margin:0 auto;padding:6rem 2rem}
 
 /* HERO */
 #about{min-height:calc(100vh - 52px);display:flex;align-items:center;padding:5rem 2rem 4rem}
-.hero-grid{width:100%;display:grid;grid-template-columns:1fr 280px 1fr;gap:2.5rem;align-items:center}
+.hero-grid{width:100%;display:grid;grid-template-columns:1fr 1fr 1fr;gap:2.5rem;align-items:center}
 
 /* 텍스트 */
 .hero-txt{min-width:0}
@@ -90,11 +90,11 @@ section{max-width:1100px;margin:0 auto;padding:6rem 2rem}
 
 /* 드워프 */
 .hero-dwarf{display:flex;flex-direction:column;align-items:center;justify-self:center;filter:drop-shadow(0 0 16px rgba(62,207,112,.42)) drop-shadow(0 0 36px rgba(62,207,112,.16))}
-.dwarf-wrap{display:flex;flex-direction:column;align-items:center;width:100%;max-width:320px}
+.dwarf-wrap{display:flex;flex-direction:column;align-items:center;width:100%}
 .dwarf-top{width:100%;image-rendering:pixelated;display:block;animation:dbreathe 3.5s ease-in-out infinite;transform-origin:bottom center}
-.dwarf-bot{width:100%;image-rendering:pixelated;display:block;margin-top:-6px}
-.dwarf-sh{width:90px;height:12px;margin-top:4px;background:radial-gradient(ellipse at center,rgba(62,207,112,.3) 0%,transparent 70%);border-radius:50%;animation:dsh 3.5s ease-in-out infinite}
-@keyframes dbreathe{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px) scaleY(1.012)}}
+.dwarf-bot{width:100%;image-rendering:pixelated;display:block;margin-top:-8px}
+.dwarf-sh{width:120px;height:14px;margin-top:4px;background:radial-gradient(ellipse at center,rgba(62,207,112,.3) 0%,transparent 70%);border-radius:50%;animation:dsh 3.5s ease-in-out infinite}
+@keyframes dbreathe{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px) scaleY(1.012)}}
 @keyframes dsh{0%,100%{transform:scaleX(1);opacity:.4}50%{transform:scaleX(.72);opacity:.2}}
 
 /* HERO 우측 카드 */
@@ -182,7 +182,7 @@ footer em{color:var(--ac);font-style:normal}
   .hero-txt{grid-column:1;grid-row:1}
   .hero-dwarf{grid-column:2;grid-row:1;align-self:center}
   .hero-card{grid-column:1/-1;grid-row:2}
-  .dwarf-wrap{max-width:260px}
+  .dwarf-wrap{max-width:200px}
 }
 @media(max-width:680px){
   .hero-grid{grid-template-columns:1fr;grid-template-rows:auto}
