@@ -527,18 +527,18 @@ function renderCriteria() {
             <div style="background:#3ecf7020;color:#3ecf70;border-radius:4px;padding:2px 9px;font-size:11px;font-weight:700">A그룹</div>
             <span style="color:#e0e6f0;font-size:12px;font-weight:700">시총 상위 100개</span>
           </div>
-          <div style="color:#6b8aaa;font-size:11px;line-height:1.8">KOSPI 전체에서 시가총액 기준 상위 100개 종목. 유동성과 안정성이 검증된 대형주 중심.</div>
+          <div style="color:#a0b8ce;font-size:12px;line-height:1.8">KOSPI 전체에서 시가총액 기준 상위 100개 종목. 유동성과 안정성이 검증된 대형주 중심.</div>
         </div>
         <div style="background:#060912;border:1px solid #4d9fff18;border-radius:10px;padding:14px">
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
             <div style="background:#4d9fff20;color:#4d9fff;border-radius:4px;padding:2px 9px;font-size:11px;font-weight:700">B그룹</div>
             <span style="color:#e0e6f0;font-size:12px;font-weight:700">재무 우량 중소형 100개</span>
           </div>
-          <div style="color:#6b8aaa;font-size:11px;line-height:1.8">시총 100위 밖 종목 중 재무 필터를 통과한 우량주. 매일 다른 종목이 선발될 수 있음.</div>
+          <div style="color:#a0b8ce;font-size:12px;line-height:1.8">시총 100위 밖 종목 중 재무 필터를 통과한 우량주. 매일 다른 종목이 선발될 수 있음.</div>
         </div>
       </div>
       <div style="background:#060912;border-radius:8px;padding:12px">
-        <div style="color:#8aa4c4;font-size:11px;font-weight:700;margin-bottom:7px">📐 B그룹 재무 필터 기준</div>
+        <div style="color:#c0d4e8;font-size:13px;font-weight:700;margin-bottom:7px">📐 B그룹 재무 필터 기준</div>
         <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
           ${[
             {label:'시총 최소',cond:'≥ 1,000억원',desc:'소형주 제외'},
@@ -547,26 +547,26 @@ function renderCriteria() {
             {label:'EPS',cond:'양수',desc:'당기순이익 흑자'},
           ].map(f=>`
           <div style="background:#0a0e1a;border-radius:6px;padding:9px 10px">
-            <div style="color:#4d6a8a;font-size:10px;margin-bottom:3px">${f.label}</div>
-            <div style="color:#4d9fff;font-size:11px;font-weight:700;margin-bottom:2px">${f.cond}</div>
-            <div style="color:#4d6a8a;font-size:9px">${f.desc}</div>
+            <div style="color:#8aa4c4;font-size:11px;margin-bottom:3px">${f.label}</div>
+            <div style="color:#4d9fff;font-size:13px;font-weight:700;margin-bottom:2px">${f.cond}</div>
+            <div style="color:#8aa4c4;font-size:11px">${f.desc}</div>
           </div>`).join('')}
         </div>
         <div style="margin-top:10px;padding-top:10px;border-top:1px solid #1e2d4a">
-          <div style="color:#8aa4c4;font-size:11px;font-weight:700;margin-bottom:6px">⭐ 우량도 점수 (높을수록 우선 선발)</div>
+          <div style="color:#c0d4e8;font-size:13px;font-weight:700;margin-bottom:6px">⭐ 우량도 점수 (높을수록 우선 선발)</div>
           <div style="display:flex;gap:10px;flex-wrap:wrap">
             ${[
               {label:'배당 지급 기업',score:'+2pt',color:'#ffd166'},
               {label:'저PBR (< 1.5)',score:'+1pt',color:'#00d4aa'},
               {label:'저PER (< 15)',score:'+1pt',color:'#4d9fff'},
             ].map(q=>`<div style="background:#0a0e1a;border-radius:5px;padding:5px 10px;display:flex;align-items:center;gap:6px">
-              <span style="color:${q.color};font-size:11px;font-weight:700">${q.score}</span>
-              <span style="color:#8aa4c4;font-size:11px">${q.label}</span>
+              <span style="color:${q.color};font-size:13px;font-weight:700">${q.score}</span>
+              <span style="color:#c0d4e8;font-size:12px">${q.label}</span>
             </div>`).join('')}
           </div>
         </div>
       </div>
-      <div style="margin-top:10px;color:#4d6a8a;font-size:10px;line-height:1.7">
+      <div style="margin-top:10px;color:#8aa4c4;font-size:12px;line-height:1.8">
         ✦ FinanceDataReader 정상 시: KOSPI 951개 중 A+B = 최대 200개 실시간 구성<br>
         ✦ SSL 오류 등 장애 시: 90개 풀에서 날짜 시드 기반으로 매일 50개 랜덤 샘플링 (매일 변동)
       </div>
@@ -577,17 +577,17 @@ function renderCriteria() {
         <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
           <div><div style="font-size:18px;margin-bottom:2px">${cat.icon}</div>
             <div style="color:${cat.color};font-size:13px;font-weight:700">${cat.cat}</div>
-            <div style="color:#4d6a8a;font-size:10px">${cat.desc}</div></div>
+            <div style="color:#8aa4c4;font-size:12px">${cat.desc}</div></div>
           <div style="background:${cat.color}18;color:${cat.color};border-radius:6px;padding:3px 10px;font-size:15px;font-weight:700">${cat.weight}pt</div>
         </div>
         ${cat.items.map(i=>`
         <div class="criteria-item-box" style="border-left:3px solid ${cat.color}50">
           <div style="display:flex;justify-content:space-between;margin-bottom:2px">
-            <span style="font-size:11px;font-weight:700">${i.name}</span>
-            <span style="color:${cat.color};font-size:11px;font-weight:700">${i.score}pt</span>
+            <span style="font-size:13px;font-weight:700">${i.name}</span>
+            <span style="color:${cat.color};font-size:13px;font-weight:700">${i.score}pt</span>
           </div>
-          <div style="background:${cat.color}12;color:${cat.color};border-radius:3px;padding:2px 7px;font-size:10px;display:inline-block;margin-bottom:2px;font-weight:700">${i.cond}</div>
-          <div style="color:#6b8aaa;font-size:10px">${i.rat}</div>
+          <div style="background:${cat.color}12;color:${cat.color};border-radius:3px;padding:2px 7px;font-size:12px;display:inline-block;margin-bottom:2px;font-weight:700">${i.cond}</div>
+          <div style="color:#8aa4c4;font-size:12px">${i.rat}</div>
         </div>`).join('')}
       </div>`).join('')}
     </div>
@@ -595,12 +595,12 @@ function renderCriteria() {
       <div style="background:#0d1224;border:1px solid #ffd16620;border-radius:12px;padding:16px">
         <div style="color:#ffd166;font-size:12px;font-weight:700;margin-bottom:10px">⭐ 보너스 (최대 +10pt)</div>
         ${[{n:'배당 지급 이력',c:'3년 이상 연속',s:'+3'},{n:'KOSPI200 구성',c:'지수 편입 여부',s:'+2'},{n:'외국인 보유율',c:'5% 이상',s:'+2'},{n:'일평균 거래대금',c:'≥ 100억원',s:'+3'}]
-          .map(b=>`<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #1e2d4a"><div><div style="font-size:11px;font-weight:700">${b.n}</div><div style="color:#4d6a8a;font-size:10px">${b.c}</div></div><span style="color:#ffd166;font-weight:700;font-size:13px">${b.s}</span></div>`).join('')}
+          .map(b=>`<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #1e2d4a"><div><div style="font-size:13px;font-weight:700">${b.n}</div><div style="color:#8aa4c4;font-size:11px">${b.c}</div></div><span style="color:#ffd166;font-weight:700;font-size:13px">${b.s}</span></div>`).join('')}
       </div>
       <div style="background:#0d1224;border:1px solid #1e2d4a;border-radius:12px;padding:16px">
         <div style="color:#e0e6f0;font-size:12px;font-weight:700;margin-bottom:10px">📈 점수별 편입 등급</div>
         ${[{g:'A+',r:'85~110pt',n:'적극 편입 · 비중 확대'},{g:'A',r:'70~84pt',n:'일반 편입 기준'},{g:'B',r:'55~69pt',n:'비중 축소하여 편입'},{g:'C',r:'0~54pt',n:'편입 보류 · 재검토'}]
-          .map(({g,r,n})=>{const cfg=GRADE_CONFIG[g]; return `<div style="background:${cfg.bg};border:1px solid ${cfg.color}25;border-radius:8px;padding:8px 12px;margin-bottom:7px;display:flex;justify-content:space-between;align-items:center"><div style="display:flex;align-items:center;gap:8px"><span style="color:${cfg.color};font-size:14px;font-weight:700">${g}</span><span style="color:${cfg.color};font-size:11px">${r}</span></div><div style="color:#6b8aaa;font-size:10px">${n}</div></div>`;}).join('')}
+          .map(({g,r,n})=>{const cfg=GRADE_CONFIG[g]; return `<div style="background:${cfg.bg};border:1px solid ${cfg.color}25;border-radius:8px;padding:8px 12px;margin-bottom:7px;display:flex;justify-content:space-between;align-items:center"><div style="display:flex;align-items:center;gap:8px"><span style="color:${cfg.color};font-size:14px;font-weight:700">${g}</span><span style="color:${cfg.color};font-size:11px">${r}</span></div><div style="color:#8aa4c4;font-size:12px">${n}</div></div>`;}).join('')}
       </div>
     </div>`;
 }
@@ -609,8 +609,8 @@ function renderCriteria() {
 function renderVix() {
   document.getElementById('pane-vix').innerHTML = `
     <div style="background:#0d1224;border:1px solid #1e2d4a;border-radius:12px;padding:16px;margin-bottom:12px">
-      <div style="color:#e0e6f0;font-size:13px;font-weight:700;margin-bottom:5px">왜 VIX를 "게이트"로 쓰는가?</div>
-      <div style="color:#6b8aaa;font-size:11px;line-height:1.9">
+      <div style="color:#e0e6f0;font-size:15px;font-weight:700;margin-bottom:5px">왜 VIX를 "게이트"로 쓰는가?</div>
+      <div style="color:#a0b8ce;font-size:13px;line-height:1.9">
         매직스플릿이 망가지는 시나리오는 단 하나 — 모든 종목이 같이 떨어질 때입니다. VIX/VKOSPI는 그 신호를 가장 빠르게 알려줍니다.
         <span style="color:#00d4aa">OPTIMAL 국면일 때만 보너스 +5pt</span>를 반영하고,
         <span style="color:#ff6b6b">둘 중 하나라도 PANIC이면 신규 편입 전면 중단</span>이 원칙입니다.
@@ -619,16 +619,16 @@ function renderVix() {
     <div class="vix-zones">
       ${VIX_ZONES.map(z=>`
       <div class="vix-zone-card" style="background:${z.color}0d;border:1px solid ${z.color}30">
-        <div style="color:${z.color};font-size:10px;font-weight:700;letter-spacing:2px;margin-bottom:7px">${z.label}</div>
-        <div style="margin-bottom:5px"><div style="color:#4d6a8a;font-size:9px">VIX</div><div style="color:#e0e6f0;font-size:17px;font-weight:700">${z.vix}</div></div>
-        <div style="margin-bottom:8px"><div style="color:#4d6a8a;font-size:9px">VKOSPI</div><div style="color:#e0e6f0;font-size:13px;font-weight:700">${z.vkospi}</div></div>
-        <div style="background:${z.color}18;color:${z.color};border-radius:4px;padding:2px 7px;font-size:10px;font-weight:700;margin-bottom:7px">${z.action}</div>
-        <div style="color:#6b8aaa;font-size:10px;line-height:1.65">${z.desc}</div>
+        <div style="color:${z.color};font-size:12px;font-weight:700;letter-spacing:2px;margin-bottom:7px">${z.label}</div>
+        <div style="margin-bottom:5px"><div style="color:#8aa4c4;font-size:11px">VIX</div><div style="color:#e0e6f0;font-size:20px;font-weight:700">${z.vix}</div></div>
+        <div style="margin-bottom:8px"><div style="color:#8aa4c4;font-size:11px">VKOSPI</div><div style="color:#e0e6f0;font-size:15px;font-weight:700">${z.vkospi}</div></div>
+        <div style="background:${z.color}18;color:${z.color};border-radius:4px;padding:2px 7px;font-size:12px;font-weight:700;margin-bottom:7px">${z.action}</div>
+        <div style="color:#8aa4c4;font-size:12px;line-height:1.7">${z.desc}</div>
       </div>`).join('')}
     </div>
     <div style="background:#060912;border:1px solid #1e2d4a;border-radius:12px;padding:16px">
-      <div style="color:#4d9fff;font-size:12px;font-weight:700;margin-bottom:9px">🖥️ 매일 08:30 자동 실행 (맥미니)</div>
-      <pre style="margin:0;font-size:10px;line-height:1.85;color:#8aa4c4;overflow-x:auto">cron: 30 8 * * 1-5 cd ~/FORGE/power-dashboard && python3 magic_split_scanner.py
+      <div style="color:#4d9fff;font-size:13px;font-weight:700;margin-bottom:9px">🖥️ 매일 08:30 자동 실행 (맥미니)</div>
+      <pre style="margin:0;font-size:12px;line-height:1.9;color:#a0b8ce;overflow-x:auto">cron: 30 8 * * 1-5 cd ~/FORGE/power-dashboard && python3 magic_split_scanner.py
 
 데이터 소스:
   yfinance           → VIX, VKOSPI, 주가/기술지표
