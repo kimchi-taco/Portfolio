@@ -5,8 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>매직스플릿 스크리너 — Forge Never Sleeps</title>
 <style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&family=Noto+Sans+KR:wght@400;500;700&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#0a0e1a;color:#e0e6f0;font-family:'IBM Plex Mono','Courier New',monospace;min-height:100vh}
+body{background:#0a0e1a;color:#e0e6f0;font-family:'Noto Sans KR','IBM Plex Mono','Courier New',sans-serif;min-height:100vh}
 a{color:inherit;text-decoration:none}
 ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:#0d1224}::-webkit-scrollbar-thumb{background:#1e2d4a;border-radius:3px}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -14,34 +15,34 @@ a{color:inherit;text-decoration:none}
 
 /* Layout */
 .topbar{height:44px;background:#0d1224;border-bottom:1px solid #1e2d4a;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:0 20px;position:sticky;top:0;z-index:200}
-.topbar-logo{font-size:11px;font-weight:700;letter-spacing:.1em;color:#3ecf70}
-.topbar-center{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:#e0e6f0;letter-spacing:.08em}
+.topbar-logo{font-size:12px;font-weight:700;letter-spacing:.1em;color:#3ecf70}
+.topbar-center{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:#e0e6f0;letter-spacing:.08em}
 .topbar-right{display:flex;align-items:center;gap:10px;justify-content:flex-end}
 .badge-live{background:#3ecf7018;border:1px solid #3ecf7040;color:#3ecf70;font-size:9px;font-weight:700;padding:2px 7px;border-radius:3px;letter-spacing:1px;display:flex;align-items:center;gap:4px}
 .blink{width:5px;height:5px;background:#3ecf70;border-radius:50%;animation:blink 1.2s ease-in-out infinite}
 
 .tabs{border-bottom:1px solid #1e2d4a;padding:0 20px;display:flex;gap:0}
-.tab{background:none;border:none;border-bottom:2px solid transparent;color:#4d6a8a;padding:11px 18px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s}
-.tab.active{border-bottom-color:#00d4aa;color:#00d4aa}
-.tab:hover:not(.active){color:#8aa4c4}
+.tab{background:none;border:none;border-bottom:2px solid transparent;color:#6b8aaa;padding:11px 18px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s}
+.tab.active{border-bottom-color:#00d4aa;color:#00d4aa;font-size:12px}
+.tab:hover:not(.active){color:#a0bcd4}
 
 .content{max-width:1100px;margin:0 auto;padding:24px 20px}
 
 /* Cards */
 .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
 .kpi-box{background:#0d1224;border:1px solid #1e2d4a;border-radius:10px;padding:14px 16px}
-.kpi-label{color:#4d6a8a;font-size:10px;margin-bottom:5px}
+.kpi-label{color:#6b8aaa;font-size:11px;margin-bottom:5px}
 .kpi-value{font-size:18px;font-weight:700}
 
 .gate-banner{border-radius:12px;padding:14px 18px;margin-bottom:18px;display:flex;align-items:center;gap:14px}
 .gate-info{flex:1}
-.gate-title{font-size:14px;font-weight:700;margin-bottom:3px}
-.gate-comment{color:#6b8aaa;font-size:11px;line-height:1.7}
+.gate-title{font-size:15px;font-weight:700;margin-bottom:3px}
+.gate-comment{color:#8aa4c4;font-size:12px;line-height:1.7}
 .gate-badges{display:flex;gap:8px}
 .vix-badge{background:#060912;border-radius:8px;padding:8px 12px;text-align:center;min-width:68px}
-.vix-label{font-size:9px;color:#4d6a8a;letter-spacing:1px}
+.vix-label{font-size:10px;color:#6b8aaa;letter-spacing:1px}
 .vix-val{font-size:18px;font-weight:700;line-height:1.2}
-.vix-zone{font-size:9px;opacity:.8}
+.vix-zone{font-size:10px;opacity:.9}
 .action-badge{border-radius:8px;padding:8px 12px;text-align:center;min-width:100px;display:flex;flex-direction:column;justify-content:center}
 
 .stock-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
@@ -51,13 +52,13 @@ a{color:inherit;text-decoration:none}
 .stock-header{display:flex;align-items:center;gap:10px;margin-bottom:10px}
 .stock-rank{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
 .stock-name{font-size:14px;font-weight:700}
-.stock-meta{color:#4d6a8a;font-size:10px}
+.stock-meta{color:#6b8aaa;font-size:11px}
 .stock-price{font-size:15px;font-weight:700}
 .price-chg{font-size:11px;font-weight:700}
 .criteria-bars{display:flex;gap:2px;margin:9px 0}
 .criteria-bar{flex:1;height:3px;border-radius:2px}
-.stock-summary{color:#8aa4c4;font-size:11px;line-height:1.6}
-.click-hint{color:#4d6a8a;font-size:10px;margin-top:7px;text-align:right}
+.stock-summary{color:#a0b8ce;font-size:12px;line-height:1.6}
+.click-hint{color:#6b8aaa;font-size:11px;margin-top:7px;text-align:right}
 
 /* Score ring SVG handled inline */
 
@@ -81,8 +82,8 @@ a{color:inherit;text-decoration:none}
 /* History */
 .history-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
 .stat-box{background:#0d1224;border:1px solid #1e2d4a;border-radius:10px;padding:12px 16px}
-.stat-label{color:#4d6a8a;font-size:10px;margin-bottom:5px}
-.stat-value{font-size:16px;font-weight:700}
+.stat-label{color:#6b8aaa;font-size:11px;margin-bottom:5px}
+.stat-value{font-size:17px;font-weight:700}
 .hist-group{background:#0d1224;border:1px solid #1e2d4a;border-radius:12px;margin-bottom:12px;overflow:hidden}
 .hist-header{background:#060912;border-bottom:1px solid #1e2d4a;padding:10px 16px;display:flex;align-items:center;justify-content:space-between}
 .hist-row{display:grid;grid-template-columns:28px 1fr 80px 70px 90px 100px 90px;align-items:center;gap:8px;padding:9px 14px;border-bottom:1px solid #0d1830}
@@ -148,7 +149,7 @@ a{color:inherit;text-decoration:none}
 
 <script>
 // ── Config ─────────────────────────────────────────────────
-const API = 'https://api.mav-ash.com';
+const API = '';
 
 const GRADE_CONFIG = {
   'A+': { color:'#00d4aa', bg:'#00d4aa18', label:'최우선 편입' },
@@ -511,12 +512,65 @@ function renderCriteria() {
       {name:'MA200 괴리율',cond:'±25% 이내',score:11,rat:'평균 회귀 가능성 확인'},
     ]},
     {cat:'오실레이션 품질',icon:'〰️',color:'#ff6b6b',weight:35,desc:'진동·변동성 품질 필터',items:[
-      {name:'연간 역사적변동성',cond:'15%~50%',score:12,rat:'진동폭 적정 범위 확인'},
-      {name:'방향전환 횟수',cond:'60거래일 내 ≥10회',score:12,rat:'진동 반복성 직접 측정'},
-      {name:'RSI 범위',cond:'최근 60일 RSI범위 ≥25pt',score:11,rat:'RSI 진동 강도 확인'},
+      {name:'연간 역사적변동성',cond:'20%~50%',score:12,rat:'진동폭 적정 범위 확인'},
+      {name:'방향전환 횟수',cond:'60거래일 내 ≥12회',score:12,rat:'진동 반복성 직접 측정'},
+      {name:'RSI 범위',cond:'최근 60일 RSI범위 ≥30pt',score:11,rat:'RSI 진동 강도 확인'},
     ]},
   ];
   document.getElementById('pane-criteria').innerHTML = `
+    <!-- 유니버스 구성 섹션 -->
+    <div style="background:#0d1224;border:1px solid #3ecf7025;border-radius:12px;padding:16px;margin-bottom:16px">
+      <div style="color:#3ecf70;font-size:13px;font-weight:700;margin-bottom:10px">🔭 종목 유니버스 구성 방식</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+        <div style="background:#060912;border:1px solid #3ecf7018;border-radius:10px;padding:14px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+            <div style="background:#3ecf7020;color:#3ecf70;border-radius:4px;padding:2px 9px;font-size:11px;font-weight:700">A그룹</div>
+            <span style="color:#e0e6f0;font-size:12px;font-weight:700">시총 상위 100개</span>
+          </div>
+          <div style="color:#6b8aaa;font-size:11px;line-height:1.8">KOSPI 전체에서 시가총액 기준 상위 100개 종목. 유동성과 안정성이 검증된 대형주 중심.</div>
+        </div>
+        <div style="background:#060912;border:1px solid #4d9fff18;border-radius:10px;padding:14px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+            <div style="background:#4d9fff20;color:#4d9fff;border-radius:4px;padding:2px 9px;font-size:11px;font-weight:700">B그룹</div>
+            <span style="color:#e0e6f0;font-size:12px;font-weight:700">재무 우량 중소형 100개</span>
+          </div>
+          <div style="color:#6b8aaa;font-size:11px;line-height:1.8">시총 100위 밖 종목 중 재무 필터를 통과한 우량주. 매일 다른 종목이 선발될 수 있음.</div>
+        </div>
+      </div>
+      <div style="background:#060912;border-radius:8px;padding:12px">
+        <div style="color:#8aa4c4;font-size:11px;font-weight:700;margin-bottom:7px">📐 B그룹 재무 필터 기준</div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
+          ${[
+            {label:'시총 최소',cond:'≥ 1,000억원',desc:'소형주 제외'},
+            {label:'PER',cond:'0 < PER < 35',desc:'흑자 + 비고평가'},
+            {label:'PBR',cond:'0.2 ~ 4.0',desc:'극단 배제'},
+            {label:'EPS',cond:'양수',desc:'당기순이익 흑자'},
+          ].map(f=>`
+          <div style="background:#0a0e1a;border-radius:6px;padding:9px 10px">
+            <div style="color:#4d6a8a;font-size:10px;margin-bottom:3px">${f.label}</div>
+            <div style="color:#4d9fff;font-size:11px;font-weight:700;margin-bottom:2px">${f.cond}</div>
+            <div style="color:#4d6a8a;font-size:9px">${f.desc}</div>
+          </div>`).join('')}
+        </div>
+        <div style="margin-top:10px;padding-top:10px;border-top:1px solid #1e2d4a">
+          <div style="color:#8aa4c4;font-size:11px;font-weight:700;margin-bottom:6px">⭐ 우량도 점수 (높을수록 우선 선발)</div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            ${[
+              {label:'배당 지급 기업',score:'+2pt',color:'#ffd166'},
+              {label:'저PBR (< 1.5)',score:'+1pt',color:'#00d4aa'},
+              {label:'저PER (< 15)',score:'+1pt',color:'#4d9fff'},
+            ].map(q=>`<div style="background:#0a0e1a;border-radius:5px;padding:5px 10px;display:flex;align-items:center;gap:6px">
+              <span style="color:${q.color};font-size:11px;font-weight:700">${q.score}</span>
+              <span style="color:#8aa4c4;font-size:11px">${q.label}</span>
+            </div>`).join('')}
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:10px;color:#4d6a8a;font-size:10px;line-height:1.7">
+        ✦ FinanceDataReader 정상 시: KOSPI 951개 중 A+B = 최대 200개 실시간 구성<br>
+        ✦ SSL 오류 등 장애 시: 90개 풀에서 날짜 시드 기반으로 매일 50개 랜덤 샘플링 (매일 변동)
+      </div>
+    </div>
     <div class="criteria-cats">
       ${FULL.map(cat=>`
       <div class="criteria-cat" style="border:1px solid ${cat.color}20">
@@ -577,9 +631,10 @@ function renderVix() {
       <pre style="margin:0;font-size:10px;line-height:1.85;color:#8aa4c4;overflow-x:auto">cron: 30 8 * * 1-5 cd ~/FORGE/power-dashboard && python3 magic_split_scanner.py
 
 데이터 소스:
-  yfinance      → VIX, VKOSPI, 주가/기술지표
-  FinanceDataReader → KOSPI 종목 유니버스
-  API 비용      → 0원 (완전 무료)</pre>
+  yfinance           → VIX, VKOSPI, 주가/기술지표
+  FinanceDataReader  → KOSPI 유니버스 (시총상위 100 + 재무우량 100)
+  API 비용           → 0원 (완전 무료)
+  최종 추천          → 상위 12종목 (가격 5,000~80,000원 필터 적용)</pre>
     </div>`;
 }
 
@@ -591,8 +646,8 @@ function showEmpty(paneId) {
   document.getElementById(paneId).innerHTML = `
     <div class="empty-state">
       <div style="font-size:48px">📊</div>
-      <div style="color:#e0e6f0;font-size:15px;font-weight:700">스캔 결과가 없습니다</div>
-      <div style="color:#4d6a8a;font-size:12px;line-height:1.9;max-width:400px">
+      <div style="color:#e0e6f0;font-size:16px;font-weight:700">스캔 결과가 없습니다</div>
+      <div style="color:#4d6a8a;font-size:13px;line-height:1.9;max-width:400px">
         맥미니에서 스캐너를 실행하면 결과가 여기에 표시됩니다.<br>
         <code style="color:#3ecf70">python3 magic_split_scanner.py</code>
       </div>
