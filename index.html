@@ -479,24 +479,26 @@ setInterval(fetchDash,5*60*1000);
 
 /* Forgeman Mesh Breathing Animation */
 const ForgemanBreathe=(()=>{const IMG_W=128,IMG_H=235,COLS=16,ROWS=28;const ZONE={headEnd:.18,chestPeak:.34,beltLine:.51,bellyEnd:.58};function buildMesh(){const v=[];for(let r=0;r<=ROWS;r++)for(let c=0;c<=COLS;c++)v.push({x:c/COLS,y:r/ROWS,ox:c/COLS,oy:r/ROWS});return v}function buildTriangles(){const t=[];for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){const i=r*(COLS+1)+c;t.push([i,i+1,i+(COLS+1)]);t.push([i+1,i+(COLS+2),i+(COLS+1)])}return t}function deform(verts,t,intensity){const breath=(Math.sin(t)*.5+.5+Math.sin(t*2.3)*.15)*intensity;for(const v of verts){const ny=v.oy,nx=v.ox;let dx=0,dy=0;if(ny<ZONE.headEnd){dy=-breath*.008*(1-ny/ZONE.headEnd)}else if(ny<ZONE.beltLine){let tc=ny<ZONE.chestPeak?Math.pow((ny-ZONE.headEnd)/(ZONE.chestPeak-ZONE.headEnd),2):Math.pow(1-(ny-ZONE.chestPeak)/(ZONE.beltLine-ZONE.chestPeak),2);dx=(nx-.5)*2*tc*breath*.025+tc*breath*.003;dy=ny<ZONE.chestPeak?-tc*breath*.012:tc*breath*.006}else if(ny<ZONE.bellyEnd){dy=(1-(ny-ZONE.beltLine)/(ZONE.bellyEnd-ZONE.beltLine))*breath*.004}v.x=v.ox+dx;v.y=v.oy+dy}}function drawTri(ctx,img,verts,tri,scale){const[i0,i1,i2]=tri;const v0=verts[i0],v1=verts[i1],v2=verts[i2];const sx0=v0.ox*IMG_W,sy0=v0.oy*IMG_H,sx1=v1.ox*IMG_W,sy1=v1.oy*IMG_H,sx2=v2.ox*IMG_W,sy2=v2.oy*IMG_H;const dx0=v0.x*IMG_W*scale,dy0=v0.y*IMG_H*scale,dx1=v1.x*IMG_W*scale,dy1=v1.y*IMG_H*scale,dx2=v2.x*IMG_W*scale,dy2=v2.y*IMG_H*scale;ctx.save();ctx.beginPath();ctx.moveTo(dx0,dy0);ctx.lineTo(dx1,dy1);ctx.lineTo(dx2,dy2);ctx.closePath();ctx.clip();const den=sx0*(sy1-sy2)+sx1*(sy2-sy0)+sx2*(sy0-sy1);if(Math.abs(den)<.001){ctx.restore();return}const a=(dx0*(sy1-sy2)+dx1*(sy2-sy0)+dx2*(sy0-sy1))/den,b=(dx0*(sx2-sx1)+dx1*(sx0-sx2)+dx2*(sx1-sx0))/den,c=(dx0*(sx1*sy2-sx2*sy1)+dx1*(sx2*sy0-sx0*sy2)+dx2*(sx0*sy1-sx1*sy0))/den,d=(dy0*(sy1-sy2)+dy1*(sy2-sy0)+dy2*(sy0-sy1))/den,e=(dy0*(sx2-sx1)+dy1*(sx0-sx2)+dy2*(sx1-sx0))/den,f=(dy0*(sx1*sy2-sx2*sy1)+dy1*(sx2*sy0-sx0*sy2)+dy2*(sx0*sy1-sx1*sy0))/den;ctx.setTransform(a,d,b,e,c,f);ctx.drawImage(img,0,0);ctx.restore()}function init(containerId,opts={}){const container=document.getElementById(containerId);if(!container)return console.error('[ForgemanBreathe] #'+containerId+' not found');const scale=opts.scale||3,intensity=opts.intensity||1.0,speed=opts.speed||1.0;const canvas=document.createElement('canvas');canvas.width=IMG_W*scale;canvas.height=IMG_H*scale;canvas.style.imageRendering='pixelated';canvas.style.display='block';container.appendChild(canvas);const ctx=canvas.getContext('2d');const verts=buildMesh();const tris=buildTriangles();const img=new Image();img.src=opts.src||'/dwarf.png';img.onload=()=>{const start=performance.now();(function loop(now){const t=((now-start)/1000)*speed*1.8;ctx.clearRect(0,0,canvas.width,canvas.height);
-            // ── 캐릭터 실루엣 glow (canvas 내부에서 직접 처리) ──
-            const offCtx=document.createElement('canvas');
-            offCtx.width=canvas.width; offCtx.height=canvas.height;
-            const oc=offCtx.getContext('2d');
-            for(const tri of tris)drawTri(oc,img,verts,tri,scale);
-            oc.globalCompositeOperation='source-in';
-            const breath=(Math.sin(t)*.5+.5)*0.35+0.65;
-            oc.fillStyle='rgba(62,207,112,'+breath+')';
-            oc.fillRect(0,0,offCtx.width,offCtx.height);
+            // ── Step 1: 실루엣 오프스크린 렌더 ──
+            const gOff=document.createElement('canvas');
+            gOff.width=canvas.width; gOff.height=canvas.height;
+            const gOc=gOff.getContext('2d');
+            for(const tri of tris)drawTri(gOc,img,verts,tri,scale);
+            // 실루엣을 초록색으로 채우기
+            gOc.globalCompositeOperation='source-in';
+            const gBreath=(Math.sin(t)*.5+.5)*0.4+0.6;
+            gOc.fillStyle='rgba(62,207,112,'+gBreath.toFixed(2)+')';
+            gOc.fillRect(0,0,gOff.width,gOff.height);
+            // ── Step 2: 글로우를 먼저 캔버스에 그림 ──
             ctx.save();
-            ctx.filter='blur(14px)';
-            ctx.globalAlpha=0.7;
-            ctx.drawImage(offCtx,0,0);
-            ctx.filter='blur(28px)';
-            ctx.globalAlpha=0.35;
-            ctx.drawImage(offCtx,0,0);
+            ctx.filter='blur(18px)';
+            ctx.globalAlpha=0.65;
+            ctx.drawImage(gOff,0,0);
+            ctx.filter='blur(36px)';
+            ctx.globalAlpha=0.3;
+            ctx.drawImage(gOff,0,0);
             ctx.restore();
-            ctx.globalAlpha=1;for(const v of verts){v.x=v.ox;v.y=v.oy}deform(verts,t,intensity);for(const tri of tris)drawTri(ctx,img,verts,tri,scale);requestAnimationFrame(loop)})(performance.now())};return canvas}return{init}})();
+            // ── Step 3: 그 위에 실제 캐릭터 그림 ──for(const v of verts){v.x=v.ox;v.y=v.oy}deform(verts,t,intensity);for(const tri of tris)drawTri(ctx,img,verts,tri,scale);requestAnimationFrame(loop)})(performance.now())};return canvas}return{init}})();
 
 ForgemanBreathe.init('forgeman',{src:'/dwarf_pixel_128.png',scale:3,intensity:1.0,speed:1.0});
 </script>
