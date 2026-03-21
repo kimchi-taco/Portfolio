@@ -55,8 +55,8 @@ a{color:inherit;text-decoration:none}
 .stock-meta{color:#6b8aaa;font-size:11px}
 .stock-price{font-size:15px;font-weight:700}
 .price-chg{font-size:11px;font-weight:700}
-.criteria-bars{display:flex;gap:2px;margin:9px 0}
-.criteria-bar{flex:1;height:3px;border-radius:2px}
+.criteria-bars{display:flex;gap:1px;margin:9px 0;flex-wrap:wrap}
+.criteria-bar{width:20px;height:16px;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;line-height:1;font-family:'IBM Plex Mono',monospace}
 .stock-summary{color:#a0b8ce;font-size:12px;line-height:1.6}
 .click-hint{color:#6b8aaa;font-size:11px;margin-top:7px;text-align:right}
 
@@ -166,15 +166,15 @@ const GATE_CONFIG = {
 };
 const CRITERIA_LIST = [
   // 💰 가치 지표 (5)
-  {key:'per',color:'#00d4aa'},{key:'pbr',color:'#00d4aa'},{key:'psr',color:'#00d4aa'},{key:'pcr',color:'#00d4aa'},{key:'peg',color:'#00d4aa'},
+  {id:1, key:'per',color:'#00d4aa',label:'PER'},{id:2, key:'pbr',color:'#00d4aa',label:'PBR'},{id:3, key:'psr',color:'#00d4aa',label:'PSR'},{id:4, key:'pcr',color:'#00d4aa',label:'PCR'},{id:5, key:'peg',color:'#00d4aa',label:'PEG'},
   // 📈 수익성·성장성 (6)
-  {key:'roe',color:'#4d9fff'},{key:'roa',color:'#4d9fff'},{key:'op_margin',color:'#4d9fff'},{key:'net_margin',color:'#4d9fff'},{key:'rev_growth',color:'#4d9fff'},{key:'net_inc_growth',color:'#4d9fff'},
+  {id:6, key:'roe',color:'#4d9fff',label:'ROE'},{id:7, key:'roa',color:'#4d9fff',label:'ROA'},{id:8, key:'op_margin',color:'#4d9fff',label:'영업이익률'},{id:9, key:'net_margin',color:'#4d9fff',label:'순이익률'},{id:10,key:'rev_growth',color:'#4d9fff',label:'매출증가'},{id:11,key:'net_inc_growth',color:'#4d9fff',label:'순이익증가'},
   // 🏦 재무 안정성 (4)
-  {key:'market_cap',color:'#ffd166'},{key:'price_range',color:'#ffd166'},{key:'debt_ratio',color:'#ffd166'},{key:'current_ratio',color:'#ffd166'},
+  {id:12,key:'market_cap',color:'#ffd166',label:'시가총액'},{id:13,key:'price_range',color:'#ffd166',label:'주가범위'},{id:14,key:'debt_ratio',color:'#ffd166',label:'부채비율'},{id:15,key:'current_ratio',color:'#ffd166',label:'유동비율'},
   // 📍 주가 위치 (4)
-  {key:'pos_from_52w_low',color:'#a78bfa'},{key:'pos_from_52w_high',color:'#a78bfa'},{key:'dividend_yield',color:'#a78bfa'},{key:'foreign_ownership',color:'#a78bfa'},
+  {id:16,key:'pos_from_52w_low',color:'#a78bfa',label:'52주저가'},{id:17,key:'pos_from_52w_high',color:'#a78bfa',label:'52주고가'},{id:18,key:'dividend_yield',color:'#a78bfa',label:'배당률'},{id:19,key:'foreign_ownership',color:'#a78bfa',label:'외국인'},
   // 〰️ 오실레이션 (2)
-  {key:'hist_vol',color:'#ff6b6b'},{key:'dir_changes',color:'#ff6b6b'},
+  {id:20,key:'hist_vol',color:'#ff6b6b',label:'변동성'},{id:21,key:'dir_changes',color:'#ff6b6b',label:'방향전환'},
 ];
 const BONUS_LIST = [
   {key:'checklist',label:'체크리스트 보너스'},{key:'vix_optimal',label:'VIX OPTIMAL'},
@@ -283,7 +283,8 @@ function stockCardHTML(s, idx) {
   const isUp = (s.price_change_pct||0) >= 0;
   const bars = CRITERIA_LIST.map(c => {
     const d = (s.criteria_detail||{})[c.key];
-    return `<div class="criteria-bar" style="background:${d&&d.pass?c.color:'#1e2d4a'};opacity:${d&&d.pass?1:0.3}"></div>`;
+    const pass = d&&d.pass;
+    return `<div class="criteria-bar" style="background:${pass?c.color+'30':'#1e2d4a'};color:${pass?c.color:'#2e4060'}">${c.id}</div>`;
   }).join('');
   return `
   <div class="stock-card" style="border:1px solid ${g.color}25" 
@@ -344,13 +345,15 @@ function openModal(idx) {
         return `<div class="criteria-item">
           <div class="criteria-row">
             <div style="display:flex;align-items:center;gap:6px">
+              <span style="background:${d.pass?color+'30':'#1e2d4a'};color:${d.pass?color:'#2e4060'};font-size:9px;font-weight:700;width:20px;height:16px;border-radius:3px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;font-family:IBM Plex Mono,monospace">${c?c.id:''}</span>
               <div class="check-box" style="background:${d.pass?color+'30':'#1e2d4a'};border:1px solid ${d.pass?color:'#2e4060'};color:${d.pass?color:'#4d6a8a'}">${d.pass?'✓':'✗'}</div>
-              <span style="font-size:11px;font-weight:700">${d.value||''}</span>
+              <span style="font-size:11px;font-weight:700">${c?c.label+' — ':''}</span>
+              <span style="font-size:11px;color:#8aa4c4">${d.value||''}</span>
             </div>
             <span style="color:${d.pass?color:'#4d6a8a'};font-size:11px;font-weight:700">${d.score}/${d.max_score}pt</span>
           </div>
           <div class="criteria-bar-track"><div class="criteria-bar-fill" style="background:${d.pass?color:'#2e4060'};width:${(d.score/d.max_score)*100}%"></div></div>
-          ${d.reason?`<div style="color:#4d6a8a;font-size:10px;margin-left:20px">${d.reason}</div>`:''}
+          ${d.reason?`<div style="color:#4d6a8a;font-size:10px;margin-left:46px">${d.reason}</div>`:''}
         </div>`;
       }).join('')}
     </div>`;
@@ -393,17 +396,22 @@ function openModal(idx) {
         <div style="color:#ff6b6b;font-size:12px;font-weight:700;margin-bottom:10px">〰️ 오실레이션 품질</div>
         <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px">
           ${['hist_vol','dir_changes'].map(k=>{
+            const c = CRITERIA_LIST.find(x=>x.key===k);
             const d = (s.criteria_detail||{})[k];
             if(!d) return '';
             return `<div>
-              <div style="display:flex;justify-content:space-between;margin-bottom:4px">
-                <span style="font-size:10px;font-weight:700">${d.value}</span>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+                <div style="display:flex;align-items:center;gap:5px">
+                  <span style="background:${d.pass?'#ff6b6b30':'#1e2d4a'};color:${d.pass?'#ff6b6b':'#2e4060'};font-size:9px;font-weight:700;width:20px;height:16px;border-radius:3px;display:inline-flex;align-items:center;justify-content:center;font-family:IBM Plex Mono,monospace">${c?c.id:''}</span>
+                  <span style="font-size:10px;font-weight:700">${c?c.label:''}</span>
+                </div>
                 <span style="color:${d.pass?'#ff6b6b':'#4d6a8a'};font-size:10px">${d.score}pt</span>
               </div>
+              <div style="color:#8aa4c4;font-size:10px;margin-bottom:4px;margin-left:25px">${d.value||''}</div>
               <div style="background:#1e2d4a;border-radius:3px;height:4px">
                 <div style="background:${d.pass?'#ff6b6b':'#2e4060'};height:100%;width:${(d.score/d.max_score)*100}%;border-radius:3px"></div>
               </div>
-              ${d.reason?`<div style="color:#4d6a8a;font-size:9px;margin-top:2px">${d.reason}</div>`:''}
+              ${d.reason?`<div style="color:#4d6a8a;font-size:9px;margin-top:2px;margin-left:25px">${d.reason}</div>`:''}
             </div>`;
           }).join('')}
         </div>
@@ -514,6 +522,7 @@ function renderHistory() {
 
 // ── Criteria ───────────────────────────────────────────────
 function renderCriteria() {
+  let idCounter = 0;
   const CHECKLIST = [
     {
       cat:'💰 가치 지표', color:'#00d4aa', desc:'저평가 우량주 선별',
@@ -589,15 +598,18 @@ function renderCriteria() {
         '<div style="background:#060912;border:1px solid ' + sec.color + '25;border-radius:10px;padding:14px">'
         + '<div style="color:' + sec.color + ';font-size:13px;font-weight:700;margin-bottom:3px">' + sec.cat + '</div>'
         + '<div style="color:#6b8aaa;font-size:11px;margin-bottom:12px">' + sec.desc + '</div>'
-        + sec.items.map(i =>
-            '<div style="padding:8px 0;border-bottom:1px solid #1a2840">'
+        + sec.items.map(i => {
+            idCounter++;
+            return '<div style="padding:8px 0;border-bottom:1px solid #1a2840">'
             + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">'
-            + '<span style="color:#c0d4e8;font-size:12px;font-weight:700">' + i.name + '</span>'
+            + '<div style="display:flex;align-items:center;gap:6px">'
+            + '<span style="background:' + sec.color + '30;color:' + sec.color + ';font-size:9px;font-weight:700;width:20px;height:16px;border-radius:3px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;font-family:IBM Plex Mono,monospace">' + idCounter + '</span>'
+            + '<span style="color:#c0d4e8;font-size:12px;font-weight:700">' + i.name + '</span></div>'
             + '<span style="background:' + sec.color + '20;color:' + sec.color + ';font-size:10px;font-weight:700;padding:1px 7px;border-radius:3px;white-space:nowrap">' + i.cond + '</span>'
             + '</div>'
-            + '<div style="color:#6b8aaa;font-size:11px">' + i.rat + '</div>'
-            + '</div>'
-          ).join('')
+            + '<div style="color:#6b8aaa;font-size:11px;margin-left:26px">' + i.rat + '</div>'
+            + '</div>';
+          }).join('')
         + '</div>'
       ).join('')
     + '</div></div>'
