@@ -284,7 +284,7 @@ function stockCardHTML(s, idx) {
   const bars = CRITERIA_LIST.map(c => {
     const d = (s.criteria_detail||{})[c.key];
     const pass = d&&d.pass;
-    return `<div class="criteria-bar" style="background:${pass?c.color+'30':'#1e2d4a'};color:${pass?c.color:'#2e4060'}">${c.id}</div>`;
+    return `<div class="criteria-bar" style="background:${pass?c.color+'30':'#0a0e1a'};color:${pass?c.color:'#1a2030'}">${c.id}</div>`;
   }).join('');
   return `
   <div class="stock-card" style="border:1px solid ${g.color}25" 
