@@ -165,13 +165,20 @@ const GATE_CONFIG = {
   STOP:       { color:'#ff6b6b', label:'🛑 PANIC — 전면 중단',     action:'신규 편입 금지' },
 };
 const CRITERIA_LIST = [
-  {key:'market_cap',color:'#00d4aa'},{key:'debt_ratio',color:'#00d4aa'},{key:'operating_profit',color:'#00d4aa'},
-  {key:'position_52w',color:'#4d9fff'},{key:'lr_slope',color:'#4d9fff'},{key:'ma200_dev',color:'#4d9fff'},
-  {key:'hist_vol',color:'#ff6b6b'},{key:'dir_changes',color:'#ff6b6b'},{key:'rsi_range',color:'#ff6b6b'},
+  // 💰 가치 지표 (5)
+  {key:'per',color:'#00d4aa'},{key:'pbr',color:'#00d4aa'},{key:'psr',color:'#00d4aa'},{key:'pcr',color:'#00d4aa'},{key:'peg',color:'#00d4aa'},
+  // 📈 수익성·성장성 (6)
+  {key:'roe',color:'#4d9fff'},{key:'roa',color:'#4d9fff'},{key:'op_margin',color:'#4d9fff'},{key:'net_margin',color:'#4d9fff'},{key:'rev_growth',color:'#4d9fff'},{key:'net_inc_growth',color:'#4d9fff'},
+  // 🏦 재무 안정성 (4)
+  {key:'market_cap',color:'#ffd166'},{key:'price_range',color:'#ffd166'},{key:'debt_ratio',color:'#ffd166'},{key:'current_ratio',color:'#ffd166'},
+  // 📍 주가 위치 (4)
+  {key:'pos_from_52w_low',color:'#a78bfa'},{key:'pos_from_52w_high',color:'#a78bfa'},{key:'dividend_yield',color:'#a78bfa'},{key:'foreign_ownership',color:'#a78bfa'},
+  // 〰️ 오실레이션 (2)
+  {key:'hist_vol',color:'#ff6b6b'},{key:'dir_changes',color:'#ff6b6b'},
 ];
 const BONUS_LIST = [
-  {key:'dividend',label:'배당 이력'},{key:'kospi200',label:'KOSPI200'},
-  {key:'foreign_ownership',label:'외국인 보유율'},{key:'trading_volume',label:'일평균 거래대금'},
+  {key:'checklist',label:'체크리스트 보너스'},{key:'vix_optimal',label:'VIX OPTIMAL'},
+  {key:'rsi_dip',label:'RSI 매수 타이밍'},{key:'near_52w_low',label:'52주 저가 근접'},
 ];
 const VIX_ZONES = [
   {label:'DEAD CALM',vix:'< 12',vkospi:'< 13',color:'#6b8aaa',action:'PAUSE',   desc:'변동성 소멸 — 매수 기회 희박'},
@@ -375,13 +382,17 @@ function openModal(idx) {
         <div style="color:#c0d4e8;font-size:12px;line-height:1.85">${s.summary||''}</div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
-        ${criteriaSection('🏦 재무 건전성',['market_cap','debt_ratio','operating_profit'],'#00d4aa')}
-        ${criteriaSection('📊 추세 중립성',['position_52w','lr_slope','ma200_dev'],'#4d9fff')}
+        ${criteriaSection('💰 가치 지표',['per','pbr','psr','pcr','peg'],'#00d4aa')}
+        ${criteriaSection('📈 수익성·성장성',['roe','roa','op_margin','net_margin','rev_growth','net_inc_growth'],'#4d9fff')}
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+        ${criteriaSection('🏦 재무 안정성',['market_cap','price_range','debt_ratio','current_ratio'],'#ffd166')}
+        ${criteriaSection('📍 주가 위치',['pos_from_52w_low','pos_from_52w_high','dividend_yield','foreign_ownership'],'#a78bfa')}
       </div>
       <div style="background:#0d1224;border:1px solid #ff6b6b18;border-radius:10px;padding:14px;margin-bottom:14px">
         <div style="color:#ff6b6b;font-size:12px;font-weight:700;margin-bottom:10px">〰️ 오실레이션 품질</div>
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
-          ${['hist_vol','dir_changes','rsi_range'].map(k=>{
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px">
+          ${['hist_vol','dir_changes'].map(k=>{
             const d = (s.criteria_detail||{})[k];
             if(!d) return '';
             return `<div>
