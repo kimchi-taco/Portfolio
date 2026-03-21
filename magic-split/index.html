@@ -330,6 +330,7 @@ function renderDashboard(data) {
 function openModal(idx) {
   const s = stockList[idx];
   if (!s) return;
+  currentChartTicker = s.ticker;
   const g = GRADE_CONFIG[s.grade] || GRADE_CONFIG['A'];
   const base = Object.values(s.criteria_detail||{}).reduce((a,c)=>a+(c.score||0),0);
   const bonus = Object.values(s.bonus_detail||{}).reduce((a,b)=>a+(b.score||0),0);
@@ -383,14 +384,22 @@ function openModal(idx) {
       <div style="background:#0d1224;border:1px solid #1e2d4a;border-radius:10px;padding:14px;margin-bottom:18px">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
           <div style="color:#e0e6f0;font-size:12px;font-weight:700">📈 주가 차트</div>
-          <div style="display:flex;gap:6px" id="chart-range-btns">
-            <button onclick="setChartRange('1M')" class="btn" style="padding:3px 10px;font-size:10px" id="cbtn-1M">1개월</button>
-            <button onclick="setChartRange('3M')" class="btn" style="padding:3px 10px;font-size:10px" id="cbtn-3M">3개월</button>
-            <button onclick="setChartRange('6M')" class="btn" style="padding:3px 10px;font-size:10px;border-color:#00d4aa;color:#00d4aa" id="cbtn-6M">6개월</button>
-            <button onclick="setChartRange('12M')" class="btn" style="padding:3px 10px;font-size:10px" id="cbtn-12M">1년</button>
+          <div style="display:flex;gap:6px;align-items:center">
+            <div style="display:flex;gap:4px" id="chart-range-btns">
+              <button onclick="setChartRange('day')" class="btn" style="padding:3px 10px;font-size:10px" id="cbtn-day">3개월</button>
+              <button onclick="setChartRange('week')" class="btn" style="padding:3px 10px;font-size:10px;border-color:#00d4aa;color:#00d4aa" id="cbtn-week">1년</button>
+              <button onclick="setChartRange('month')" class="btn" style="padding:3px 10px;font-size:10px" id="cbtn-month">3년</button>
+            </div>
+            <a href="https://finance.naver.com/item/main.naver?code=${s.ticker}" target="_blank" class="btn" style="padding:3px 10px;font-size:10px;color:#00d4aa;border-color:#00d4aa40">네이버 금융 →</a>
           </div>
         </div>
-        <div id="tv-chart-wrap" style="height:360px;border-radius:8px;overflow:hidden"></div>
+        <div id="chart-wrap" style="text-align:center;background:#060912;border-radius:8px;padding:10px;min-height:200px;display:flex;align-items:center;justify-content:center">
+          <img id="chart-img" src="https://ssl.pstatic.net/imgfinance/chart/item/area/week/${s.ticker}.png" style="max-width:100%;border-radius:6px" onerror="this.parentElement.innerHTML='<div style=\\'color:#4d6a8a;font-size:12px\\'>차트를 불러올 수 없습니다</div>'" />
+        </div>
+        <div style="display:flex;justify-content:center;gap:14px;margin-top:8px">
+          <a href="https://ssl.pstatic.net/imgfinance/chart/item/candle/day/${s.ticker}.png" target="_blank" style="color:#4d6a8a;font-size:10px;text-decoration:underline">캔들 일봉</a>
+          <a href="https://ssl.pstatic.net/imgfinance/chart/item/candle/week/${s.ticker}.png" target="_blank" style="color:#4d6a8a;font-size:10px;text-decoration:underline">캔들 주봉</a>
+        </div>
       </div>
       <div style="background:${g.color}0d;border:1px solid ${g.color}25;border-radius:10px;padding:14px;margin-bottom:18px">
         <div style="color:${g.color};font-size:12px;font-weight:700;margin-bottom:5px">💡 핵심 추천 이유</div>
@@ -457,57 +466,18 @@ function openModal(idx) {
       </div>
     </div>`;
   document.getElementById('modal').style.display = 'flex';
-  loadTVChart(s.ticker, '6M');
 }
 
 let currentChartTicker = '';
-function loadTVChart(ticker, range) {
-  currentChartTicker = ticker;
-  const rangeMap = {'1M':'1M','3M':'3M','6M':'6M','12M':'12M'};
-  const intervalMap = {'1M':'D','3M':'D','6M':'D','12M':'W'};
-  const wrap = document.getElementById('tv-chart-wrap');
-  if (!wrap) return;
-  // Highlight active button
-  ['1M','3M','6M','12M'].forEach(r => {
+function setChartRange(range) {
+  const img = document.getElementById('chart-img');
+  if (!img) return;
+  img.src = 'https://ssl.pstatic.net/imgfinance/chart/item/area/' + range + '/' + currentChartTicker + '.png?' + Date.now();
+  ['day','week','month'].forEach(r => {
     const btn = document.getElementById('cbtn-'+r);
     if(btn) { btn.style.borderColor = r===range?'#00d4aa':'#1e2d4a'; btn.style.color = r===range?'#00d4aa':'#8aa4c4'; }
   });
-  wrap.innerHTML = '';
-  const script = document.createElement('script');
-  script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js';
-  script.async = true;
-  script.textContent = JSON.stringify({
-    "symbol": "KRX:" + ticker,
-    "width": "100%",
-    "height": "100%",
-    "autosize": true,
-    "interval": intervalMap[range] || "D",
-    "range": rangeMap[range] || "6M",
-    "timezone": "Asia/Seoul",
-    "theme": "dark",
-    "style": "1",
-    "locale": "kr",
-    "backgroundColor": "rgba(13,18,36,1)",
-    "gridColor": "rgba(30,45,74,0.3)",
-    "hide_top_toolbar": false,
-    "hide_legend": false,
-    "allow_symbol_change": false,
-    "save_image": false,
-    "calendar": false,
-    "studies": ["MASimple@tv-basicstudies"],
-    "support_host": "https://www.tradingview.com"
-  });
-  const container = document.createElement('div');
-  container.className = 'tradingview-widget-container';
-  container.style.height = '100%';
-  const inner = document.createElement('div');
-  inner.className = 'tradingview-widget-container__widget';
-  inner.style.height = '100%';
-  container.appendChild(inner);
-  container.appendChild(script);
-  wrap.appendChild(container);
 }
-function setChartRange(range) { loadTVChart(currentChartTicker, range); }
 function closeModal() { document.getElementById('modal').style.display = 'none'; }
 document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
 
