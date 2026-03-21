@@ -118,6 +118,14 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .mchart{padding:16px 18px;flex:1;position:relative;min-height:260px}
 
 @media(max-width:900px){.kpi-row{grid-template-columns:repeat(2,1fr)}.grid2,.grid3{grid-template-columns:1fr}.span2{grid-column:auto}}
+@media(max-width:600px){.logo-text{display:none}
+  .topbar{padding:0 12px;gap:6px}
+  .topbar a[href]{font-size:10px;letter-spacing:.06em;white-space:nowrap;overflow:hidden;max-width:110px;text-overflow:ellipsis}
+  #lastUpdate{display:none}
+  .last-update{display:none}
+  .refresh-btn{font-size:9px;padding:3px 7px}
+  .logo em{font-size:10px}
+}
 @media(max-width:700px){.grid2eq{grid-template-columns:1fr}}
 </style>
 </head>
@@ -125,7 +133,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 
 <div class="topbar">
       <a href="https://mav-ash.com" style="text-decoration:none;font-family:'Cinzel',serif;font-size:12px;font-weight:700;letter-spacing:.14em;color:var(--green);display:flex;align-items:center;gap:6px">
-        <span style="color:var(--green)">⬥</span> FORGE NEVER SLEEPS
+        <span style="color:var(--green)">⬥</span><span class="logo-text"> FORGE NEVER SLEEPS</span>
       </a>
       <div style="position:absolute;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:8px">
         <span class="logo"><em>KR.POWER.INTEL</em></span>
