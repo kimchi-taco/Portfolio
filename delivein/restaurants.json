@@ -1142,6 +1142,401 @@
       "source": "crawl",
       "added": "2026-03-23",
       "score": 50
+    },
+    {
+      "name": "억조",
+      "type": "복어요리",
+      "address": "서울특별시 종로구 종로35길 21-8",
+      "category": [
+        "회식",
+        "비즈니스"
+      ],
+      "phone": "",
+      "coords": [
+        37.5720833,
+        127.0036139
+      ],
+      "since": 2000,
+      "menu": [],
+      "hours": "확인 필요",
+      "closed": "확인 필요",
+      "reservation": false,
+      "reservationNote": "확인 필요",
+      "capacity": "확인 필요",
+      "description": "억조 - 복어요리",
+      "verdict": "네이버 즐겨찾기 등록 맛집",
+      "id": 31,
+      "source": "crawl",
+      "added": "2026-03-23",
+      "score": 50
+    },
+    {
+      "name": "백제고기집",
+      "type": "육류/고기",
+      "address": "서울특별시 종로구 종로35길 31",
+      "category": [
+        "회식"
+      ],
+      "phone": "",
+      "coords": [
+        37.5726423,
+        127.0037275
+      ],
+      "since": 2000,
+      "menu": [],
+      "hours": "확인 필요",
+      "closed": "확인 필요",
+      "reservation": false,
+      "reservationNote": "확인 필요",
+      "capacity": "확인 필요",
+      "description": "백제고기집 - 육류/고기",
+      "verdict": "네이버 즐겨찾기 등록 맛집",
+      "id": 32,
+      "source": "crawl",
+      "added": "2026-03-23",
+      "score": 50
+    },
+    {
+      "name": "대성식당",
+      "type": "찌개/전골",
+      "address": "서울특별시 종로구 종로26길 14-3",
+      "category": [
+        "회식"
+      ],
+      "phone": "",
+      "coords": [
+        37.5696749,
+        126.994675
+      ],
+      "since": 2000,
+      "menu": [],
+      "hours": "확인 필요",
+      "closed": "확인 필요",
+      "reservation": false,
+      "reservationNote": "확인 필요",
+      "capacity": "확인 필요",
+      "description": "대성식당 - 찌개/전골",
+      "verdict": "네이버 즐겨찾기 등록 맛집",
+      "id": 33,
+      "source": "crawl",
+      "added": "2026-03-23",
+      "score": 50
+    },
+    {
+      "name": "한도삼겹살",
+      "type": "돼지고기구이",
+      "address": "서울특별시 종로구 수표로18길 24",
+      "category": [
+        "회식"
+      ],
+      "phone": "",
+      "coords": [
+        37.5693032,
+        126.9908596
+      ],
+      "since": 2000,
+      "menu": [],
+      "hours": "확인 필요",
+      "closed": "확인 필요",
+      "reservation": false,
+      "reservationNote": "확인 필요",
+      "capacity": "확인 필요",
+      "description": "한도삼겹살 - 돼지고기구이",
+      "verdict": "네이버 즐겨찾기 등록 맛집",
+      "id": 34,
+      "source": "crawl",
+      "added": "2026-03-23",
+      "score": 50
+    },
+    {
+      "name": "종로곰육개장",
+      "type": "한식",
+      "address": "서울특별시 종로구 수표로 93 경보빌딩 2층",
+      "category": [
+        "점심"
+      ],
+      "phone": "",
+      "coords": [
+        37.5695414,
+        126.9893882
+      ],
+      "since": 2000,
+      "menu": [],
+      "hours": "확인 필요",
+      "closed": "확인 필요",
+      "reservation": false,
+      "reservationNote": "확인 필요",
+      "capacity": "확인 필요",
+      "description": "종로곰육개장 - 한식",
+      "verdict": "네이버 즐겨찾기 등록 맛집",
+      "id": 35,
+      "source": "crawl",
+      "added": "2026-03-23",
+      "score": 50
+    },
+    {
+      "name": "뒷마루집된장예술",
+      "type": "비빔밥",
+      "address": "서울특별시 종로구 인사동4길 5-26 중원빌딩 2층",
+      "category": [
+        "점심"
+      ],
+      "phone": "",
+      "coords": [
+        37.5733999,
+        126.9864249
+      ],
+      "since": 2000,
+      "menu": [],
+      "hours": "확인 필요",
+      "closed": "확인 필요",
+      "reservation": false,
+      "reservationNote": "확인 필요",
+      "capacity": "확인 필요",
+      "description": "뒷마루집된장예술 - 비빔밥",
+      "verdict": "네이버 즐겨찾기 등록 맛집",
+      "id": 36,
+      "source": "crawl",
+      "added": "2026-03-23",
+      "score": 50
+    },
+    {
+      "name": "봉이밥 안국역점",
+      "type": "한식",
+      "address": "서울특별시 종로구 삼일대로 446-34 101호",
+      "category": [
+        "점심"
+      ],
+      "phone": "",
+      "coords": [
+        37.5742486,
+        126.9879516
+      ],
+      "since": 2000,
+      "menu": [],
+      "hours": "확인 필요",
+      "closed": "확인 필요",
+      "reservation": false,
+      "reservationNote": "확인 필요",
+      "capacity": "확인 필요",
+      "description": "봉이밥 안국역점 - 한식",
+      "verdict": "네이버 즐겨찾기 등록 맛집",
+      "id": 37,
+      "source": "crawl",
+      "added": "2026-03-23",
+      "score": 50
+    },
+    {
+      "name": "카나르",
+      "type": "일본식라면",
+      "address": "서울특별시 종로구 돈화문로11가길 65 1층",
+      "category": [
+        "점심"
+      ],
+      "phone": "",
+      "coords": [
+        37.5755367,
+        126.9902963
+      ],
+      "since": 2000,
+      "menu": [],
+      "hours": "확인 필요",
+      "closed": "확인 필요",
+      "reservation": false,
+      "reservationNote": "확인 필요",
+      "capacity": "확인 필요",
+      "description": "카나르 - 일본식라면",
+      "verdict": "네이버 즐겨찾기 등록 맛집",
+      "id": 38,
+      "source": "crawl",
+      "added": "2026-03-23",
+      "score": 50
+    },
+    {
+      "name": "멘노야지 종로점",
+      "type": "일본식라면",
+      "address": "서울 종로구 청진동 128",
+      "category": [
+        "점심"
+      ],
+      "coords": [
+        37.572,
+        126.985
+      ],
+      "phone": "확인 필요",
+      "since": 2000,
+      "menu": [],
+      "hours": "확인 필요",
+      "closed": "확인 필요",
+      "reservation": false,
+      "reservationNote": "확인 필요",
+      "capacity": "확인 필요",
+      "description": "멘노야지 종로점 - 일본식라면",
+      "verdict": "네이버 즐겨찾기 등록 맛집",
+      "id": 39,
+      "source": "crawl",
+      "added": "2026-03-23",
+      "score": 50
+    },
+    {
+      "name": "십경희라라랜드 광화문",
+      "type": "소고기구이",
+      "address": "서울 종로구 견지동 110",
+      "category": [
+        "회식",
+        "비즈니스"
+      ],
+      "coords": [
+        37.572,
+        126.985
+      ],
+      "phone": "확인 필요",
+      "since": 2000,
+      "menu": [],
+      "hours": "확인 필요",
+      "closed": "확인 필요",
+      "reservation": false,
+      "reservationNote": "확인 필요",
+      "capacity": "확인 필요",
+      "description": "십경희라라랜드 광화문 - 소고기구이",
+      "verdict": "네이버 즐겨찾기 등록 맛집",
+      "id": 40,
+      "source": "crawl",
+      "added": "2026-03-23",
+      "score": 50
+    },
+    {
+      "name": "개성만두 궁",
+      "type": "만두",
+      "address": "서울특별시 종로구 인사동10길 11-3",
+      "category": [
+        "노포",
+        "점심"
+      ],
+      "phone": "",
+      "coords": [
+        37.5742917,
+        126.9853889
+      ],
+      "since": 2000,
+      "menu": [],
+      "hours": "확인 필요",
+      "closed": "확인 필요",
+      "reservation": false,
+      "reservationNote": "확인 필요",
+      "capacity": "확인 필요",
+      "description": "개성만두 궁 - 만두",
+      "verdict": "네이버 즐겨찾기 등록 맛집",
+      "id": 41,
+      "source": "crawl",
+      "added": "2026-03-23",
+      "score": 50
+    },
+    {
+      "name": "진아춘 광화문점",
+      "type": "중식",
+      "address": "서울특별시 종로구 새문안로 92 광화문오피시아",
+      "category": [
+        "노포",
+        "비즈니스"
+      ],
+      "phone": "",
+      "coords": [
+        37.5697325,
+        126.974885
+      ],
+      "since": 2000,
+      "menu": [],
+      "hours": "확인 필요",
+      "closed": "확인 필요",
+      "reservation": false,
+      "reservationNote": "확인 필요",
+      "capacity": "확인 필요",
+      "description": "진아춘 광화문점 - 중식",
+      "verdict": "네이버 즐겨찾기 등록 맛집",
+      "id": 42,
+      "source": "crawl",
+      "added": "2026-03-23",
+      "score": 50
+    },
+    {
+      "name": "꽃밥에피다",
+      "type": "한식",
+      "address": "서울특별시 종로구 인사동16길 3-6",
+      "category": [
+        "점심",
+        "비즈니스"
+      ],
+      "phone": "",
+      "coords": [
+        37.5753027,
+        126.9840246
+      ],
+      "since": 2000,
+      "menu": [],
+      "hours": "확인 필요",
+      "closed": "확인 필요",
+      "reservation": false,
+      "reservationNote": "확인 필요",
+      "capacity": "확인 필요",
+      "description": "꽃밥에피다 - 한식",
+      "verdict": "네이버 즐겨찾기 등록 맛집",
+      "id": 43,
+      "source": "crawl",
+      "added": "2026-03-23",
+      "score": 50
+    },
+    {
+      "name": "오레노라멘 인사점",
+      "type": "일본식라면",
+      "address": "서울특별시 종로구 율곡로 49-4 1층",
+      "category": [
+        "점심"
+      ],
+      "phone": "",
+      "coords": [
+        37.5765297,
+        126.9845721
+      ],
+      "since": 2000,
+      "menu": [],
+      "hours": "확인 필요",
+      "closed": "확인 필요",
+      "reservation": false,
+      "reservationNote": "확인 필요",
+      "capacity": "확인 필요",
+      "description": "오레노라멘 인사점 - 일본식라면",
+      "verdict": "네이버 즐겨찾기 등록 맛집",
+      "id": 44,
+      "source": "crawl",
+      "added": "2026-03-23",
+      "score": 50
+    },
+    {
+      "name": "레스토랑 주은",
+      "type": "한식",
+      "address": "서울특별시 종로구 경희궁길 36 8층",
+      "category": [
+        "비즈니스"
+      ],
+      "phone": "",
+      "coords": [
+        37.5729692,
+        126.9700841
+      ],
+      "since": 2000,
+      "menu": [],
+      "hours": "확인 필요",
+      "closed": "확인 필요",
+      "reservation": false,
+      "reservationNote": "확인 필요",
+      "capacity": "확인 필요",
+      "description": "레스토랑 주은 - 한식",
+      "verdict": "네이버 즐겨찾기 등록 맛집",
+      "id": 45,
+      "source": "crawl",
+      "added": "2026-03-23",
+      "score": 50
     }
   ]
 }
