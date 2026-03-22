@@ -1379,8 +1379,8 @@
       "score": 50
     },
     {
-      "name": "십경희라라랜드 광화문",
-      "type": "소고기구이",
+      "name": "심경희라라랜드 광화문",
+      "type": "LA갈비",
       "address": "서울 종로구 견지동 110",
       "category": [
         "회식",
@@ -1398,8 +1398,8 @@
       "reservation": false,
       "reservationNote": "확인 필요",
       "capacity": "확인 필요",
-      "description": "광화문 견지동의 소고기구이 전문점. 숙성 한우를 합리적 가격에 제공.",
-      "verdict": "광화문 소고기 구이 맛집. 숙성육 퀄리티가 좋음.",
+      "description": "광화문 견지동의 LA갈비 전문점. LA갈비+라라랜드=LALA랜드.",
+      "verdict": "LA갈비 맛집. 이름처럼 LA갈비의 LALA랜드.",
       "id": 40,
       "source": "crawl",
       "added": "2026-03-23",
