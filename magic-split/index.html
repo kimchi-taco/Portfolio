@@ -420,19 +420,18 @@ function openModal(idx) {
           <div style="color:#e0e6f0;font-size:12px;font-weight:700">📈 주가 차트</div>
           <div style="display:flex;gap:6px;align-items:center">
             <div style="display:flex;gap:4px" id="chart-range-btns">
-              <button onclick="setChartRange('day')" class="btn" style="padding:3px 10px;font-size:10px" id="cbtn-day">3개월</button>
-              <button onclick="setChartRange('week')" class="btn" style="padding:3px 10px;font-size:10px;border-color:#00d4aa;color:#00d4aa" id="cbtn-week">1년</button>
+              <button onclick="setChartRange('day')" class="btn" style="padding:3px 10px;font-size:10px;border-color:#00d4aa;color:#00d4aa" id="cbtn-day">3개월</button>
+              <button onclick="setChartRange('week')" class="btn" style="padding:3px 10px;font-size:10px" id="cbtn-week">1년</button>
               <button onclick="setChartRange('month')" class="btn" style="padding:3px 10px;font-size:10px" id="cbtn-month">3년</button>
             </div>
             <a href="https://finance.naver.com/item/main.naver?code=${s.ticker}" target="_blank" class="btn" style="padding:3px 10px;font-size:10px;color:#00d4aa;border-color:#00d4aa40">네이버 금융 →</a>
           </div>
         </div>
         <div id="chart-wrap" style="text-align:center;background:#060912;border-radius:8px;padding:10px;min-height:200px;display:flex;align-items:center;justify-content:center">
-          <img id="chart-img" src="https://ssl.pstatic.net/imgfinance/chart/item/area/week/${s.ticker}.png" style="max-width:100%;border-radius:6px" onerror="this.parentElement.innerHTML='<div style=\\'color:#4d6a8a;font-size:12px\\'>차트를 불러올 수 없습니다</div>'" />
+          <img id="chart-img" src="https://ssl.pstatic.net/imgfinance/chart/item/area/day/${s.ticker}.png" style="max-width:100%;border-radius:6px" onerror="this.parentElement.innerHTML='<div style=\\'color:#4d6a8a;font-size:12px\\'>차트를 불러올 수 없습니다</div>'" />
         </div>
-        <div style="display:flex;justify-content:center;gap:14px;margin-top:8px">
-          <a href="https://ssl.pstatic.net/imgfinance/chart/item/candle/day/${s.ticker}.png" target="_blank" style="color:#4d6a8a;font-size:10px;text-decoration:underline">캔들 일봉</a>
-          <a href="https://ssl.pstatic.net/imgfinance/chart/item/candle/week/${s.ticker}.png" target="_blank" style="color:#4d6a8a;font-size:10px;text-decoration:underline">캔들 주봉</a>
+        <div style="display:flex;justify-content:center;gap:14px;margin-top:8px;color:#4d6a8a;font-size:10px">
+          <span>네이버 금융 기준: day=3개월 · week=1년 · month=3년</span>
         </div>
       </div>
       <div style="background:${g.color}0d;border:1px solid ${g.color}25;border-radius:10px;padding:14px;margin-bottom:18px">
