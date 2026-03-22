@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DeliVein — 종로 맛집 큐레이션</title>
+  <meta name="description" content="광고 없는 종로 진짜 맛집 가이드. 노포·회식·점심·비즈니스 카테고리별 큐레이션.">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+    body { background: #0d0d1a; color: #fff; font-family: 'Pretendard Variable', 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif; }
+    a { text-decoration: none; }
+    button { font-family: inherit; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+    /* Back to Home */
+    .back-home { position: fixed; top: 16px; left: 16px; z-index: 100; display: flex; align-items: center; gap: 6px;
+      padding: 8px 14px; border-radius: 8px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.5); font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+    .back-home:hover { background: rgba(255,255,255,0.1); color: #fff; }
+  </style>
+</head>
+<body>
+  <a href="/" class="back-home">← FORGE</a>
+  <div id="root"></div>
+
+  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+    // ═══════════════════════════════════════════════
+    // DELIVEIN — 종로 맛집 큐레이션
+    // 광고 없는 진짜 맛집 · 노포 · 회식 · 점심 · 비즈니스
+    // restaurants.json 로드 → 실패 시 하드코딩 fallback
+    // ═══════════════════════════════════════════════
+
+    const FALLBACK_RESTAURANTS = [
+      {
+        id: 1, name: "이문설농탕", category: ["노포"], since: 1904, type: "설농탕",
+        address: "서울 종로구 종로35길 3", phone: "02-733-6526",
+        menu: [{ item: "설농탕", price: "13,000원" }, { item: "도가니탕", price: "16,000원" }, { item: "수육", price: "35,000원" }],
+        hours: "매일 08:00~21:00", closed: "명절 당일", reservation: false,
+        reservationNote: "현장 대기 (회전 빠름)", capacity: "~60석",
+        coords: [37.5712, 126.9910],
+        description: "1904년 개업, 한국 최초 등록 식당. 4대째 운영. 무쇠솥에 17시간 이상 사골을 고아 만든 설농탕이 대표 메뉴. 서울미래유산 선정.",
+        verdict: "120년 역사의 원조. 관광객이 아닌 단골이 채우는 집.",
+      },
+      {
+        id: 2, name: "청진옥", category: ["노포", "점심"], since: 1937, type: "해장국",
+        address: "서울 종로구 종로11길 19", phone: "02-735-1690",
+        menu: [{ item: "해장국", price: "13,000원" }, { item: "내장탕", price: "14,000원" }, { item: "수육", price: "40,000원" }],
+        hours: "매일 07:00~22:00", closed: "일요일", reservation: false,
+        reservationNote: "현장 대기", capacity: "~80석",
+        coords: [37.5705, 126.9808],
+        description: "1937년부터 청진동에서 해장국 하나로 버텨온 노포. 진한 사골 국물에 선지와 우거지를 넣은 해장국이 시그니처. 직장인 아침 해장 명소.",
+        verdict: "광화문 직장인이 아침마다 찾는 이유가 있는 집.",
+      },
+      {
+        id: 3, name: "미진", category: ["노포", "점심"], since: 1954, type: "메밀국수",
+        address: "서울 종로구 종로 19 르메이에르종로타운 B1", phone: "02-733-2966",
+        menu: [{ item: "냉메밀", price: "11,000원" }, { item: "비빔메밀", price: "11,000원" }, { item: "메밀전병", price: "12,000원" }],
+        hours: "매일 11:00~21:00", closed: "일요일", reservation: false,
+        reservationNote: "현장 대기", capacity: "~50석",
+        coords: [37.5700, 126.9850],
+        description: "1954년 개업, 70년 전통의 메밀국수 전문점. 직접 뽑은 면발과 간장 기반 육수가 특징. 여름 냉메밀, 겨울 온메밀 모두 수준급.",
+        verdict: "70년간 메밀 하나만 판 장인의 집. 쫄깃한 면발이 핵심.",
+      },
+      {
+        id: 4, name: "열차집", category: ["노포", "회식"], since: 1954, type: "빈대떡/전",
+        address: "서울 종로구 종로7길 47", phone: "02-2272-0507",
+        menu: [{ item: "빈대떡", price: "15,000원" }, { item: "해물파전", price: "18,000원" }, { item: "굴전", price: "18,000원" }, { item: "막걸리", price: "5,000원" }],
+        hours: "매일 11:00~22:00", closed: "명절", reservation: false,
+        reservationNote: "현장 방문", capacity: "~40석",
+        coords: [37.5708, 126.9935],
+        description: "1954년부터 광장시장 입구에서 전을 부쳐온 노포. 빈대떡, 굴전, 해물파전이 대표 메뉴. 막걸리와의 조합이 일품.",
+        verdict: "광장시장 전 골목의 원조. 허세 없이 기름에 바삭하게 부친 전.",
+      },
+      {
+        id: 5, name: "산골막국수", category: ["노포", "점심"], since: 1962, type: "막국수",
+        address: "서울 종로구 종로56길 5-7", phone: "02-745-5477",
+        menu: [{ item: "막국수", price: "9,000원" }, { item: "감자전", price: "10,000원" }, { item: "수육", price: "25,000원" }],
+        hours: "매일 11:00~20:30", closed: "일요일", reservation: false,
+        reservationNote: "현장 대기", capacity: "~30석",
+        coords: [37.5755, 127.0005],
+        description: "1962년 개업, 60년 넘게 종로에서 막국수를 만들어온 집. 시원한 동치미 육수와 쫄깃한 메밀면이 조화. 감자전도 필수.",
+        verdict: "허름한 외관에 속지 말 것. 막국수 진검승부에선 서울 탑급.",
+      },
+      {
+        id: 6, name: "선천집", category: ["노포", "비즈니스"], since: 1971, type: "한정식",
+        address: "서울 종로구 인사동14길 5", phone: "02-732-0330",
+        menu: [{ item: "한정식 코스", price: "35,000~60,000원" }, { item: "불고기", price: "30,000원" }, { item: "갈비찜", price: "35,000원" }],
+        hours: "매일 11:30~22:00", closed: "일요일", reservation: true,
+        reservationNote: "전화 예약 가능 (룸 보유)", capacity: "~100석 (룸 4개)",
+        coords: [37.5730, 126.9853],
+        description: "1971년부터 인사동에서 한정식을 내온 노포. 정갈한 반찬과 불고기, 갈비찜이 대표. 룸이 있어 접대식사에 적합.",
+        verdict: "인사동의 숨은 접대 맛집. 화려하진 않지만 실패 없는 한정식.",
+      },
+      {
+        id: 7, name: "종로곱창", category: ["노포", "회식"], since: 1973, type: "곱창",
+        address: "서울 종로구 종로40가길 6", phone: "02-2267-6133",
+        menu: [{ item: "곱창볶음 (2인)", price: "26,000원" }, { item: "막창소금구이 (2인)", price: "30,000원" }, { item: "볶음밥", price: "3,000원" }],
+        hours: "매일 11:00~22:00", closed: "둘째·넷째 일요일", reservation: false,
+        reservationNote: "현장 대기 (저녁 웨이팅 있음)", capacity: "~35석 + 야외",
+        coords: [37.5710, 126.9960],
+        description: "종로5가 곱창골목에서 50년 넘게 자리 지킨 원조. 주문 즉시 철판에서 볶아주는 곱창이 시그니처. 야외 좌석에서 맥주 한잔이 정석.",
+        verdict: "곱창골목 최고참. 화려한 인테리어 대신 곱창 맛으로 승부.",
+      },
+      {
+        id: 8, name: "토속촌 삼계탕", category: ["노포", "회식", "비즈니스"], since: 1983, type: "삼계탕",
+        address: "서울 종로구 자하문로5길 5", phone: "02-737-7444",
+        menu: [{ item: "토속촌삼계탕", price: "18,000원" }, { item: "옻닭", price: "20,000원" }, { item: "전복삼계탕", price: "25,000원" }],
+        hours: "매일 10:00~22:00", closed: "연중무휴", reservation: true,
+        reservationNote: "전화 예약 가능 (단체석·룸 보유)", capacity: "~200석 (한옥 구조, 룸 다수)",
+        coords: [37.5780, 126.9720],
+        description: "경복궁 옆 한옥에서 40년 넘게 삼계탕을 끓여온 집. 넓은 좌석과 한옥 분위기로 단체모임, 외국인 접대에 특히 적합. 복날엔 긴 줄 각오.",
+        verdict: "관광객이 많지만, 그래도 삼계탕 실력은 검증됨. 외국인 접대 1순위.",
+      },
+      {
+        id: 9, name: "풍천임금님장어", category: ["회식", "비즈니스"], since: 2005, type: "민물장어",
+        address: "서울 종로구 종로 113", phone: "02-765-3582",
+        menu: [{ item: "민물장어 (1인)", price: "35,000원" }, { item: "장어정식", price: "40,000원" }, { item: "장어탕", price: "15,000원" }],
+        hours: "매일 11:00~22:00", closed: "연중무휴", reservation: true,
+        reservationNote: "전화·네이버 예약 (룸 보유)", capacity: "~80석 (룸 3개)",
+        coords: [37.5702, 126.9925],
+        description: "종로3가 장어 전문점. 풍천산 민물장어를 숯불에 구워 제공. 룸이 있어 가족 모임이나 소규모 회식에 적합. 보양식 회식으로 인기.",
+        verdict: "회식 겸 보양. 장어 품질이 안정적이고 룸이 있어 편함.",
+      },
+      {
+        id: 10, name: "더미 한우", category: ["회식", "비즈니스"], since: 2015, type: "한우",
+        address: "서울 종로구 종로3길 17 B1", phone: "02-722-0092",
+        menu: [{ item: "투쁠 숙성등심", price: "59,000원 (150g)" }, { item: "투쁠 꽃등심", price: "55,000원 (150g)" }, { item: "육회", price: "25,000원" }],
+        hours: "매일 11:30~22:00", closed: "일요일", reservation: true,
+        reservationNote: "네이버·전화 예약 (룸 보유)", capacity: "~60석 (룸 2개)",
+        coords: [37.5705, 126.9790],
+        description: "다이닝코드 광화문 한우 1위. 투쁠 숙성 한우를 합리적 가격에 제공. 깔끔한 인테리어와 룸이 있어 비즈니스 회식에 적합.",
+        verdict: "가격 대비 한우 퀄리티 최상급. 광화문 회식 시 안전한 선택.",
+      },
+      {
+        id: 11, name: "한라담", category: ["회식"], since: 2018, type: "삼겹살",
+        address: "서울 종로구 새문안로3길 36 B1", phone: "02-723-8292",
+        menu: [{ item: "생삼겹살", price: "18,000원" }, { item: "항정살", price: "19,000원" }, { item: "된장찌개", price: "서비스" }],
+        hours: "매일 11:30~23:00", closed: "일요일", reservation: true,
+        reservationNote: "네이버 예약 가능", capacity: "~70석",
+        coords: [37.5715, 126.9740],
+        description: "광화문 직장인 삼겹살 회식 명소. 고기 퀄리티 대비 합리적 가격. 된장찌개 서비스. 넓은 좌석으로 단체 수용 가능.",
+        verdict: "10명 이상 회식도 무리 없는 넓은 공간. 고기 맛도 확실.",
+      },
+      {
+        id: 12, name: "광화문 한옥집", category: ["점심"], since: 2000, type: "김치찜",
+        address: "서울 종로구 새문안로5길 19", phone: "02-720-2345",
+        menu: [{ item: "김치찜", price: "10,000원" }, { item: "낙지볶음", price: "12,000원" }, { item: "제육볶음", price: "10,000원" }],
+        hours: "매일 11:00~21:30", closed: "일요일", reservation: false,
+        reservationNote: "현장 방문 (점심 웨이팅)", capacity: "~45석",
+        coords: [37.5720, 126.9750],
+        description: "광화문 기자·직장인이 매일 찾는 백반집. 부드럽게 익힌 김치찜이 대표. 가격 대비 양과 반찬이 푸짐. 점심시간 웨이팅 있음.",
+        verdict: "광화문 직장인 점심 1순위. 10,000원에 이 정도면 가성비 끝판왕.",
+      },
+      {
+        id: 13, name: "우육면관 광화문점", category: ["점심"], since: 2017, type: "우육면 (대만식)",
+        address: "서울 종로구 종로7길 29-14", phone: "02-722-8807",
+        menu: [{ item: "홍소우육면", price: "14,000원" }, { item: "마라우육면", price: "14,000원" }, { item: "소룡포 (4개)", price: "6,000원" }],
+        hours: "매일 11:00~21:00", closed: "연중무휴", reservation: false,
+        reservationNote: "현장 대기 (회전 빠름)", capacity: "~40석",
+        coords: [37.5703, 126.9800],
+        description: "대만식 소고기 국수 전문점. 진한 소고기 육수와 쫄깃한 면발이 특징. 점심시간 웨이팅이 있지만 회전이 빨라 10~15분 내 입장 가능.",
+        verdict: "한식에 질렸을 때 최고의 대안. 진한 국물이 매력적.",
+      },
+      {
+        id: 14, name: "도마 솥밥", category: ["점심"], since: 2019, type: "솥밥",
+        address: "서울 종로구 인사동8길 6-1", phone: "02-722-9393",
+        menu: [{ item: "갈비솥밥정식", price: "16,000원" }, { item: "이베리코목살솥밥정식", price: "17,000원" }, { item: "된장찌개", price: "포함" }],
+        hours: "매일 11:30~20:30", closed: "월요일", reservation: false,
+        reservationNote: "원격 줄서기 (10시부터)", capacity: "~25석",
+        coords: [37.5735, 126.9848],
+        description: "인사동 골목의 솥밥 맛집. 갈비솥밥과 '마약된장찌개'의 조합이 유명. 점심 오픈 전부터 웨이팅 필수. 혼밥도 가능한 1인 구성.",
+        verdict: "점심 만족도 최상위. 줄 서는 이유가 분명한 집.",
+      },
+      {
+        id: 15, name: "진순대", category: ["점심"], since: 2010, type: "순대국",
+        address: "서울 종로구 삼봉로 80-12", phone: "02-735-0123",
+        menu: [{ item: "순대국", price: "9,000원" }, { item: "순대라면", price: "9,000원" }, { item: "모듬순대", price: "15,000원" }],
+        hours: "매일 09:00~21:00", closed: "일요일", reservation: false,
+        reservationNote: "현장 방문", capacity: "~35석",
+        coords: [37.5702, 126.9815],
+        description: "광화문 직장인 해장·점심 맛집. 순대국에 라면을 넣은 '순대라면'이 시그니처. 진한 국물과 푸짐한 순대가 매력.",
+        verdict: "9천원에 해장과 점심을 동시에 해결. 가성비의 정석.",
+      },
+      {
+        id: 16, name: "수운 한정식", category: ["비즈니스"], since: 2012, type: "한정식",
+        address: "서울 종로구 율곡로 83 포시즌스호텔 B2", phone: "02-6388-5000",
+        menu: [{ item: "런치 코스", price: "120,000원" }, { item: "디너 코스", price: "200,000~350,000원" }, { item: "주류 별도", price: "" }],
+        hours: "12:00~14:30, 18:00~21:30", closed: "일요일", reservation: true,
+        reservationNote: "전화·캐치테이블 예약 필수", capacity: "~50석 (프라이빗 룸 3개)",
+        coords: [37.5720, 126.9830],
+        description: "포시즌스호텔 내 한정식. 다이닝코드 종로 한정식 1위. 최고급 식재료와 정갈한 코스, 프라이빗 룸을 갖춰 VIP 접대에 최적.",
+        verdict: "종로 접대식사의 끝판왕. 가격은 높지만 격에 맞는 경험.",
+      },
+      {
+        id: 17, name: "단상", category: ["비즈니스"], since: 2020, type: "파인다이닝",
+        address: "서울 종로구 북촌로 51-6", phone: "02-722-9092",
+        menu: [{ item: "점심 코스", price: "80,000원" }, { item: "저녁 코스", price: "150,000원" }, { item: "페어링", price: "별도" }],
+        hours: "12:00~14:30, 18:00~21:30", closed: "월요일", reservation: true,
+        reservationNote: "캐치테이블 예약 필수", capacity: "~24석 (프라이빗 룸 1개)",
+        coords: [37.5792, 126.9855],
+        description: "북촌 한옥 파인다이닝. 한식 기반 창작요리 코스. 고즈넉한 한옥 분위기와 소규모 좌석으로 중요한 비즈니스 자리에 적합.",
+        verdict: "분위기와 음식 모두 격이 있음. 외국인 비즈니스 파트너 접대에 최적.",
+      },
+      {
+        id: 18, name: "유유안", category: ["비즈니스", "회식"], since: 2019, type: "베이징덕",
+        address: "서울 종로구 삼청로 100", phone: "02-6020-8880",
+        menu: [{ item: "베이징덕 코스", price: "88,000원" }, { item: "런치 코스", price: "55,000원" }, { item: "단품 메뉴", price: "30,000~50,000원" }],
+        hours: "11:30~14:30, 17:30~21:30", closed: "월요일", reservation: true,
+        reservationNote: "전화·네이버 예약 (룸 보유)", capacity: "~60석 (룸 2개)",
+        coords: [37.5810, 126.9820],
+        description: "종로 중식 파인다이닝. 베이징덕을 테이블 앞에서 카빙해주는 퍼포먼스가 인상적. 고급 중식 회식이나 접대에 적합한 공간과 서비스.",
+        verdict: "중식 접대 시 확실한 선택. 베이징덕 퀄리티가 서울 상위권.",
+      },
+    ];
+
+    const CATEGORIES = [
+      { key: "all", label: "전체", icon: "🗺️" },
+      { key: "노포", label: "노포 (20년+)", icon: "🏮" },
+      { key: "회식", label: "회식용", icon: "🍻" },
+      { key: "점심", label: "점심식사", icon: "🍚" },
+      { key: "비즈니스", label: "비즈니스", icon: "💼" },
+    ];
+
+    /* ── Canvas Map ── */
+    const MapView = ({ restaurants, selected, onSelect }) => {
+      const canvasRef = useRef(null);
+      const containerRef = useRef(null);
+      const bounds = { minLat: 37.568, maxLat: 37.583, minLng: 126.970, maxLng: 127.002 };
+
+      const project = (lat, lng, w, h) => {
+        const x = ((lng - bounds.minLng) / (bounds.maxLng - bounds.minLng)) * (w - 80) + 40;
+        const y = (1 - (lat - bounds.minLat) / (bounds.maxLat - bounds.minLat)) * (h - 80) + 40;
+        return [x, y];
+      };
+
+      useEffect(() => {
+        const canvas = canvasRef.current;
+        const container = containerRef.current;
+        if (!canvas || !container) return;
+        const w = container.clientWidth;
+        const h = container.clientHeight;
+        canvas.width = w * 2; canvas.height = h * 2;
+        canvas.style.width = w + "px"; canvas.style.height = h + "px";
+        const ctx = canvas.getContext("2d");
+        ctx.scale(2, 2);
+
+        // BG
+        ctx.fillStyle = "#1a1a2e"; ctx.fillRect(0, 0, w, h);
+        // Grid
+        ctx.strokeStyle = "rgba(255,255,255,0.04)"; ctx.lineWidth = 1;
+        for (let i = 0; i < w; i += 40) { ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, h); ctx.stroke(); }
+        for (let i = 0; i < h; i += 40) { ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(w, i); ctx.stroke(); }
+        // Roads
+        ctx.strokeStyle = "rgba(255,200,100,0.08)"; ctx.lineWidth = 3;
+        let p1 = project(37.570, 126.970, w, h), p2 = project(37.570, 127.002, w, h);
+        ctx.beginPath(); ctx.moveTo(p1[0], p1[1]); ctx.lineTo(p2[0], p2[1]); ctx.stroke();
+        p1 = project(37.583, 126.977, w, h); p2 = project(37.568, 126.977, w, h);
+        ctx.beginPath(); ctx.moveTo(p1[0], p1[1]); ctx.lineTo(p2[0], p2[1]); ctx.stroke();
+        // Area labels
+        ctx.font = "11px 'Pretendard Variable', sans-serif"; ctx.fillStyle = "rgba(255,255,255,0.15)";
+        const areas = [["광화문",37.5755,126.9770],["종로3가",37.571,126.992],["인사동",37.575,126.986],["북촌",37.580,126.984]];
+        areas.forEach(([n,lat,lng]) => { const p = project(lat,lng,w,h); ctx.fillText(n, p[0], p[1]); });
+
+        // Pins
+        restaurants.forEach((r) => {
+          const [x, y] = project(r.coords[0], r.coords[1], w, h);
+          const isSel = selected && selected.id === r.id;
+          if (isSel) {
+            const grd = ctx.createRadialGradient(x, y, 0, x, y, 25);
+            grd.addColorStop(0, "rgba(255,107,53,0.4)"); grd.addColorStop(1, "rgba(255,107,53,0)");
+            ctx.fillStyle = grd; ctx.beginPath(); ctx.arc(x, y, 25, 0, Math.PI*2); ctx.fill();
+          }
+          const cc = r.category.includes("노포") ? "#ff6b35" : r.category.includes("비즈니스") ? "#e8c547" : r.category.includes("회식") ? "#4ecdc4" : "#a8e6cf";
+          ctx.fillStyle = isSel ? "#fff" : cc;
+          ctx.beginPath(); ctx.arc(x, y, isSel ? 10 : 7, 0, Math.PI*2); ctx.fill();
+          ctx.strokeStyle = "rgba(0,0,0,0.5)"; ctx.lineWidth = 1.5; ctx.stroke();
+          if (isSel) {
+            ctx.font = "bold 13px 'Pretendard Variable', sans-serif";
+            const tw = ctx.measureText(r.name).width; const pad = 6;
+            ctx.fillStyle = "rgba(0,0,0,0.75)";
+            ctx.beginPath(); ctx.roundRect(x-tw/2-pad, y-28-pad, tw+pad*2, 20+pad, 4); ctx.fill();
+            ctx.fillStyle = "#fff"; ctx.fillText(r.name, x-tw/2, y-22);
+          }
+        });
+        // Legend
+        const legend = [{color:"#ff6b35",label:"노포"},{color:"#4ecdc4",label:"회식"},{color:"#a8e6cf",label:"점심"},{color:"#e8c547",label:"비즈니스"}];
+        ctx.font = "12px 'Pretendard Variable', sans-serif";
+        legend.forEach((l, i) => { const lx=16, ly=h-20-(legend.length-1-i)*22;
+          ctx.fillStyle=l.color; ctx.beginPath(); ctx.arc(lx,ly-4,5,0,Math.PI*2); ctx.fill();
+          ctx.fillStyle="rgba(255,255,255,0.6)"; ctx.fillText(l.label,lx+14,ly);
+        });
+      }, [restaurants, selected]);
+
+      const handleClick = (e) => {
+        const canvas = canvasRef.current, container = containerRef.current;
+        if (!canvas || !container) return;
+        const rect = canvas.getBoundingClientRect();
+        const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+        const w = container.clientWidth, h = container.clientHeight;
+        let closest = null, minDist = Infinity;
+        restaurants.forEach((r) => {
+          const [x, y] = project(r.coords[0], r.coords[1], w, h);
+          const dist = Math.sqrt((mx-x)**2 + (my-y)**2);
+          if (dist < 20 && dist < minDist) { minDist = dist; closest = r; }
+        });
+        if (closest) onSelect(closest);
+      };
+
+      return (
+        <div ref={containerRef} style={{ width: "100%", height: "100%", position: "relative" }}>
+          <canvas ref={canvasRef} onClick={handleClick} style={{ cursor: "pointer", borderRadius: 12 }} />
+        </div>
+      );
+    };
+
+    /* ── Info Item ── */
+    const InfoItem = ({ label, value, sub, isPhone }) => (
+      <div>
+        <div style={{ fontSize: 13, color: "rgba(255,255,255,0.35)", marginBottom: 3, fontWeight: 600, letterSpacing: 0.5 }}>{label}</div>
+        {isPhone ? (
+          <a href={"tel:" + value} style={{ fontSize: 16, color: "#4ecdc4", textDecoration: "none", fontWeight: 500 }}>{value}</a>
+        ) : (
+          <div style={{ fontSize: 16, color: "rgba(255,255,255,0.8)", fontWeight: 500 }}>{value}</div>
+        )}
+        {sub && <div style={{ fontSize: 14, color: "rgba(255,255,255,0.4)", marginTop: 2 }}>{sub}</div>}
+      </div>
+    );
+
+    /* ── Restaurant Card ── */
+    const RestaurantCard = ({ r, isSelected, onClick }) => {
+      const [expanded, setExpanded] = useState(false);
+      const age = 2026 - r.since;
+
+      return (
+        <div
+          onClick={() => { onClick(r); setExpanded(!isSelected ? true : !expanded); }}
+          style={{
+            background: isSelected ? "rgba(255,107,53,0.08)" : "rgba(255,255,255,0.03)",
+            border: isSelected ? "1px solid rgba(255,107,53,0.4)" : "1px solid rgba(255,255,255,0.06)",
+            borderRadius: 12, padding: "20px 24px", cursor: "pointer",
+            transition: "all 0.3s ease", marginBottom: 12,
+          }}
+        >
+          {/* Header */}
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8, flexWrap: "wrap", gap: 8 }}>
+            <div>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6, flexWrap: "wrap" }}>
+                <span style={{ fontSize: 24, fontWeight: 700, color: "#fff", letterSpacing: "-0.5px" }}>{r.name}</span>
+                {age >= 20 && (
+                  <span style={{ fontSize: 13, fontWeight: 600, color: "#ff6b35",
+                    background: "rgba(255,107,53,0.15)", padding: "2px 10px", borderRadius: 20 }}>
+                    {age}년 전통
+                  </span>
+                )}
+              </div>
+              <div style={{ fontSize: 16, color: "rgba(255,255,255,0.5)", marginBottom: 4 }}>{r.type}</div>
+            </div>
+            <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+              {r.category.map((c) => {
+                const bg = c==="노포"?"rgba(255,107,53,0.15)":c==="비즈니스"?"rgba(232,197,71,0.15)":c==="회식"?"rgba(78,205,196,0.15)":"rgba(168,230,207,0.15)";
+                const fg = c==="노포"?"#ff6b35":c==="비즈니스"?"#e8c547":c==="회식"?"#4ecdc4":"#a8e6cf";
+                return <span key={c} style={{ fontSize: 13, fontWeight: 500, padding: "3px 10px", borderRadius: 20, background: bg, color: fg }}>{c}</span>;
+              })}
+            </div>
+          </div>
+
+          {/* Verdict */}
+          <p style={{ fontSize: 16, color: "rgba(255,255,255,0.7)", margin: "8px 0 0", lineHeight: 1.6 }}>{r.verdict}</p>
+
+          {/* Expanded */}
+          {isSelected && expanded && (
+            <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid rgba(255,255,255,0.08)" }}>
+              <p style={{ fontSize: 16, color: "rgba(255,255,255,0.6)", lineHeight: 1.7, marginBottom: 16 }}>{r.description}</p>
+
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px 24px", marginBottom: 16 }}>
+                <InfoItem label="주소" value={r.address} />
+                <InfoItem label="전화" value={r.phone} isPhone />
+                <InfoItem label="영업시간" value={r.hours} />
+                <InfoItem label="휴무" value={r.closed} />
+                <InfoItem label="좌석" value={r.capacity} />
+                <InfoItem label="예약" value={r.reservation ? "✅ 가능" : "❌ 불가"} sub={r.reservationNote} />
+              </div>
+
+              {/* Menu */}
+              <div style={{ marginTop: 12 }}>
+                <div style={{ fontSize: 14, fontWeight: 600, color: "rgba(255,255,255,0.4)", marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>메뉴</div>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                  {r.menu.map((m, i) => (
+                    <div key={i} style={{ background: "rgba(255,255,255,0.05)", borderRadius: 8, padding: "8px 14px", display: "flex", gap: 12, alignItems: "center" }}>
+                      <span style={{ fontSize: 16, color: "#fff", fontWeight: 500 }}>{m.item}</span>
+                      {m.price && <span style={{ fontSize: 15, color: "#ff6b35", fontWeight: 600 }}>{m.price}</span>}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* External Links */}
+              <div style={{ marginTop: 16, display: "flex", gap: 10, flexWrap: "wrap" }}>
+                <a href={"https://map.naver.com/v5/search/" + encodeURIComponent(r.name + " " + r.address)} target="_blank" rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  style={{ fontSize: 15, fontWeight: 600, color: "#1ec800", background: "rgba(30,200,0,0.1)", padding: "8px 16px", borderRadius: 8, display: "inline-flex", alignItems: "center", gap: 6 }}>
+                  📍 네이버지도
+                </a>
+                <a href={"https://map.kakao.com/?q=" + encodeURIComponent(r.name)} target="_blank" rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  style={{ fontSize: 15, fontWeight: 600, color: "#fee500", background: "rgba(254,229,0,0.1)", padding: "8px 16px", borderRadius: 8, display: "inline-flex", alignItems: "center", gap: 6 }}>
+                  📍 카카오맵
+                </a>
+                {r.reservation && (
+                  <a href={"https://app.catchtable.co.kr/ct/search/list?keyword=" + encodeURIComponent(r.name)} target="_blank" rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    style={{ fontSize: 15, fontWeight: 600, color: "#ff3e6c", background: "rgba(255,62,108,0.1)", padding: "8px 16px", borderRadius: 8, display: "inline-flex", alignItems: "center", gap: 6 }}>
+                    📅 예약하기
+                  </a>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    };
+
+    /* ── Main App ── */
+    function DeliVein() {
+      const [restaurants, setRestaurants] = useState(FALLBACK_RESTAURANTS);
+      const [dataInfo, setDataInfo] = useState({ updated: "2026-03-22", total: FALLBACK_RESTAURANTS.length, source: "local" });
+      const [activeCategory, setActiveCategory] = useState("all");
+      const [selected, setSelected] = useState(null);
+      const [viewMode, setViewMode] = useState("list");
+
+      // JSON 파일에서 데이터 로드 (배포 후 restaurants.json 사용)
+      useEffect(() => {
+        fetch("restaurants.json")
+          .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+          .then(data => {
+            if (data.restaurants && data.restaurants.length > 0) {
+              setRestaurants(data.restaurants);
+              setDataInfo({
+                updated: data.updated || "unknown",
+                total: data.restaurants.length,
+                source: "json",
+                manual: (data.source_stats || {}).manual_curated || 0,
+                crawled: (data.source_stats || {}).crawled || 0,
+              });
+            }
+          })
+          .catch(() => { /* fallback 데이터 유지 */ });
+      }, []);
+
+      const filtered = activeCategory === "all"
+        ? restaurants
+        : restaurants.filter((r) => r.category.includes(activeCategory));
+
+      const handleSelect = (r) => {
+        setSelected(r);
+        if (viewMode === "map") {
+          setViewMode("list");
+          setTimeout(() => {
+            const el = document.getElementById("restaurant-" + r.id);
+            if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+          }, 100);
+        }
+      };
+
+      return (
+        <div style={{ minHeight: "100vh" }}>
+          {/* Header */}
+          <div style={{
+            background: "linear-gradient(180deg, rgba(255,107,53,0.08) 0%, transparent 100%)",
+            borderBottom: "1px solid rgba(255,255,255,0.06)",
+            padding: "36px 24px 24px",
+          }}>
+            <div style={{ maxWidth: 900, margin: "0 auto" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
+                <span style={{ fontSize: 15, fontWeight: 700, color: "#ff6b35", letterSpacing: 3, textTransform: "uppercase" }}>DELIVEIN</span>
+                <span style={{ fontSize: 13, color: "rgba(255,255,255,0.25)" }}>by MAV</span>
+              </div>
+              <h1 style={{ fontSize: 32, fontWeight: 800, margin: "0 0 8px", letterSpacing: "-1px", lineHeight: 1.2 }}>종로 맛집 큐레이션</h1>
+              <p style={{ fontSize: 17, color: "rgba(255,255,255,0.45)", margin: 0, lineHeight: 1.5 }}>
+                광고성 칭찬 걸러낸, 검증된 {restaurants.length}곳 — 노포 · 회식 · 점심 · 비즈니스
+              </p>
+            </div>
+          </div>
+
+          {/* Content */}
+          <div style={{ maxWidth: 900, margin: "0 auto", padding: "0 24px 60px" }}>
+            {/* Category Tabs */}
+            <div style={{
+              display: "flex", gap: 8, padding: "20px 0", overflowX: "auto",
+              position: "sticky", top: 0, zIndex: 10,
+              background: "linear-gradient(180deg, #0d0d1a 80%, transparent)",
+            }}>
+              {CATEGORIES.map((cat) => {
+                const count = cat.key === "all" ? restaurants.length : restaurants.filter((r) => r.category.includes(cat.key)).length;
+                const isActive = activeCategory === cat.key;
+                return (
+                  <button key={cat.key}
+                    onClick={() => { setActiveCategory(cat.key); setSelected(null); }}
+                    style={{
+                      background: isActive ? "rgba(255,107,53,0.15)" : "rgba(255,255,255,0.04)",
+                      border: isActive ? "1px solid rgba(255,107,53,0.4)" : "1px solid rgba(255,255,255,0.08)",
+                      borderRadius: 24, padding: "10px 20px",
+                      color: isActive ? "#ff6b35" : "rgba(255,255,255,0.5)",
+                      fontSize: 16, fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap",
+                      display: "flex", alignItems: "center", gap: 8, transition: "all 0.2s",
+                    }}
+                  >
+                    <span>{cat.icon}</span>
+                    <span>{cat.label}</span>
+                    <span style={{ fontSize: 13, fontWeight: 700,
+                      background: isActive ? "rgba(255,107,53,0.2)" : "rgba(255,255,255,0.06)",
+                      padding: "2px 8px", borderRadius: 12 }}>{count}</span>
+                  </button>
+                );
+              })}
+              <div style={{ marginLeft: "auto", display: "flex", gap: 4 }}>
+                <button onClick={() => setViewMode("list")}
+                  style={{ background: viewMode==="list"?"rgba(255,255,255,0.1)":"transparent", border:"none", borderRadius:8, padding:"8px 14px",
+                    color: viewMode==="list"?"#fff":"rgba(255,255,255,0.3)", fontSize:16, cursor:"pointer" }}>≡</button>
+                <button onClick={() => setViewMode("map")}
+                  style={{ background: viewMode==="map"?"rgba(255,255,255,0.1)":"transparent", border:"none", borderRadius:8, padding:"8px 14px",
+                    color: viewMode==="map"?"#fff":"rgba(255,255,255,0.3)", fontSize:16, cursor:"pointer" }}>⊞</button>
+              </div>
+            </div>
+
+            {/* Map (full view) */}
+            {viewMode === "map" && (
+              <div style={{ height: 420, borderRadius: 16, overflow: "hidden", marginBottom: 24, border: "1px solid rgba(255,255,255,0.08)" }}>
+                <MapView restaurants={filtered} selected={selected} onSelect={handleSelect} />
+              </div>
+            )}
+
+            {/* Stats */}
+            {activeCategory !== "all" && (
+              <div style={{ display: "flex", gap: 16, marginBottom: 20, padding: "14px 20px",
+                background: "rgba(255,255,255,0.02)", borderRadius: 12, border: "1px solid rgba(255,255,255,0.04)" }}>
+                {activeCategory === "노포" && (
+                  <span style={{ fontSize: 15, color: "rgba(255,255,255,0.5)" }}>🏮 평균 역사 <strong style={{ color: "#ff6b35" }}>{Math.round(filtered.reduce((s,r) => s+(2026-r.since),0)/filtered.length)}년</strong></span>
+                )}
+                {activeCategory === "비즈니스" && <span style={{ fontSize: 15, color: "rgba(255,255,255,0.5)" }}>💼 전체 예약 가능 · 룸 보유 식당 위주</span>}
+                {activeCategory === "회식" && <span style={{ fontSize: 15, color: "rgba(255,255,255,0.5)" }}>🍻 10인 이상 수용 가능 · 단체석/룸 보유</span>}
+                {activeCategory === "점심" && <span style={{ fontSize: 15, color: "rgba(255,255,255,0.5)" }}>🍚 1만원대 이하 가성비 · 빠른 회전</span>}
+              </div>
+            )}
+
+            {/* List */}
+            {viewMode === "list" && (
+              <div>
+                <div style={{ height: 200, borderRadius: 16, overflow: "hidden", marginBottom: 20, border: "1px solid rgba(255,255,255,0.08)" }}>
+                  <MapView restaurants={filtered} selected={selected} onSelect={handleSelect} />
+                </div>
+                {filtered.map((r) => (
+                  <div key={r.id} id={"restaurant-" + r.id}>
+                    <RestaurantCard r={r} isSelected={selected && selected.id === r.id} onClick={handleSelect} />
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Footer */}
+            <div style={{ marginTop: 40, padding: "20px 0", borderTop: "1px solid rgba(255,255,255,0.06)", textAlign: "center" }}>
+              <p style={{ fontSize: 14, color: "rgba(255,255,255,0.2)", lineHeight: 1.8 }}>
+                데이터 기준: {dataInfo.updated} · 전체 {dataInfo.total}곳
+                {dataInfo.crawled > 0 && <span> (큐레이션 {dataInfo.manual}곳 + 크롤링 {dataInfo.crawled}곳)</span>}
+                <br/>
+                광고·협찬 없음 · 서울미래유산, 미쉐린가이드, 다이닝코드 교차검증
+                <br/>
+                가격·영업시간은 변동될 수 있으니 방문 전 확인 권장
+              </p>
+              <p style={{ fontSize: 13, color: "rgba(255,255,255,0.1)", marginTop: 8 }}>DELIVEIN — by MAV</p>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<DeliVein />);
+  </script>
+</body>
+</html>
