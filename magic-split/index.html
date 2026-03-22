@@ -420,15 +420,15 @@ function openModal(idx) {
           <div style="color:#e0e6f0;font-size:12px;font-weight:700">📈 주가 차트</div>
           <div style="display:flex;gap:6px;align-items:center">
             <div style="display:flex;gap:4px" id="chart-range-btns">
-              <button onclick="setChartRange('month3')" class="btn" style="padding:3px 10px;font-size:10px;border-color:#00d4aa;color:#00d4aa" id="cbtn-month3">3개월</button>
+              <button onclick="setChartRange('week')" class="btn" style="padding:3px 10px;font-size:10px;border-color:#00d4aa;color:#00d4aa" id="cbtn-week">1주일</button>
+              <button onclick="setChartRange('month3')" class="btn" style="padding:3px 10px;font-size:10px" id="cbtn-month3">3개월</button>
               <button onclick="setChartRange('year')" class="btn" style="padding:3px 10px;font-size:10px" id="cbtn-year">1년</button>
-              <button onclick="setChartRange('year3')" class="btn" style="padding:3px 10px;font-size:10px" id="cbtn-year3">3년</button>
             </div>
             <a href="https://finance.naver.com/item/main.naver?code=${s.ticker}" target="_blank" class="btn" style="padding:3px 10px;font-size:10px;color:#00d4aa;border-color:#00d4aa40">네이버 금융 →</a>
           </div>
         </div>
         <div id="chart-wrap" style="text-align:center;background:#060912;border-radius:8px;padding:10px;min-height:200px;display:flex;align-items:center;justify-content:center">
-          <img id="chart-img" src="https://ssl.pstatic.net/imgfinance/chart/item/area/month3/${s.ticker}.png" style="max-width:100%;border-radius:6px" onerror="this.parentElement.innerHTML='<div style=\\'color:#4d6a8a;font-size:12px\\'>차트를 불러올 수 없습니다</div>'" />
+          <img id="chart-img" src="https://ssl.pstatic.net/imgfinance/chart/item/area/week/${s.ticker}.png" style="max-width:100%;border-radius:6px" onerror="this.parentElement.innerHTML='<div style=\\'color:#4d6a8a;font-size:12px\\'>차트를 불러올 수 없습니다</div>'" />
         </div>
       </div>
       <div style="background:${g.color}0d;border:1px solid ${g.color}25;border-radius:10px;padding:14px;margin-bottom:18px">
@@ -503,7 +503,7 @@ function setChartRange(range) {
   const img = document.getElementById('chart-img');
   if (!img) return;
   img.src = 'https://ssl.pstatic.net/imgfinance/chart/item/area/' + range + '/' + currentChartTicker + '.png?' + Date.now();
-  ['month3','year','year3'].forEach(r => {
+  ['week','month3','year'].forEach(r => {
     const btn = document.getElementById('cbtn-'+r);
     if(btn) { btn.style.borderColor = r===range?'#00d4aa':'#1e2d4a'; btn.style.color = r===range?'#00d4aa':'#8aa4c4'; }
   });
