@@ -14,7 +14,6 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 
-/* Topbar */
 .topbar{height:48px;background:#0c120e;border-bottom:1px solid #1e2d20;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:0 20px;position:sticky;top:0;z-index:200}
 .topbar-logo{font-family:'Cinzel',serif;font-size:13px;font-weight:700;letter-spacing:.14em;color:#3ecf70}
 .topbar-logo .logo-short{display:none}
@@ -27,42 +26,40 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .topbar-btn{font-family:'IBM Plex Mono',monospace;font-size:11px;padding:5px 14px;background:transparent;border:1px solid #1e2d20;color:#7a9a80;border-radius:3px;cursor:pointer;transition:all .15s;text-decoration:none}
 .topbar-btn:hover{border-color:#3ecf70;color:#3ecf70}
 
-/* Tabs */
 .tabs{border-bottom:1px solid #1e2d20;padding:0 20px;display:flex;gap:0}
 .tab{background:none;border:none;border-bottom:2px solid transparent;color:#5a7a60;padding:12px 18px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s;display:flex;align-items:center;gap:6px}
 .tab.active{border-bottom-color:#c4a44a;color:#c4a44a}
 .tab:hover:not(.active){color:#8aaa90}
 
-/* Content */
 .content{max-width:1200px;margin:0 auto;padding:20px}
 
-/* Stats Bar */
 .stats-row{display:flex;align-items:center;gap:16px;padding:10px 16px;background:#0c120e;border:1px solid #1e2d20;border-radius:8px;font-family:'IBM Plex Mono',monospace;font-size:13px;flex-wrap:wrap;margin-bottom:16px}
 .stats-row .sl{color:#5a7a60;letter-spacing:.08em;text-transform:uppercase;font-weight:500}
-.stats-row .sv{color:#6a8a70}
-.stats-row .sn{color:#b0d8b8;font-weight:600}
-.stats-row .si{color:#E1306C}
-.stats-row .sy{color:#c4a44a}
+.stats-row .sv{color:#6a8a70}.stats-row .sn{color:#b0d8b8;font-weight:600}
+.stats-row .si{color:#E1306C}.stats-row .sy{color:#c4a44a}
 .stats-row .sd{color:#4a6650;margin-left:auto}
 
-/* Month Pills */
 .month-row{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:16px}
 .month-btn{background:#0c120e;color:#5a7a60;border:1px solid #1a2a1c;border-radius:6px;padding:8px 14px;font-family:'IBM Plex Mono',monospace;font-size:13px;cursor:pointer;transition:all .15s;font-weight:500}
 .month-btn:hover{border-color:#2a4a30;color:#7a9a80}
 .month-btn.active{background:linear-gradient(135deg,#c4a44a,#a8883a);color:#080d0a;border-color:transparent;font-weight:700}
 .month-btn.disabled{opacity:.2;cursor:default}
 
-/* Grid Layout */
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+/* ── 탭 뷰: 추천 (2열 그리드) ── */
+.view-recommend .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.view-recommend .map-panel{height:640px}
 
-/* Trail List Panel */
+/* ── 탭 뷰: 전체지도 (지도만 풀사이즈) ── */
+.view-fullmap .grid{display:grid;grid-template-columns:1fr;gap:14px}
+.view-fullmap .panel{display:none}
+.view-fullmap .map-panel{height:calc(100vh - 220px);min-height:500px;position:relative;top:0}
+
 .panel{background:#0c120e;border:1px solid #1e2d20;border-radius:10px;overflow:hidden}
 .panel-head{padding:12px 16px;border-bottom:1px solid #1a2a1c;display:flex;align-items:center;justify-content:space-between;background:rgba(0,0,0,.2)}
 .panel-title{font-family:'IBM Plex Mono',monospace;font-size:14px;color:#b0d8b8;letter-spacing:.1em;text-transform:uppercase;font-weight:600}
 .panel-badge{font-family:'IBM Plex Mono',monospace;font-size:12px;padding:3px 10px;border-radius:3px;background:rgba(196,164,74,.12);color:#c4a44a;border:1px solid rgba(196,164,74,.25);font-weight:600}
 .panel-body{max-height:640px;overflow-y:auto}
 
-/* Trail Card */
 .tc{padding:16px 18px;border-bottom:1px solid #141c16;cursor:pointer;transition:all .15s;animation:fadeIn .3s ease both}
 .tc:last-child{border-bottom:none}
 .tc:hover{background:#101a12}
@@ -70,8 +67,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .tc .rw{display:flex;align-items:center;justify-content:space-between;gap:12px}
 .tc .lt{display:flex;align-items:center;gap:12px;flex:1;min-width:0}
 .tc .rk{font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:700;min-width:30px;text-align:right}
-.tc .rk.t3{color:#c4a44a}
-.tc .rk.dm{color:#2a3a2c}
+.tc .rk.t3{color:#c4a44a}.tc .rk.dm{color:#2a3a2c}
 .tc .info{min-width:0}
 .tc .nr{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .tc .nm{font-size:18px;font-weight:600;color:#e8f0ea}
@@ -81,7 +77,6 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .tc .tgi{font-family:'IBM Plex Mono',monospace;font-size:12px;color:#5a7a60}
 .tc .rt{display:flex;align-items:center;gap:12px;flex-shrink:0}
 
-/* Badges */
 .tu{color:#3ecf70;font-size:14px}.tn{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;color:#c4a44a;background:rgba(196,164,74,.12);border:1px solid rgba(196,164,74,.25);border-radius:3px;padding:2px 7px}.ts{color:#2a4a30;font-size:14px}
 .df{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;border-radius:3px;padding:3px 8px}
 .d하{color:#3ecf70;background:rgba(62,207,112,.1);border:1px solid rgba(62,207,112,.22)}
@@ -94,20 +89,17 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .sbs{display:flex;gap:3px}
 .sbi{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;border-radius:2px;padding:2px 5px;line-height:14px}
 
-/* Detail */
 .dt{display:none;margin-top:14px;padding-top:14px;border-top:1px solid #1a2a1c}
 .tc.on .dt{display:block}
 .dt p{font-size:15px;color:#a0c8a8;line-height:1.9;font-weight:400}
 .dt .mt{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;font-family:'IBM Plex Mono',monospace;font-size:13px}
 .dt .ml{color:#5a7a60;font-weight:500}.dt .mv{color:#9abaa0;font-weight:500}.dt .mi{color:#E1306C}
 
-/* Map Panel */
-.map-panel{border-radius:10px;overflow:hidden;border:1px solid #1e2d20;position:sticky;top:64px;height:640px;background:#0c120e}
+.map-panel{border-radius:10px;overflow:hidden;border:1px solid #1e2d20;position:sticky;top:64px;background:#0c120e}
 .map-head{padding:12px 16px;border-bottom:1px solid #1a2a1c;display:flex;align-items:center;justify-content:space-between;background:rgba(0,0,0,.2)}
 .map-title{font-family:'IBM Plex Mono',monospace;font-size:14px;color:#b0d8b8;letter-spacing:.1em;text-transform:uppercase;font-weight:600}
 #map{height:calc(100% - 44px);width:100%}
 
-/* Leaflet */
 .leaflet-control-zoom a{background:#0c120e!important;color:#7a9a80!important;border-color:#1e2d20!important;font-size:16px!important}
 .leaflet-control-zoom a:hover{background:#1a2a1c!important;color:#3ecf70!important}
 .leaflet-control-attribution{background:rgba(8,13,10,.85)!important;color:#3a5640!important;font-size:10px!important}
@@ -127,14 +119,11 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 @keyframes spin{to{transform:rotate(360deg)}}
 .footer{max-width:1200px;margin:32px auto 0;padding:14px 20px;border-top:1px solid #1a2a1c;display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#3a5640;flex-wrap:wrap;gap:8px}
 
-/* ══ Tablet ══ */
 @media(max-width:960px){
-  .grid{grid-template-columns:1fr}
-  .map-panel{position:relative;top:0;height:400px;order:-1}
+  .view-recommend .grid{grid-template-columns:1fr}
+  .view-recommend .map-panel{position:relative;top:0;height:400px;order:-1}
   .panel-body{max-height:none}
 }
-
-/* ══ Mobile ══ */
 @media(max-width:768px){
   .topbar{padding:0 14px;height:44px}
   .topbar-logo .logo-full{display:none}
@@ -149,8 +138,6 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   .stats-row{font-size:11px;gap:8px;padding:8px 12px}
   .month-row{gap:4px}
   .month-btn{padding:7px 11px;font-size:12px}
-
-  /* Trail Card - 모바일 최적화 */
   .tc{padding:14px 12px}
   .tc .rw{flex-wrap:wrap}
   .tc .lt{gap:10px}
@@ -161,11 +148,10 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   .snum{font-size:14px}
   .df{font-size:11px;padding:2px 6px}
   .dt .mt{grid-template-columns:1fr;gap:6px}
-  .map-panel{height:300px}
+  .view-recommend .map-panel{height:300px}
+  .view-fullmap .map-panel{height:calc(100vh - 200px);min-height:350px}
   .footer{flex-direction:column;text-align:center;gap:4px}
 }
-
-/* ══ Small Mobile ══ */
 @media(max-width:420px){
   .topbar{padding:0 10px}
   .content{padding:8px}
@@ -175,7 +161,8 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   .tc .nr{gap:6px}
   .sbs{display:none}
   .stats-row .sd{margin-left:0;width:100%;margin-top:2px;font-size:10px}
-  .map-panel{height:260px}
+  .view-recommend .map-panel{height:260px}
+  .view-fullmap .map-panel{height:calc(100vh - 180px);min-height:300px}
 }
 </style>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -189,11 +176,11 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 </div>
 
 <div class="tabs">
-  <button class="tab active"><span>🗺</span> 이달의 추천</button>
-  <button class="tab"><span>📍</span> 전체 지도</button>
+  <button class="tab active" id="tabRecommend" onclick="switchTab('recommend')"><span>🗺</span> 이달의 추천</button>
+  <button class="tab" id="tabFullmap" onclick="switchTab('fullmap')"><span>📍</span> 전체 지도</button>
 </div>
 
-<div class="content">
+<div class="content view-recommend" id="mainContent">
   <div class="stats-row" id="statsBar"></div>
   <div class="month-row" id="months"></div>
   <div class="grid">
@@ -220,9 +207,25 @@ const API='https://api.mav-ash.com/api/trails/data';
 const MK=['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
 const TM={'산':'⛰','능선':'〰','계곡':'🏞','해변':'🏖','해안':'🌊','강변':'🏞','호수':'💧','섬':'🏝'};
 const SR={blog:{l:'B',c:'#3ecf70'},cafe:{l:'C',c:'#58e888'},instagram:{l:'IG',c:'#E1306C'},youtube:{l:'YT',c:'#c4a44a'},tistory:{l:'T',c:'#eb531f'},brunch:{l:'Br',c:'#7a9a80'}};
-let D=null,cM=new Date().getMonth()+1,aI=null,map,mks=[];
+let D=null,cM=new Date().getMonth()+1,aI=null,map,mks=[],curTab='recommend';
 
 function initMap(){map=L.map('map',{zoomControl:true}).setView([36.5,127.8],7);L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{attribution:'© OpenStreetMap © CARTO',maxZoom:18}).addTo(map)}
+
+function switchTab(tab){
+  curTab=tab;
+  const mc=document.getElementById('mainContent');
+  const tr=document.getElementById('tabRecommend');
+  const tf=document.getElementById('tabFullmap');
+  if(tab==='recommend'){
+    mc.className='content view-recommend';
+    tr.className='tab active';tf.className='tab';
+  }else{
+    mc.className='content view-fullmap';
+    tr.className='tab';tf.className='tab active';
+  }
+  // 지도 크기 변경 후 리프레시
+  setTimeout(()=>{map.invalidateSize();if(D)rMap()},100);
+}
 
 async function load(){try{const r=await fetch(API),j=await r.json();D=j.data||j;render()}catch(e){console.error(e);document.getElementById('list').innerHTML='<div class="empty">데이터를 불러올 수 없습니다.<br>파이프라인 실행 후 다시 시도해 주세요.</div>'}}
 
@@ -265,7 +268,9 @@ function rMap(){
     const ic=L.divIcon({className:'',html:`<div style="background:${v.rank<=3?'#c4a44a':'#1e2d20'};color:${v.rank<=3?'#080d0a':'#6a8a70'};width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;border:2px solid ${v.rank<=3?'#c4a44a':'#2a4a30'};box-shadow:0 2px 10px rgba(0,0,0,.6)">${v.rank}</div>`,iconSize:[28,28],iconAnchor:[14,14]});
     const mk=L.marker([v.coords[0],v.coords[1]],{icon:ic}).addTo(map)
       .bindPopup(`<div class="pn">${TM[v.terrain]||'⛰'} ${v.name}</div><div class="pr">${v.region} · ${v.terrain||'산'}</div><div class="pd">${v.description||''}</div><div style="margin-top:10px"><span class="ps">점수 ${v.score}</span><span style="color:#5a7a60;margin-left:10px;font-size:13px">난이도 ${v.difficulty}</span></div>`,{maxWidth:300});
-    mk._i=i;mk.on('click',()=>{aI=i;rList();document.querySelectorAll('.tc')[i]?.scrollIntoView({behavior:'smooth',block:'center'})});mks.push(mk)});
+    mk._i=i;mk.on('click',()=>{
+      if(curTab==='recommend'){aI=i;rList();document.querySelectorAll('.tc')[i]?.scrollIntoView({behavior:'smooth',block:'center'})}
+    });mks.push(mk)});
   if(bs.length)map.fitBounds(bs,{padding:[40,40]})}
 
 function sc(s){return s>=80?'#3ecf70':s>=60?'#58e888':s>=40?'#c4a44a':'#7a9a80'}
