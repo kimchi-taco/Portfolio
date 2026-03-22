@@ -55,8 +55,8 @@ a{color:inherit;text-decoration:none}
 .stock-meta{color:#6b8aaa;font-size:11px}
 .stock-price{font-size:15px;font-weight:700}
 .price-chg{font-size:11px;font-weight:700}
-.criteria-bars{display:flex;gap:1px;margin:9px 0;flex-wrap:wrap}
-.criteria-bar{width:20px;height:16px;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;line-height:1;font-family:'IBM Plex Mono',monospace}
+.criteria-bars{display:flex;gap:2px;margin:9px 0}
+.criteria-bar{flex:1;height:3px;border-radius:2px}
 .stock-summary{color:#a0b8ce;font-size:12px;line-height:1.6}
 .click-hint{color:#6b8aaa;font-size:11px;margin-top:7px;text-align:right}
 
@@ -77,7 +77,6 @@ a{color:inherit;text-decoration:none}
 .bonus-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 .bonus-item{border-radius:8px;padding:9px 10px;text-align:center}
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.modal-2col{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
 .two-col-section{border-radius:10px;padding:13px}
 
 /* History */
@@ -114,51 +113,24 @@ a{color:inherit;text-decoration:none}
 .btn-primary:disabled{background:#1e2d4a;color:#4d6a8a;cursor:not-allowed}
 .btn-danger{background:#ff6b6b10;border:1px solid #ff6b6b32;color:#ff6b6b;padding:6px 12px;font-size:10px}
 
-/* Mobile responsive */
-@media(max-width:768px){
-  .hide-mobile{display:none!important}
-  .topbar{grid-template-columns:auto 1fr auto;padding:0 12px}
-  .topbar-center{justify-content:center}
-  .tabs{padding:0 10px;overflow-x:auto;-webkit-overflow-scrolling:touch}
-  .tab{padding:10px 12px;font-size:11px;white-space:nowrap}
-  .content{padding:14px 12px}
-  .stock-grid{grid-template-columns:1fr!important}
-  .gate-banner{flex-direction:column;align-items:stretch;padding:12px 14px}
-  .gate-badges{flex-wrap:wrap;justify-content:center}
-  .kpi-grid{grid-template-columns:repeat(2,1fr)}
-  .history-stats{grid-template-columns:repeat(2,1fr)}
-  .hist-row{grid-template-columns:24px 1fr 50px 50px;font-size:10px;padding:8px 10px}
-  .hist-row>div:nth-child(5),.hist-row>div:nth-child(6){display:none}
-  .vix-zones{grid-template-columns:repeat(2,1fr)}
-  .criteria-5col{grid-template-columns:1fr!important}
-  .resp-2col{grid-template-columns:1fr!important}
-  .modal-overlay{padding:10px 8px}
-  .modal-header{flex-wrap:wrap;padding:14px 16px;gap:8px}
-  .modal-body{padding:14px}
-  .modal-body .two-col{grid-template-columns:1fr}
-  .modal-2col{grid-template-columns:1fr}
-  .bonus-grid{grid-template-columns:repeat(2,1fr)}
-}
-@media(max-width:480px){
-  .topbar-center span:first-child{font-size:11px}
-  .stock-name{font-size:13px}
-  .stock-price{font-size:14px}
-  .criteria-bars{gap:1px}
-  .criteria-bar{width:18px;height:14px;font-size:7px}
-}
+/* Gold Dwarf */
+.gold-dwarf{position:fixed;bottom:0;left:16px;width:100px;z-index:150;pointer-events:none;opacity:.85;transition:opacity .4s,transform .3s}
+.gold-dwarf:hover{opacity:1;transform:translateY(-4px)}
+.gold-dwarf.hidden{display:none}
+@media(max-width:768px){.gold-dwarf{display:none!important}}
 </style>
 </head>
 <body>
 
 <div class="topbar">
-  <a href="https://mav-ash.com" class="topbar-logo">⬥ FORGE<span class="hide-mobile"> NEVER SLEEPS</span></a>
+  <a href="https://mav-ash.com" class="topbar-logo">⬥ FORGE NEVER SLEEPS</a>
   <div class="topbar-center">
     <span>GOLDHALLOW</span>
     <span class="badge-live"><span class="blink"></span>LIVE</span>
   </div>
   <div class="topbar-right">
     <span style="font-size:10px;color:#4d6a8a" id="lastScan">—</span>
-    <a href="https://mav-ash.com/dash" class="btn hide-mobile">⚡ 전력 대시보드</a>
+    <a href="https://mav-ash.com/dash" class="btn">⚡ 전력 대시보드</a>
   </div>
 </div>
 
@@ -176,6 +148,9 @@ a{color:inherit;text-decoration:none}
   <div id="pane-vix" style="display:none"></div>
 </div>
 
+<!-- Gold Dwarf -->
+<img id="goldDwarf" class="gold-dwarf" src="gold_dwarf_full.png" alt="Gold Dwarf" />
+
 <!-- Modal -->
 <div id="modal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeModal()">
   <div class="modal-box" id="modal-box"></div>
@@ -183,7 +158,7 @@ a{color:inherit;text-decoration:none}
 
 <script>
 // ── Config ─────────────────────────────────────────────────
-const API = 'https://api.mav-ash.com';
+const API = '';
 
 const GRADE_CONFIG = {
   'A+': { color:'#00d4aa', bg:'#00d4aa18', label:'최우선 편입' },
@@ -199,20 +174,13 @@ const GATE_CONFIG = {
   STOP:       { color:'#ff6b6b', label:'🛑 PANIC — 전면 중단',     action:'신규 편입 금지' },
 };
 const CRITERIA_LIST = [
-  // 💰 가치 지표 (5)
-  {id:1, key:'per',color:'#00d4aa',label:'PER'},{id:2, key:'pbr',color:'#00d4aa',label:'PBR'},{id:3, key:'psr',color:'#00d4aa',label:'PSR'},{id:4, key:'pcr',color:'#00d4aa',label:'PCR'},{id:5, key:'peg',color:'#00d4aa',label:'PEG'},
-  // 📈 수익성·성장성 (6)
-  {id:6, key:'roe',color:'#4d9fff',label:'ROE'},{id:7, key:'roa',color:'#4d9fff',label:'ROA'},{id:8, key:'op_margin',color:'#4d9fff',label:'영업이익률'},{id:9, key:'net_margin',color:'#4d9fff',label:'순이익률'},{id:10,key:'rev_growth',color:'#4d9fff',label:'매출증가'},{id:11,key:'net_inc_growth',color:'#4d9fff',label:'순이익증가'},
-  // 🏦 재무 안정성 (4)
-  {id:12,key:'market_cap',color:'#ffd166',label:'시가총액'},{id:13,key:'price_range',color:'#ffd166',label:'주가범위'},{id:14,key:'debt_ratio',color:'#ffd166',label:'부채비율'},{id:15,key:'current_ratio',color:'#ffd166',label:'유동비율'},
-  // 📍 주가 위치 (4)
-  {id:16,key:'pos_from_52w_low',color:'#a78bfa',label:'52주저가'},{id:17,key:'pos_from_52w_high',color:'#a78bfa',label:'52주고가'},{id:18,key:'dividend_yield',color:'#a78bfa',label:'배당률'},{id:19,key:'foreign_ownership',color:'#a78bfa',label:'외국인'},
-  // 〰️ 오실레이션 (2)
-  {id:20,key:'hist_vol',color:'#ff6b6b',label:'변동성'},{id:21,key:'dir_changes',color:'#ff6b6b',label:'방향전환'},
+  {key:'market_cap',color:'#00d4aa'},{key:'debt_ratio',color:'#00d4aa'},{key:'operating_profit',color:'#00d4aa'},
+  {key:'position_52w',color:'#4d9fff'},{key:'lr_slope',color:'#4d9fff'},{key:'ma200_dev',color:'#4d9fff'},
+  {key:'hist_vol',color:'#ff6b6b'},{key:'dir_changes',color:'#ff6b6b'},{key:'rsi_range',color:'#ff6b6b'},
 ];
 const BONUS_LIST = [
-  {key:'checklist',label:'체크리스트 보너스'},{key:'vix_optimal',label:'VIX OPTIMAL'},
-  {key:'rsi_dip',label:'RSI 매수 타이밍'},{key:'near_52w_low',label:'52주 저가 근접'},
+  {key:'dividend',label:'배당 이력'},{key:'kospi200',label:'KOSPI200'},
+  {key:'foreign_ownership',label:'외국인 보유율'},{key:'trading_volume',label:'일평균 거래대금'},
 ];
 const VIX_ZONES = [
   {label:'DEAD CALM',vix:'< 12',vkospi:'< 13',color:'#6b8aaa',action:'PAUSE',   desc:'변동성 소멸 — 매수 기회 희박'},
@@ -225,7 +193,6 @@ const VIX_ZONES = [
 let currentTab = 'dashboard';
 let scanData = null;
 let historyData = [];
-let stockList = [];
 
 // ── Init ───────────────────────────────────────────────────
 async function init() {
@@ -269,6 +236,9 @@ function setTab(tab) {
     document.getElementById('pane-' + t).style.display = t === tab ? 'block' : 'none';
     document.getElementById('tab-' + t).classList.toggle('active', t === tab);
   });
+  // Gold dwarf only on dashboard tab
+  const dwarf = document.getElementById('goldDwarf');
+  if(dwarf) dwarf.classList.toggle('hidden', tab !== 'dashboard');
   if (tab === 'history') renderHistory();
 }
 
@@ -310,21 +280,20 @@ function gateBannerHTML(gate) {
 }
 
 // ── Stock Card ─────────────────────────────────────────────
-function stockCardHTML(s, idx) {
+function stockCardHTML(s) {
   const g = GRADE_CONFIG[s.grade] || GRADE_CONFIG['A'];
   const base = Object.values(s.criteria_detail||{}).reduce((a,c)=>a+(c.score||0),0);
   const bonus = Object.values(s.bonus_detail||{}).reduce((a,b)=>a+(b.score||0),0);
   const isUp = (s.price_change_pct||0) >= 0;
   const bars = CRITERIA_LIST.map(c => {
     const d = (s.criteria_detail||{})[c.key];
-    const pass = d&&d.pass;
-    return `<div class="criteria-bar" style="background:${pass?c.color+'30':'#0a0e1a'};color:${pass?c.color:'#1a2030'}">${c.id}</div>`;
+    return `<div class="criteria-bar" style="background:${d&&d.pass?c.color:'#1e2d4a'};opacity:${d&&d.pass?1:0.3}"></div>`;
   }).join('');
   return `
   <div class="stock-card" style="border:1px solid ${g.color}25" 
     onmouseenter="this.style.borderColor='${g.color}65';this.style.background='${g.bg}'"
     onmouseleave="this.style.borderColor='${g.color}25';this.style.background='#0d1224'"
-    onclick="openModal(${idx})">
+    onclick="openModal(${JSON.stringify(JSON.stringify(s))})">
     <div class="grade-tag" style="background:${g.bg};color:${g.color}">${s.grade} · ${g.label}</div>
     <div class="stock-header">
       <div class="stock-rank" style="background:${g.color}1e;color:${g.color}">#${s.rank}</div>
@@ -354,17 +323,14 @@ function stockCardHTML(s, idx) {
 // ── Dashboard ──────────────────────────────────────────────
 function renderDashboard(data) {
   if (!data) { showEmpty('pane-dashboard'); return; }
-  stockList = data.recommendations || [];
   const el = document.getElementById('pane-dashboard');
   el.innerHTML = gateBannerHTML(data.market_gate||{}) +
-    `<div class="stock-grid">${stockList.map((s,i) => stockCardHTML(s,i)).join('')}</div>`;
+    `<div class="stock-grid">${(data.recommendations||[]).map(stockCardHTML).join('')}</div>`;
 }
 
 // ── Modal ──────────────────────────────────────────────────
-function openModal(idx) {
-  const s = stockList[idx];
-  if (!s) return;
-  currentChartTicker = s.ticker;
+function openModal(jsonStr) {
+  const s = JSON.parse(jsonStr);
   const g = GRADE_CONFIG[s.grade] || GRADE_CONFIG['A'];
   const base = Object.values(s.criteria_detail||{}).reduce((a,c)=>a+(c.score||0),0);
   const bonus = Object.values(s.bonus_detail||{}).reduce((a,b)=>a+(b.score||0),0);
@@ -380,15 +346,13 @@ function openModal(idx) {
         return `<div class="criteria-item">
           <div class="criteria-row">
             <div style="display:flex;align-items:center;gap:6px">
-              <span style="background:${d.pass?color+'30':'#1e2d4a'};color:${d.pass?color:'#2e4060'};font-size:9px;font-weight:700;width:20px;height:16px;border-radius:3px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;font-family:IBM Plex Mono,monospace">${c?c.id:''}</span>
               <div class="check-box" style="background:${d.pass?color+'30':'#1e2d4a'};border:1px solid ${d.pass?color:'#2e4060'};color:${d.pass?color:'#4d6a8a'}">${d.pass?'✓':'✗'}</div>
-              <span style="font-size:11px;font-weight:700">${c?c.label+' — ':''}</span>
-              <span style="font-size:11px;color:#8aa4c4">${d.value||''}</span>
+              <span style="font-size:11px;font-weight:700">${d.value||''}</span>
             </div>
             <span style="color:${d.pass?color:'#4d6a8a'};font-size:11px;font-weight:700">${d.score}/${d.max_score}pt</span>
           </div>
           <div class="criteria-bar-track"><div class="criteria-bar-fill" style="background:${d.pass?color:'#2e4060'};width:${(d.score/d.max_score)*100}%"></div></div>
-          ${d.reason?`<div style="color:#4d6a8a;font-size:10px;margin-left:46px">${d.reason}</div>`:''}
+          ${d.reason?`<div style="color:#4d6a8a;font-size:10px;margin-left:20px">${d.reason}</div>`:''}
         </div>`;
       }).join('')}
     </div>`;
@@ -415,54 +379,29 @@ function openModal(idx) {
       <button onclick="closeModal()" style="background:none;border:1px solid #1e2d4a;color:#4d6a8a;border-radius:6px;padding:5px 11px;cursor:pointer;font-family:inherit;font-size:12px;align-self:flex-start">✕</button>
     </div>
     <div class="modal-body">
-      <div style="background:#0d1224;border:1px solid #1e2d4a;border-radius:10px;padding:14px;margin-bottom:18px">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-          <div style="color:#e0e6f0;font-size:12px;font-weight:700">📈 주가 차트</div>
-          <div style="display:flex;gap:6px;align-items:center">
-            <div style="display:flex;gap:4px" id="chart-range-btns">
-              <button onclick="setChartRange('week')" class="btn" style="padding:3px 10px;font-size:10px;border-color:#00d4aa;color:#00d4aa" id="cbtn-week">1주일</button>
-              <button onclick="setChartRange('month3')" class="btn" style="padding:3px 10px;font-size:10px" id="cbtn-month3">3개월</button>
-              <button onclick="setChartRange('year')" class="btn" style="padding:3px 10px;font-size:10px" id="cbtn-year">1년</button>
-            </div>
-            <a href="https://finance.naver.com/item/main.naver?code=${s.ticker}" target="_blank" class="btn" style="padding:3px 10px;font-size:10px;color:#00d4aa;border-color:#00d4aa40">네이버 금융 →</a>
-          </div>
-        </div>
-        <div id="chart-wrap" style="text-align:center;background:#060912;border-radius:8px;padding:10px;min-height:200px;display:flex;align-items:center;justify-content:center">
-          <img id="chart-img" src="https://ssl.pstatic.net/imgfinance/chart/item/area/week/${s.ticker}.png" style="max-width:100%;border-radius:6px" onerror="this.parentElement.innerHTML='<div style=\\'color:#4d6a8a;font-size:12px\\'>차트를 불러올 수 없습니다</div>'" />
-        </div>
-      </div>
       <div style="background:${g.color}0d;border:1px solid ${g.color}25;border-radius:10px;padding:14px;margin-bottom:18px">
         <div style="color:${g.color};font-size:12px;font-weight:700;margin-bottom:5px">💡 핵심 추천 이유</div>
         <div style="color:#c0d4e8;font-size:12px;line-height:1.85">${s.summary||''}</div>
       </div>
-      <div class="modal-2col">
-        ${criteriaSection('💰 가치 지표',['per','pbr','psr','pcr','peg'],'#00d4aa')}
-        ${criteriaSection('📈 수익성·성장성',['roe','roa','op_margin','net_margin','rev_growth','net_inc_growth'],'#4d9fff')}
-      </div>
-      <div class="modal-2col">
-        ${criteriaSection('🏦 재무 안정성',['market_cap','price_range','debt_ratio','current_ratio'],'#ffd166')}
-        ${criteriaSection('📍 주가 위치',['pos_from_52w_low','pos_from_52w_high','dividend_yield','foreign_ownership'],'#a78bfa')}
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+        ${criteriaSection('🏦 재무 건전성',['market_cap','debt_ratio','operating_profit'],'#00d4aa')}
+        ${criteriaSection('📊 추세 중립성',['position_52w','lr_slope','ma200_dev'],'#4d9fff')}
       </div>
       <div style="background:#0d1224;border:1px solid #ff6b6b18;border-radius:10px;padding:14px;margin-bottom:14px">
         <div style="color:#ff6b6b;font-size:12px;font-weight:700;margin-bottom:10px">〰️ 오실레이션 품질</div>
-        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px">
-          ${['hist_vol','dir_changes'].map(k=>{
-            const c = CRITERIA_LIST.find(x=>x.key===k);
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+          ${['hist_vol','dir_changes','rsi_range'].map(k=>{
             const d = (s.criteria_detail||{})[k];
             if(!d) return '';
             return `<div>
-              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
-                <div style="display:flex;align-items:center;gap:5px">
-                  <span style="background:${d.pass?'#ff6b6b30':'#1e2d4a'};color:${d.pass?'#ff6b6b':'#2e4060'};font-size:9px;font-weight:700;width:20px;height:16px;border-radius:3px;display:inline-flex;align-items:center;justify-content:center;font-family:IBM Plex Mono,monospace">${c?c.id:''}</span>
-                  <span style="font-size:10px;font-weight:700">${c?c.label:''}</span>
-                </div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+                <span style="font-size:10px;font-weight:700">${d.value}</span>
                 <span style="color:${d.pass?'#ff6b6b':'#4d6a8a'};font-size:10px">${d.score}pt</span>
               </div>
-              <div style="color:#8aa4c4;font-size:10px;margin-bottom:4px;margin-left:25px">${d.value||''}</div>
               <div style="background:#1e2d4a;border-radius:3px;height:4px">
                 <div style="background:${d.pass?'#ff6b6b':'#2e4060'};height:100%;width:${(d.score/d.max_score)*100}%;border-radius:3px"></div>
               </div>
-              ${d.reason?`<div style="color:#4d6a8a;font-size:9px;margin-top:2px;margin-left:25px">${d.reason}</div>`:''}
+              ${d.reason?`<div style="color:#4d6a8a;font-size:9px;margin-top:2px">${d.reason}</div>`:''}
             </div>`;
           }).join('')}
         </div>
@@ -496,17 +435,6 @@ function openModal(idx) {
       </div>
     </div>`;
   document.getElementById('modal').style.display = 'flex';
-}
-
-let currentChartTicker = '';
-function setChartRange(range) {
-  const img = document.getElementById('chart-img');
-  if (!img) return;
-  img.src = 'https://ssl.pstatic.net/imgfinance/chart/item/area/' + range + '/' + currentChartTicker + '.png?' + Date.now();
-  ['week','month3','year'].forEach(r => {
-    const btn = document.getElementById('cbtn-'+r);
-    if(btn) { btn.style.borderColor = r===range?'#00d4aa':'#1e2d4a'; btn.style.color = r===range?'#00d4aa':'#8aa4c4'; }
-  });
 }
 function closeModal() { document.getElementById('modal').style.display = 'none'; }
 document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
@@ -584,207 +512,142 @@ function renderHistory() {
 
 // ── Criteria ───────────────────────────────────────────────
 function renderCriteria() {
-  let idCounter = 0;
-  const CHECKLIST = [
-    {
-      cat:'💰 가치 지표', color:'#00d4aa', desc:'저평가 우량주 선별',
-      items:[
-        {name:'PER',           cond:'≤ 15',            rat:'수익 대비 저평가'},
-        {name:'PBR',           cond:'≤ 1',             rat:'자산 대비 주가 저평가'},
-        {name:'PSR',           cond:'≤ 5',             rat:'매출 대비 주가 적정'},
-        {name:'PCR',           cond:'≤ 10',            rat:'현금흐름 대비 저평가'},
-        {name:'PEG',           cond:'≤ 1',             rat:'성장성 감안한 밸류'},
-      ]
-    },
-    {
-      cat:'📈 수익성·성장성', color:'#4d9fff', desc:'실질 이익 창출 능력',
-      items:[
-        {name:'ROE',           cond:'≥ 5%',            rat:'자기자본 수익률'},
-        {name:'ROA',           cond:'≥ 3%',            rat:'총자산 수익률'},
-        {name:'영업이익률',    cond:'≥ 5%',            rat:'본업 수익성 확인'},
-        {name:'순이익률',      cond:'≥ 1%',            rat:'최종 수익 잔존'},
-        {name:'매출액증가율',  cond:'≥ 1%',            rat:'외형 성장 지속'},
-        {name:'순이익증가율',  cond:'0 ~ 100%',        rat:'과열 없는 적정 성장'},
-      ]
-    },
-    {
-      cat:'🏦 재무 안정성', color:'#ffd166', desc:'망하지 않는 기업 필터',
-      items:[
-        {name:'시가총액',      cond:'≥ 3,000억원',     rat:'소형주·상장폐지 위험 배제'},
-        {name:'주가범위',      cond:'₩5,000~₩80,000', rat:'분할매수 가능한 단가'},
-        {name:'부채비율',      cond:'≤ 300%',          rat:'레버리지 리스크 제거'},
-        {name:'유동비율',      cond:'≥ 150%',          rat:'단기 채무 상환 능력'},
-      ]
-    },
-    {
-      cat:'📍 주가 위치', color:'#a78bfa', desc:'매수 타이밍 — 저점 근처',
-      items:[
-        {name:'52주 저가 대비', cond:'≤ 30% 상승',     rat:'저가 근처 — 하락 여지 제한'},
-        {name:'52주 고가 대비', cond:'≥ 25% 하락',     rat:'고점에서 충분히 하락'},
-        {name:'배당수익률',     cond:'≥ 1%',           rat:'배당이 하방 지지'},
-        {name:'외국인·기관보유',cond:'≥ 10%',          rat:'스마트머니 보유'},
-      ]
-    },
-    {
-      cat:'〰️ 오실레이션', color:'#ff6b6b', desc:'매직스플릿 핵심 — 진동 반복성',
-      items:[
-        {name:'역사적변동성(HV)', cond:'20% ~ 55%',      rat:'적정 진동폭 확인'},
-        {name:'방향전환 횟수',    cond:'60일 내 ≥ 10회', rat:'오실레이션 반복성 실측'},
-      ]
-    },
+  const FULL = [
+    {cat:'재무 건전성',icon:'🏦',color:'#00d4aa',weight:30,desc:'망하지 않는 기업 필터',items:[
+      {name:'시가총액',cond:'≥ 5,000억원',score:10,rat:'소형주 상장폐지 위험 방지'},
+      {name:'부채비율',cond:'≤ 150%',score:10,rat:'과도한 레버리지 위험 제거'},
+      {name:'영업이익',cond:'3년 연속 흑자',score:10,rat:'지속적 수익 창출력 확인'},
+    ]},
+    {cat:'추세 중립성',icon:'📊',color:'#4d9fff',weight:35,desc:'계단식 하락 배제 필터',items:[
+      {name:'52주 위치',cond:'20%~80% 구간',score:12,rat:'극단적 추세 배제'},
+      {name:'LR Slope (120d)',cond:'-15%~+15%',score:12,rat:'강한 방향성 추세 없음'},
+      {name:'MA200 괴리율',cond:'±25% 이내',score:11,rat:'평균 회귀 가능성 확인'},
+    ]},
+    {cat:'오실레이션 품질',icon:'〰️',color:'#ff6b6b',weight:35,desc:'진동·변동성 품질 필터',items:[
+      {name:'연간 역사적변동성',cond:'20%~50%',score:12,rat:'진동폭 적정 범위 확인'},
+      {name:'방향전환 횟수',cond:'60거래일 내 ≥12회',score:12,rat:'진동 반복성 직접 측정'},
+      {name:'RSI 범위',cond:'최근 60일 RSI범위 ≥30pt',score:11,rat:'RSI 진동 강도 확인'},
+    ]},
   ];
-
-  const gradeRows = [
-    {g:'A+', check:'16개 이상', prob:'일지 않을 확률 90%+', action:'최우선 편입'},
-    {g:'A',  check:'12~15개',  prob:'일지 않을 확률 70%+', action:'편입 권장'},
-    {g:'B',  check:'9~11개',   prob:'일지 않을 확률 50%+', action:'조건부 편입'},
-    {g:'C',  check:'5~8개',    prob:'일지 않을 확률 30%+', action:'편입 보류'},
-    {g:'D',  check:'5개 미만', prob:'투자 부적합',          action:'스캔 제외'},
-  ];
-
-  const bonusRows = [
-    {n:'VIX OPTIMAL',    c:'VIX 12~20 / VKOSPI 13~22', s:'+5pt', col:'#00d4aa'},
-    {n:'RSI 매수 타이밍',c:'현재 RSI ≤ 40',             s:'+3pt', col:'#4d9fff'},
-    {n:'52주 저가 근접', c:'저가 대비 +15% 이내',        s:'+2pt', col:'#4d9fff'},
-  ];
-
-  document.getElementById('pane-criteria').innerHTML =
-    '<div style="background:#0d1224;border:1px solid #1e2d4a;border-radius:12px;padding:18px;margin-bottom:16px">'
-    + '<div style="color:#e0e6f0;font-size:15px;font-weight:700;margin-bottom:8px">📋 저자 원본 체크리스트 21항목</div>'
-    + '<div style="color:#8aa4c4;font-size:13px;line-height:1.85;margin-bottom:16px">'
-    + '"일지 않는 안전한 주식"의 저자 기준을 그대로 반영합니다. '
-    + '21개 중 <span style="color:#00d4aa;font-weight:700">16개 이상</span> 통과 시 일지 않을 확률 90%+. '
-    + '매일 08:30 맥미니 스캐너가 자동으로 전 종목을 체크합니다.</div>'
-    + '<div class="criteria-5col" style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px">'
-    + CHECKLIST.map(sec =>
-        '<div style="background:#060912;border:1px solid ' + sec.color + '25;border-radius:10px;padding:14px">'
-        + '<div style="color:' + sec.color + ';font-size:13px;font-weight:700;margin-bottom:3px">' + sec.cat + '</div>'
-        + '<div style="color:#6b8aaa;font-size:11px;margin-bottom:12px">' + sec.desc + '</div>'
-        + sec.items.map(i => {
-            idCounter++;
-            return '<div style="padding:8px 0;border-bottom:1px solid #1a2840">'
-            + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">'
-            + '<div style="display:flex;align-items:center;gap:6px">'
-            + '<span style="background:' + sec.color + '30;color:' + sec.color + ';font-size:9px;font-weight:700;width:20px;height:16px;border-radius:3px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;font-family:IBM Plex Mono,monospace">' + idCounter + '</span>'
-            + '<span style="color:#c0d4e8;font-size:12px;font-weight:700">' + i.name + '</span></div>'
-            + '<span style="background:' + sec.color + '20;color:' + sec.color + ';font-size:10px;font-weight:700;padding:1px 7px;border-radius:3px;white-space:nowrap">' + i.cond + '</span>'
-            + '</div>'
-            + '<div style="color:#6b8aaa;font-size:11px;margin-left:26px">' + i.rat + '</div>'
-            + '</div>';
-          }).join('')
-        + '</div>'
-      ).join('')
-    + '</div></div>'
-
-    + '<div class="resp-2col" style="display:grid;grid-template-columns:1fr 1fr;gap:13px">'
-    + '<div style="background:#0d1224;border:1px solid #1e2d4a;border-radius:12px;padding:18px">'
-    + '<div style="color:#e0e6f0;font-size:14px;font-weight:700;margin-bottom:12px">📊 등급 기준</div>'
-    + gradeRows.map(row => {
-        const cfg = GRADE_CONFIG[row.g] || {color:'#4d6a8a', bg:'#1e2d4a18'};
-        return '<div style="background:' + cfg.bg + ';border:1px solid ' + cfg.color + '30;border-radius:8px;padding:10px 14px;margin-bottom:7px;display:flex;align-items:center;gap:12px">'
-          + '<span style="color:' + cfg.color + ';font-size:15px;font-weight:700;min-width:28px">' + row.g + '</span>'
-          + '<span style="background:' + cfg.color + '25;color:' + cfg.color + ';font-size:11px;font-weight:700;padding:2px 9px;border-radius:10px;white-space:nowrap">' + row.check + '</span>'
-          + '<div style="flex:1">'
-          + '<div style="color:#e0e6f0;font-size:13px;font-weight:700">' + row.prob + '</div>'
-          + '<div style="color:#6b8aaa;font-size:11px">' + row.action + '</div>'
-          + '</div></div>';
-      }).join('')
-    + '</div>'
-    + '<div style="background:#0d1224;border:1px solid #ffd16620;border-radius:12px;padding:18px">'
-    + '<div style="color:#ffd166;font-size:14px;font-weight:700;margin-bottom:8px">⭐ 추가 보너스 점수</div>'
-    + '<div style="color:#6b8aaa;font-size:12px;margin-bottom:14px;line-height:1.7">21개 체크리스트 외 실시간 타이밍 신호에 따라 추가 점수를 부여합니다.</div>'
-    + bonusRows.map(b =>
-        '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #1e2d4a">'
-        + '<div><div style="font-size:13px;font-weight:700;color:#e0e6f0">' + b.n + '</div>'
-        + '<div style="color:#6b8aaa;font-size:11px;margin-top:2px">' + b.c + '</div></div>'
-        + '<span style="background:' + b.col + '20;color:' + b.col + ';font-weight:700;font-size:13px;padding:3px 10px;border-radius:6px">' + b.s + '</span>'
-        + '</div>'
-      ).join('')
-    + '<div style="margin-top:12px;padding:10px;background:#060912;border-radius:8px">'
-    + '<div style="color:#6b8aaa;font-size:11px;line-height:1.75">'
-    + '최종 점수 = (체크통과수 / 21 × 100) + 보너스<br>'
-    + '점수 범위: 0 ~ 100pt (보너스 포함 최대 110pt)</div>'
-    + '</div></div>'
-    + '</div>';
+  document.getElementById('pane-criteria').innerHTML = `
+    <!-- 유니버스 구성 섹션 -->
+    <div style="background:#0d1224;border:1px solid #3ecf7025;border-radius:12px;padding:16px;margin-bottom:16px">
+      <div style="color:#3ecf70;font-size:13px;font-weight:700;margin-bottom:10px">🔭 종목 유니버스 구성 방식</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+        <div style="background:#060912;border:1px solid #3ecf7018;border-radius:10px;padding:14px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+            <div style="background:#3ecf7020;color:#3ecf70;border-radius:4px;padding:2px 9px;font-size:11px;font-weight:700">A그룹</div>
+            <span style="color:#e0e6f0;font-size:12px;font-weight:700">시총 상위 100개</span>
+          </div>
+          <div style="color:#a0b8ce;font-size:12px;line-height:1.8">KOSPI 전체에서 시가총액 기준 상위 100개 종목. 유동성과 안정성이 검증된 대형주 중심.</div>
+        </div>
+        <div style="background:#060912;border:1px solid #4d9fff18;border-radius:10px;padding:14px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+            <div style="background:#4d9fff20;color:#4d9fff;border-radius:4px;padding:2px 9px;font-size:11px;font-weight:700">B그룹</div>
+            <span style="color:#e0e6f0;font-size:12px;font-weight:700">재무 우량 중소형 100개</span>
+          </div>
+          <div style="color:#a0b8ce;font-size:12px;line-height:1.8">시총 100위 밖 종목 중 재무 필터를 통과한 우량주. 매일 다른 종목이 선발될 수 있음.</div>
+        </div>
+      </div>
+      <div style="background:#060912;border-radius:8px;padding:12px">
+        <div style="color:#c0d4e8;font-size:13px;font-weight:700;margin-bottom:7px">📐 B그룹 재무 필터 기준</div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
+          ${[
+            {label:'시총 최소',cond:'≥ 1,000억원',desc:'소형주 제외'},
+            {label:'PER',cond:'0 < PER < 35',desc:'흑자 + 비고평가'},
+            {label:'PBR',cond:'0.2 ~ 4.0',desc:'극단 배제'},
+            {label:'EPS',cond:'양수',desc:'당기순이익 흑자'},
+          ].map(f=>`
+          <div style="background:#0a0e1a;border-radius:6px;padding:9px 10px">
+            <div style="color:#8aa4c4;font-size:11px;margin-bottom:3px">${f.label}</div>
+            <div style="color:#4d9fff;font-size:13px;font-weight:700;margin-bottom:2px">${f.cond}</div>
+            <div style="color:#8aa4c4;font-size:11px">${f.desc}</div>
+          </div>`).join('')}
+        </div>
+        <div style="margin-top:10px;padding-top:10px;border-top:1px solid #1e2d4a">
+          <div style="color:#c0d4e8;font-size:13px;font-weight:700;margin-bottom:6px">⭐ 우량도 점수 (높을수록 우선 선발)</div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            ${[
+              {label:'배당 지급 기업',score:'+2pt',color:'#ffd166'},
+              {label:'저PBR (< 1.5)',score:'+1pt',color:'#00d4aa'},
+              {label:'저PER (< 15)',score:'+1pt',color:'#4d9fff'},
+            ].map(q=>`<div style="background:#0a0e1a;border-radius:5px;padding:5px 10px;display:flex;align-items:center;gap:6px">
+              <span style="color:${q.color};font-size:13px;font-weight:700">${q.score}</span>
+              <span style="color:#c0d4e8;font-size:12px">${q.label}</span>
+            </div>`).join('')}
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:10px;color:#8aa4c4;font-size:12px;line-height:1.8">
+        ✦ FinanceDataReader 정상 시: KOSPI 951개 중 A+B = 최대 200개 실시간 구성<br>
+        ✦ SSL 오류 등 장애 시: 90개 풀에서 날짜 시드 기반으로 매일 50개 랜덤 샘플링 (매일 변동)
+      </div>
+    </div>
+    <div class="criteria-cats">
+      ${FULL.map(cat=>`
+      <div class="criteria-cat" style="border:1px solid ${cat.color}20">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+          <div><div style="font-size:18px;margin-bottom:2px">${cat.icon}</div>
+            <div style="color:${cat.color};font-size:13px;font-weight:700">${cat.cat}</div>
+            <div style="color:#8aa4c4;font-size:12px">${cat.desc}</div></div>
+          <div style="background:${cat.color}18;color:${cat.color};border-radius:6px;padding:3px 10px;font-size:15px;font-weight:700">${cat.weight}pt</div>
+        </div>
+        ${cat.items.map(i=>`
+        <div class="criteria-item-box" style="border-left:3px solid ${cat.color}50">
+          <div style="display:flex;justify-content:space-between;margin-bottom:2px">
+            <span style="font-size:13px;font-weight:700">${i.name}</span>
+            <span style="color:${cat.color};font-size:13px;font-weight:700">${i.score}pt</span>
+          </div>
+          <div style="background:${cat.color}12;color:${cat.color};border-radius:3px;padding:2px 7px;font-size:12px;display:inline-block;margin-bottom:2px;font-weight:700">${i.cond}</div>
+          <div style="color:#8aa4c4;font-size:12px">${i.rat}</div>
+        </div>`).join('')}
+      </div>`).join('')}
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div style="background:#0d1224;border:1px solid #ffd16620;border-radius:12px;padding:16px">
+        <div style="color:#ffd166;font-size:12px;font-weight:700;margin-bottom:10px">⭐ 보너스 (최대 +10pt)</div>
+        ${[{n:'배당 지급 이력',c:'3년 이상 연속',s:'+3'},{n:'KOSPI200 구성',c:'지수 편입 여부',s:'+2'},{n:'외국인 보유율',c:'5% 이상',s:'+2'},{n:'일평균 거래대금',c:'≥ 100억원',s:'+3'}]
+          .map(b=>`<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #1e2d4a"><div><div style="font-size:13px;font-weight:700">${b.n}</div><div style="color:#8aa4c4;font-size:11px">${b.c}</div></div><span style="color:#ffd166;font-weight:700;font-size:13px">${b.s}</span></div>`).join('')}
+      </div>
+      <div style="background:#0d1224;border:1px solid #1e2d4a;border-radius:12px;padding:16px">
+        <div style="color:#e0e6f0;font-size:12px;font-weight:700;margin-bottom:10px">📈 점수별 편입 등급</div>
+        ${[{g:'A+',r:'85~110pt',n:'적극 편입 · 비중 확대'},{g:'A',r:'70~84pt',n:'일반 편입 기준'},{g:'B',r:'55~69pt',n:'비중 축소하여 편입'},{g:'C',r:'0~54pt',n:'편입 보류 · 재검토'}]
+          .map(({g,r,n})=>{const cfg=GRADE_CONFIG[g]; return `<div style="background:${cfg.bg};border:1px solid ${cfg.color}25;border-radius:8px;padding:8px 12px;margin-bottom:7px;display:flex;justify-content:space-between;align-items:center"><div style="display:flex;align-items:center;gap:8px"><span style="color:${cfg.color};font-size:14px;font-weight:700">${g}</span><span style="color:${cfg.color};font-size:11px">${r}</span></div><div style="color:#8aa4c4;font-size:12px">${n}</div></div>`;}).join('')}
+      </div>
+    </div>`;
 }
 
 // ── VIX ────────────────────────────────────────────────────
 function renderVix() {
-  const vixDetails = [
-    {label:'DEAD CALM',vix:'< 12',vkospi:'< 13',color:'#6b8aaa',action:'⏸ 스캔 보류',
-     desc:'변동성 소멸. 종목이 움직이지 않아 매수 기회가 발생하지 않음.',score:'보너스 없음',scan:'스캔 실행 / 편입 중단'},
-    {label:'OPTIMAL',vix:'12 ~ 20',vkospi:'13 ~ 22',color:'#00d4aa',action:'✅ 최적 작동',
-     desc:'매직스플릿이 가장 잘 작동하는 환경. 충분한 진동폭 + 패닉 없음.',score:'+5pt 보너스',scan:'정상 스캔 · 적극 편입'},
-    {label:'ELEVATED',vix:'20 ~ 32',vkospi:'22 ~ 35',color:'#ffd166',action:'⚠️ 신중 운용',
-     desc:'변동성 상승 국면. 기회이지만 하락 가속 위험도 공존.',score:'보너스 없음',scan:'스캔 실행 · 비중 30% 축소'},
-    {label:'PANIC',vix:'> 32',vkospi:'> 35',color:'#ff6b6b',action:'🛑 편입 중단',
-     desc:'패닉 국면. 체크리스트와 무관하게 모든 종목이 동반 하락.',score:'보너스 없음',scan:'스캔 중단 · 신규 편입 금지'},
-  ];
+  document.getElementById('pane-vix').innerHTML = `
+    <div style="background:#0d1224;border:1px solid #1e2d4a;border-radius:12px;padding:16px;margin-bottom:12px">
+      <div style="color:#e0e6f0;font-size:15px;font-weight:700;margin-bottom:5px">왜 VIX를 "게이트"로 쓰는가?</div>
+      <div style="color:#a0b8ce;font-size:13px;line-height:1.9">
+        매직스플릿이 망가지는 시나리오는 단 하나 — 모든 종목이 같이 떨어질 때입니다. VIX/VKOSPI는 그 신호를 가장 빠르게 알려줍니다.
+        <span style="color:#00d4aa">OPTIMAL 국면일 때만 보너스 +5pt</span>를 반영하고,
+        <span style="color:#ff6b6b">둘 중 하나라도 PANIC이면 신규 편입 전면 중단</span>이 원칙입니다.
+      </div>
+    </div>
+    <div class="vix-zones">
+      ${VIX_ZONES.map(z=>`
+      <div class="vix-zone-card" style="background:${z.color}0d;border:1px solid ${z.color}30">
+        <div style="color:${z.color};font-size:12px;font-weight:700;letter-spacing:2px;margin-bottom:7px">${z.label}</div>
+        <div style="margin-bottom:5px"><div style="color:#8aa4c4;font-size:11px">VIX</div><div style="color:#e0e6f0;font-size:20px;font-weight:700">${z.vix}</div></div>
+        <div style="margin-bottom:8px"><div style="color:#8aa4c4;font-size:11px">VKOSPI</div><div style="color:#e0e6f0;font-size:15px;font-weight:700">${z.vkospi}</div></div>
+        <div style="background:${z.color}18;color:${z.color};border-radius:4px;padding:2px 7px;font-size:12px;font-weight:700;margin-bottom:7px">${z.action}</div>
+        <div style="color:#8aa4c4;font-size:12px;line-height:1.7">${z.desc}</div>
+      </div>`).join('')}
+    </div>
+    <div style="background:#060912;border:1px solid #1e2d4a;border-radius:12px;padding:16px">
+      <div style="color:#4d9fff;font-size:13px;font-weight:700;margin-bottom:9px">🖥️ 매일 08:30 자동 실행 (맥미니)</div>
+      <pre style="margin:0;font-size:12px;line-height:1.9;color:#a0b8ce;overflow-x:auto">cron: 30 8 * * 1-5 cd ~/FORGE/power-dashboard && python3 magic_split_scanner.py
 
-  document.getElementById('pane-vix').innerHTML =
-    '<div style="background:#0d1224;border:1px solid #1e2d4a;border-radius:12px;padding:18px;margin-bottom:14px">'
-    + '<div style="color:#e0e6f0;font-size:15px;font-weight:700;margin-bottom:8px">왜 VIX를 "선행 게이트"로 쓰는가?</div>'
-    + '<div style="color:#8aa4c4;font-size:13px;line-height:1.9">'
-    + '매직스플릿이 망가지는 유일한 시나리오는 <span style="color:#ff6b6b;font-weight:700">모든 종목이 같이 떨어질 때</span>입니다. '
-    + '체크리스트 21개를 모두 통과한 종목도 예외 없이 하락합니다. '
-    + 'VIX/VKOSPI는 그 신호를 가장 빠르게 포착하므로 <span style="color:#00d4aa;font-weight:700">종목 스캔 전에 먼저 시장 국면을 판단</span>하는 선행 게이트로 활용합니다.<br><br>'
-    + '⚠️ VKOSPI는 yfinance 미지원 — 현재 <span style="color:#ffd166">VIX × 1.05</span>로 추정합니다.</div></div>'
-
-    + '<div class="vix-zones" style="margin-bottom:14px">'
-    + vixDetails.map(z =>
-        '<div class="vix-zone-card" style="background:' + z.color + '0d;border:1px solid ' + z.color + '35">'
-        + '<div style="color:' + z.color + ';font-size:12px;font-weight:700;letter-spacing:2px;margin-bottom:8px">' + z.label + '</div>'
-        + '<div style="margin-bottom:5px"><div style="color:#6b8aaa;font-size:10px;letter-spacing:1px">VIX</div>'
-        + '<div style="color:#e0e6f0;font-size:20px;font-weight:700">' + z.vix + '</div></div>'
-        + '<div style="margin-bottom:10px"><div style="color:#6b8aaa;font-size:10px;letter-spacing:1px">VKOSPI</div>'
-        + '<div style="color:#e0e6f0;font-size:15px;font-weight:700">' + z.vkospi + '</div></div>'
-        + '<div style="background:' + z.color + '20;color:' + z.color + ';border-radius:5px;padding:3px 8px;font-size:12px;font-weight:700;margin-bottom:8px;display:inline-block">' + z.action + '</div>'
-        + '<div style="color:#8aa4c4;font-size:12px;line-height:1.7;margin-bottom:8px">' + z.desc + '</div>'
-        + '<div style="border-top:1px solid #1a2840;padding-top:8px">'
-        + '<div style="display:flex;justify-content:space-between;margin-bottom:3px"><span style="color:#6b8aaa;font-size:11px">보너스</span><span style="color:' + z.color + ';font-size:11px;font-weight:700">' + z.score + '</span></div>'
-        + '<div style="color:#6b8aaa;font-size:11px">' + z.scan + '</div>'
-        + '</div></div>'
-      ).join('')
-    + '</div>'
-
-    + '<div class="resp-2col" style="display:grid;grid-template-columns:1fr 1fr;gap:13px">'
-    + '<div style="background:#060912;border:1px solid #1e2d4a;border-radius:12px;padding:16px">'
-    + '<div style="color:#4d9fff;font-size:14px;font-weight:700;margin-bottom:12px">🖥️ 자동화 구조</div>'
-    + '<div style="display:flex;flex-direction:column;gap:8px">'
-    + [
-        {step:'08:30',label:'Cron 트리거',desc:'평일 매일 자동 실행',color:'#4d9fff'},
-        {step:'①',label:'VIX 게이트 확인',desc:'PANIC이면 즉시 중단',color:'#ffd166'},
-        {step:'②',label:'FDR 유니버스 로드',desc:'KOSPI+KOSDAQ 상위 300종목',color:'#00d4aa'},
-        {step:'③',label:'21개 체크리스트',desc:'yfinance 기반 자동 채점',color:'#00d4aa'},
-        {step:'④',label:'TOP 8 선정 → DB 저장',desc:'passed_count 내림차순',color:'#00d4aa'},
-        {step:'⑤',label:'브라우저 자동 반영',desc:'localhost:3000 새로고침',color:'#a78bfa'},
-      ].map(s =>
-        '<div style="display:flex;align-items:flex-start;gap:10px;padding:9px 10px;background:#0d1224;border-radius:7px">'
-        + '<span style="background:' + s.color + '20;color:' + s.color + ';font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;white-space:nowrap;min-width:36px;text-align:center">' + s.step + '</span>'
-        + '<div><div style="color:#e0e6f0;font-size:13px;font-weight:700">' + s.label + '</div>'
-        + '<div style="color:#6b8aaa;font-size:11px">' + s.desc + '</div></div>'
-        + '</div>'
-      ).join('')
-    + '</div></div>'
-
-    + '<div style="background:#060912;border:1px solid #1e2d4a;border-radius:12px;padding:16px">'
-    + '<div style="color:#4d9fff;font-size:14px;font-weight:700;margin-bottom:12px">📡 데이터 소스</div>'
-    + [
-        {name:'yfinance',desc:'VIX · 주가 · 기술지표 · 재무',cost:'무료',color:'#00d4aa'},
-        {name:'FinanceDataReader',desc:'KOSPI · KOSDAQ 종목 유니버스',cost:'무료',color:'#00d4aa'},
-        {name:'VKOSPI',desc:'VIX × 1.05 추정 (직접 미지원)',cost:'추정',color:'#ffd166'},
-        {name:'DART OpenAPI',desc:'재무제표 정밀 확인 (미연동)',cost:'무료',color:'#6b8aaa'},
-      ].map(d =>
-        '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #1a2840">'
-        + '<div><div style="color:#e0e6f0;font-size:13px;font-weight:700">' + d.name + '</div>'
-        + '<div style="color:#6b8aaa;font-size:11px">' + d.desc + '</div></div>'
-        + '<span style="background:' + d.color + '18;color:' + d.color + ';font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px">' + d.cost + '</span>'
-        + '</div>'
-      ).join('')
-    + '<div style="margin-top:12px;padding:9px;background:#0d1224;border-radius:6px">'
-    + '<div style="color:#6b8aaa;font-size:11px;line-height:1.75">'
-    + 'cron: 30 8 * * 1-5<br>cd ~/FORGE/magic-split && python3 scanner.py</div></div>'
-    + '</div></div>';
+데이터 소스:
+  yfinance           → VIX, VKOSPI, 주가/기술지표
+  FinanceDataReader  → KOSPI 유니버스 (시총상위 100 + 재무우량 100)
+  API 비용           → 0원 (완전 무료)
+  최종 추천          → 상위 12종목 (가격 5,000~80,000원 필터 적용)</pre>
+    </div>`;
 }
 
 // ── Helpers ────────────────────────────────────────────────

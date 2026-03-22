@@ -31,7 +31,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .tab.active{border-bottom-color:#c4a44a;color:#c4a44a}
 .tab:hover:not(.active){color:#8aaa90}
 
-.content{max-width:1200px;margin:0 auto;padding:20px}
+.content{max-width:1200px;margin:0 auto;padding:20px;overflow:visible}
 
 .stats-row{display:flex;align-items:center;gap:16px;padding:10px 16px;background:#0c120e;border:1px solid #1e2d20;border-radius:8px;font-family:'IBM Plex Mono',monospace;font-size:13px;flex-wrap:wrap;margin-bottom:16px}
 .stats-row .sl{color:#5a7a60;letter-spacing:.08em;text-transform:uppercase;font-weight:500}
@@ -112,6 +112,10 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .leaflet-popup-content .pd{margin-top:8px;color:#a0c8a8;font-size:14px;line-height:1.8}
 .leaflet-popup-content .ps{font-family:'IBM Plex Mono',monospace;color:#c4a44a;font-weight:600;font-size:15px}
 .leaflet-popup-close-button{color:#5a7a60!important;font-size:20px!important}
+
+.trail-dwarf{position:fixed;bottom:25%;left:2%;width:100px;pointer-events:none;opacity:.85;transition:opacity .3s;z-index:150}
+.trail-dwarf:hover{opacity:1}
+@media(max-width:960px){.trail-dwarf{display:none}}
 
 .empty{text-align:center;padding:3.5rem;color:#5a7a60;font-family:'IBM Plex Mono',monospace;font-size:14px;line-height:1.8}
 .ld{display:flex;align-items:center;justify-content:center;height:200px;color:#5a7a60;font-family:'IBM Plex Mono',monospace;font-size:14px;gap:8px}
@@ -213,6 +217,8 @@ function initMap(){map=L.map('map',{zoomControl:true}).setView([36.5,127.8],7);L
 
 function switchTab(tab){
   curTab=tab;
+  var dw=document.getElementById('trailDwarf');
+  if(dw) dw.style.display=(tab==='recommend')?'block':'none';
   const mc=document.getElementById('mainContent');
   const tr=document.getElementById('tabRecommend');
   const tf=document.getElementById('tabFullmap');
@@ -279,5 +285,6 @@ function sb(types){if(!types||!types.length)return '';return '<span class="sbs">
 
 initMap();load();
 </script>
+<img id="trailDwarf" class="trail-dwarf" src="trail_dwarf_full.png" alt="Trail Dwarf" />
 </body>
 </html>
