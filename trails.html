@@ -39,6 +39,10 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .stats-row .si{color:#E1306C}.stats-row .sy{color:#c4a44a}
 .stats-row .sd{color:#4a6650;margin-left:auto}
 
+.legend{display:flex;align-items:center;gap:14px;padding:6px 16px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#5a7a60;margin-bottom:12px;flex-wrap:wrap}
+.legend .ll{color:#4a6650;letter-spacing:.06em;font-weight:500}
+.legend .li{display:flex;align-items:center;gap:4px}
+.legend .lb{font-size:10px;font-weight:600;border-radius:2px;padding:1px 5px;line-height:14px}
 .month-row{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:16px}
 .month-btn{background:#0c120e;color:#5a7a60;border:1px solid #1a2a1c;border-radius:6px;padding:8px 14px;font-family:'IBM Plex Mono',monospace;font-size:13px;cursor:pointer;transition:all .15s;font-weight:500}
 .month-btn:hover{border-color:#2a4a30;color:#7a9a80}
@@ -140,6 +144,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   .tabs{overflow-x:auto;padding:0 14px}
   .tab{padding:10px 14px;font-size:13px;white-space:nowrap}
   .stats-row{font-size:11px;gap:8px;padding:8px 12px}
+  .legend{font-size:11px;gap:10px;padding:4px 12px}
   .month-row{gap:4px}
   .month-btn{padding:7px 11px;font-size:12px}
   .tc{padding:14px 12px}
@@ -165,6 +170,8 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   .tc .nr{gap:6px}
   .sbs{display:none}
   .stats-row .sd{margin-left:0;width:100%;margin-top:2px;font-size:10px}
+  .legend{font-size:10px;gap:8px}
+  .legend .ll{display:none}
   .view-recommend .map-panel{height:260px}
   .view-fullmap .map-panel{height:calc(100vh - 180px);min-height:300px}
 }
@@ -186,6 +193,14 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 
 <div class="content view-recommend" id="mainContent">
   <div class="stats-row" id="statsBar"></div>
+  <div class="legend">
+    <span class="ll">SOURCE</span>
+    <span class="li"><span class="lb" style="color:#3ecf70;border:1px solid #3ecf7044">B</span> 블로그</span>
+    <span class="li"><span class="lb" style="color:#58e888;border:1px solid #58e88844">C</span> 카페</span>
+    <span class="li"><span class="lb" style="color:#E1306C;border:1px solid #E1306C44">IG</span> 인스타그램</span>
+    <span class="li"><span class="lb" style="color:#c4a44a;border:1px solid #c4a44a44">YT</span> 유튜브</span>
+    <span class="li"><span class="lb" style="color:#eb531f;border:1px solid #eb531f44">T</span> 티스토리</span>
+  </div>
   <div class="month-row" id="months"></div>
   <div class="grid">
     <div class="panel">
