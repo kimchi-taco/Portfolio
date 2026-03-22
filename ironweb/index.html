@@ -62,6 +62,9 @@ body{font-family:'Noto Sans KR',system-ui;background:var(--bg);color:var(--t1);o
 .cr input:checked~.cb{border-color:var(--cc,var(--acc));background:var(--cc,var(--acc));color:#fff}
 .cl2{width:22px;height:3px;border-radius:2px;flex-shrink:0}
 .cd{width:9px;height:9px;border-radius:50%;flex-shrink:0;border:2px solid}
+.cp{width:16px;height:16px;border:none;border-radius:4px;cursor:pointer;padding:0;background:none;flex-shrink:0;-webkit-appearance:none;appearance:none}
+.cp::-webkit-color-swatch-wrapper{padding:0}.cp::-webkit-color-swatch{border:1px solid rgba(255,255,255,.2);border-radius:3px}
+.cp::-moz-color-swatch{border:1px solid rgba(255,255,255,.2);border-radius:3px}
 .cn{font-size:13px;flex:1}.cv{font-family:'IBM Plex Mono',monospace;font-size:12px;color:#b0bec5;font-weight:600}
 .at{font-size:11px;color:var(--acc);cursor:pointer;border:none;background:none;font-family:'Noto Sans KR';padding:2px 0;margin-bottom:4px}.at:hover{text-decoration:underline}
 .qb{display:block;width:100%;text-align:left;background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:6px;padding:7px 10px;color:var(--t1);font-size:13px;font-family:'Noto Sans KR';cursor:pointer;transition:all .12s;margin-bottom:3px}
@@ -208,17 +211,17 @@ body{font-family:'Noto Sans KR',system-ui;background:var(--bg);color:var(--t1);o
     <div class="sh" onclick="togS(this)"><span class="st2">송전선로 (전압별)</span><span class="sa">▾</span></div>
     <div class="sb" id="secL">
       <button class="at" onclick="togAllL()">전체 선택/해제</button>
-      <label class="cr" style="--cc:var(--v765)"><input type="checkbox" checked data-vc="765" onchange="togV(765,this.checked)"><span class="cb">✓</span><span class="cl2" style="background:var(--v765);box-shadow:0 0 6px var(--v765)"></span><span class="cn">765 kV</span><span class="cv" id="c765">…</span></label>
-      <label class="cr" style="--cc:var(--v345)"><input type="checkbox" checked data-vc="345" onchange="togV(345,this.checked)"><span class="cb">✓</span><span class="cl2" style="background:var(--v345);box-shadow:0 0 4px var(--v345)"></span><span class="cn">345 kV</span><span class="cv" id="c345">…</span></label>
-      <label class="cr" style="--cc:var(--v154)"><input type="checkbox" checked data-vc="154" onchange="togV(154,this.checked)"><span class="cb">✓</span><span class="cl2" style="background:var(--v154)"></span><span class="cn">154 kV</span><span class="cv" id="c154">…</span></label>
+      <label class="cr" style="--cc:var(--v765)"><input type="checkbox" checked data-vc="765" onchange="togV(765,this.checked)"><span class="cb">✓</span><input type="color" class="cp" value="#ff1744" onchange="setClr('765',this.value)"><span class="cn">765 kV</span><span class="cv" id="c765">…</span></label>
+      <label class="cr" style="--cc:var(--v345)"><input type="checkbox" checked data-vc="345" onchange="togV(345,this.checked)"><span class="cb">✓</span><input type="color" class="cp" value="#ff6d00" onchange="setClr('345',this.value)"><span class="cn">345 kV</span><span class="cv" id="c345">…</span></label>
+      <label class="cr" style="--cc:var(--v154)"><input type="checkbox" checked data-vc="154" onchange="togV(154,this.checked)"><span class="cb">✓</span><input type="color" class="cp" value="#ffd600" onchange="setClr('154',this.value)"><span class="cn">154 kV</span><span class="cv" id="c154">…</span></label>
     </div>
   </div>
 
   <div class="sc">
     <div class="sh" onclick="togS(this)"><span class="st2">시설물</span><span class="sa">▾</span></div>
     <div class="sb">
-      <label class="cr" style="--cc:var(--sub)"><input type="checkbox" checked onchange="togF('sub',this.checked)"><span class="cb">✓</span><span class="cd" style="background:rgba(171,71,188,.25);border-color:var(--sub)"></span><span class="cn">변전소</span><span class="cv" id="csub">…</span></label>
-      <label class="cr" style="--cc:var(--plant)"><input type="checkbox" checked onchange="togF('plt',this.checked)"><span class="cb">✓</span><span class="cd" style="background:rgba(41,121,255,.25);border-color:var(--plant)"></span><span class="cn">발전소 (전체)</span><span class="cv" id="cplt">…</span></label>
+      <label class="cr" style="--cc:var(--sub)"><input type="checkbox" checked onchange="togF('sub',this.checked)"><span class="cb">✓</span><input type="color" class="cp" value="#ab47bc" onchange="setClr('sub',this.value)"><span class="cn">변전소</span><span class="cv" id="csub">…</span></label>
+      <label class="cr" style="--cc:var(--plant)"><input type="checkbox" checked onchange="togF('plt',this.checked)"><span class="cb">✓</span><input type="color" class="cp" value="#2979ff" onchange="setClr('plt',this.value)"><span class="cn">발전소 (전체)</span><span class="cv" id="cplt">…</span></label>
     </div>
   </div>
 
@@ -226,13 +229,13 @@ body{font-family:'Noto Sans KR',system-ui;background:var(--bg);color:var(--t1);o
     <div class="sh" onclick="togS(this)"><span class="st2">발전소 연료별</span><span class="sa">▾</span></div>
     <div class="sb" id="secFuel">
       <button class="at" onclick="togAllFuel()">전체 선택/해제</button>
-      <label class="cr" style="--cc:var(--f-lng)"><input type="checkbox" checked data-fuel="gas" onchange="togFuel('gas',this.checked)"><span class="cb">✓</span><span class="cd" style="background:rgba(255,145,0,.25);border-color:var(--f-lng)"></span><span class="cn">LNG/가스</span><span class="cv" id="cf-gas">…</span></label>
-      <label class="cr" style="--cc:var(--f-coal)"><input type="checkbox" checked data-fuel="coal" onchange="togFuel('coal',this.checked)"><span class="cb">✓</span><span class="cd" style="background:rgba(121,85,72,.25);border-color:var(--f-coal)"></span><span class="cn">석탄/화력</span><span class="cv" id="cf-coal">…</span></label>
-      <label class="cr" style="--cc:var(--f-nuc)"><input type="checkbox" checked data-fuel="nuclear" onchange="togFuel('nuclear',this.checked)"><span class="cb">✓</span><span class="cd" style="background:rgba(118,255,3,.25);border-color:var(--f-nuc)"></span><span class="cn">원자력</span><span class="cv" id="cf-nuclear">…</span></label>
-      <label class="cr" style="--cc:var(--f-solar)"><input type="checkbox" checked data-fuel="solar" onchange="togFuel('solar',this.checked)"><span class="cb">✓</span><span class="cd" style="background:rgba(255,214,0,.25);border-color:var(--f-solar)"></span><span class="cn">태양광</span><span class="cv" id="cf-solar">…</span></label>
-      <label class="cr" style="--cc:var(--f-wind)"><input type="checkbox" checked data-fuel="wind" onchange="togFuel('wind',this.checked)"><span class="cb">✓</span><span class="cd" style="background:rgba(0,229,255,.25);border-color:var(--f-wind)"></span><span class="cn">풍력</span><span class="cv" id="cf-wind">…</span></label>
-      <label class="cr" style="--cc:var(--f-hydro)"><input type="checkbox" checked data-fuel="hydro" onchange="togFuel('hydro',this.checked)"><span class="cb">✓</span><span class="cd" style="background:rgba(33,150,243,.25);border-color:var(--f-hydro)"></span><span class="cn">수력</span><span class="cv" id="cf-hydro">…</span></label>
-      <label class="cr" style="--cc:var(--f-other)"><input type="checkbox" checked data-fuel="other" onchange="togFuel('other',this.checked)"><span class="cb">✓</span><span class="cd" style="background:rgba(144,164,174,.25);border-color:var(--f-other)"></span><span class="cn">기타/미분류</span><span class="cv" id="cf-other">…</span></label>
+      <label class="cr" style="--cc:var(--f-lng)"><input type="checkbox" checked data-fuel="gas" onchange="togFuel('gas',this.checked)"><span class="cb">✓</span><input type="color" class="cp" value="#ff9100" onchange="setClr('f-gas',this.value)"><span class="cn">LNG/가스</span><span class="cv" id="cf-gas">…</span></label>
+      <label class="cr" style="--cc:var(--f-coal)"><input type="checkbox" checked data-fuel="coal" onchange="togFuel('coal',this.checked)"><span class="cb">✓</span><input type="color" class="cp" value="#795548" onchange="setClr('f-coal',this.value)"><span class="cn">석탄/화력</span><span class="cv" id="cf-coal">…</span></label>
+      <label class="cr" style="--cc:var(--f-nuc)"><input type="checkbox" checked data-fuel="nuclear" onchange="togFuel('nuclear',this.checked)"><span class="cb">✓</span><input type="color" class="cp" value="#76ff03" onchange="setClr('f-nuc',this.value)"><span class="cn">원자력</span><span class="cv" id="cf-nuclear">…</span></label>
+      <label class="cr" style="--cc:var(--f-solar)"><input type="checkbox" checked data-fuel="solar" onchange="togFuel('solar',this.checked)"><span class="cb">✓</span><input type="color" class="cp" value="#ffd600" onchange="setClr('f-solar',this.value)"><span class="cn">태양광</span><span class="cv" id="cf-solar">…</span></label>
+      <label class="cr" style="--cc:var(--f-wind)"><input type="checkbox" checked data-fuel="wind" onchange="togFuel('wind',this.checked)"><span class="cb">✓</span><input type="color" class="cp" value="#00e5ff" onchange="setClr('f-wind',this.value)"><span class="cn">풍력</span><span class="cv" id="cf-wind">…</span></label>
+      <label class="cr" style="--cc:var(--f-hydro)"><input type="checkbox" checked data-fuel="hydro" onchange="togFuel('hydro',this.checked)"><span class="cb">✓</span><input type="color" class="cp" value="#2196f3" onchange="setClr('f-hydro',this.value)"><span class="cn">수력</span><span class="cv" id="cf-hydro">…</span></label>
+      <label class="cr" style="--cc:var(--f-other)"><input type="checkbox" checked data-fuel="other" onchange="togFuel('other',this.checked)"><span class="cb">✓</span><input type="color" class="cp" value="#90a4ae" onchange="setClr('f-other',this.value)"><span class="cn">기타/미분류</span><span class="cv" id="cf-other">…</span></label>
     </div>
   </div>
 
@@ -304,22 +307,22 @@ body{font-family:'Noto Sans KR',system-ui;background:var(--bg);color:var(--t1);o
 
   <div class="m-sec">
     <h3>⚡ 송전선로</h3>
-    <p>765kV(빨강), 345kV(주황), 154kV(골드) 3단계로 표시됩니다.</p>
+    <p>765kV(빨강), 345kV(주황), 154kV(골드) 3단계로 표시됩니다. (색상 커스텀 가능)</p>
     <p>체크박스로 전압별 개별 ON/OFF 가능. 검은 casing이 적용되어 어떤 배경에서도 선명합니다.</p>
   </div>
 
   <div class="m-sec">
     <h3>🏗️ 시설물</h3>
     <ul>
-      <li><b>변전소</b> (보라색) — 전국 변전소 위치. 줌인 시 이름 라벨 표시</li>
-      <li><b>발전소 (전체)</b> (파란색) — 모든 발전소를 통합 표시</li>
+      <li><b>변전소</b> (보라색) — 전국 변전소 위치. 줌인 시 이름 라벨 표시 (색상 커스텀 가능)</li>
+      <li><b>발전소 (전체)</b> (파란색) — 모든 발전소를 통합 표시 (색상 커스텀 가능)</li>
     </ul>
     <p>"발전소 전체"와 "연료별" 레이어는 독립적으로 동작합니다. 전체를 끄고 연료별만 볼 수도 있습니다.</p>
   </div>
 
   <div class="m-sec">
     <h3>🔥 발전소 연료별</h3>
-    <p>발전소를 연료원별로 색상 구분하여 표시합니다.</p>
+    <p>발전소를 연료원별로 색상 구분하여 표시합니다. (색상 커스텀 가능)</p>
     <ul>
       <li>🟠 <b>LNG/가스</b> — 주황</li>
       <li>🟤 <b>석탄/화력</b> — 갈색</li>
@@ -371,6 +374,32 @@ body{font-family:'Noto Sans KR',system-ui;background:var(--bg);color:var(--t1);o
     <h3>🔍 클릭 상세 정보</h3>
     <p>지도 위 시설물(송전선로, 변전소, 발전소)을 클릭하면 우측에 상세 정보 패널이 표시됩니다.</p>
     <p>전압, 연료 타입, 운영사 등이 배지와 속성 테이블로 표시됩니다.</p>
+  </div>
+
+  <div class="m-sec">
+    <h3>🎨 색상 커스텀</h3>
+    <p>각 레이어 이름 옆의 <b>컬러 피커(■)</b>를 클릭하면 색상을 자유롭게 변경할 수 있습니다.</p>
+    <ul>
+      <li>송전선로 (765kV, 345kV, 154kV) — 각 전압별 선 색상</li>
+      <li>변전소, 발전소 (전체) — 점 색상</li>
+      <li>연료별 발전소 (LNG, 석탄, 원자력 등 7종) — 각각 독립 색상</li>
+    </ul>
+    <p>변경된 색상은 브라우저에 자동 저장되어 <b>다음 접속 시에도 유지</b>됩니다. 초기화하려면 브라우저의 localStorage를 삭제하거나 새 시크릿 창에서 열면 됩니다.</p>
+  </div>
+
+  <div class="m-sec">
+    <h3>🏗️ 아이소메트릭 아이콘</h3>
+    <p>줌 레벨 8 이상에서 변전소와 발전소가 원형 점 대신 <b>미니어처 아이콘</b>으로 표시됩니다.</p>
+    <ul>
+      <li>변전소 — 변압기 박스 + 절연체</li>
+      <li>LNG/가스 — 가스터빈 + 탱크</li>
+      <li>석탄/화력 — 공장 + 석탄더미</li>
+      <li>원자력 — 돔 원자로</li>
+      <li>태양광 — 기울어진 패널</li>
+      <li>풍력 — 터빈</li>
+      <li>수력 — 댐</li>
+    </ul>
+    <p>3D 기울기(◇ 버튼 또는 <b>3</b> 키) 시 아이콘이 지면에 눕어서 입체적으로 보입니다.</p>
   </div>
 
   <div class="m-sec">
@@ -603,6 +632,9 @@ map.on('load',async()=>{
   map.addSource('plants',{type:'geojson',data:EMP});
   map.addSource('mask',{type:'geojson',data:EMP});
 
+  /* ★ 아이소메트릭 아이콘 등록 */
+  await registerIcons();
+
   /* mask는 인프라 레이어 위에 추가 (아래 참조) */
 
   /* Lines — 검은 외곽선(casing)으로 어떤 배경에서도 선명하게 */
@@ -632,6 +664,18 @@ map.on('load',async()=>{
   map.addLayer({id:'pfg',type:'circle',source:'plants-fuel',minzoom:4,paint:{'circle-radius':['interpolate',['linear'],['zoom'],4,4,8,8,14,16],'circle-color':FC,'circle-opacity':.12,'circle-blur':1}});
   map.addLayer({id:'pfc',type:'circle',source:'plants-fuel',minzoom:4,paint:{'circle-radius':['interpolate',['linear'],['zoom'],4,3,8,6,14,12],'circle-color':FC,'circle-opacity':.85,'circle-stroke-color':FC,'circle-stroke-width':1.5,'circle-stroke-opacity':.6}});
 
+  /* ★ 아이소메트릭 아이콘 레이어 (줌 8 이상에서 표시) */
+  map.addLayer({id:'sub-ico',type:'symbol',source:'sub-pt',minzoom:8,layout:{
+    'icon-image':'ico-sub','icon-size':['interpolate',['linear'],['zoom'],8,.5,12,.8,16,1.2],
+    'icon-allow-overlap':true,'icon-pitch-alignment':'map','icon-rotation-alignment':'map',
+    visibility:'visible'},paint:{'icon-opacity':.9}});
+
+  map.addLayer({id:'plant-ico',type:'symbol',source:'plants-fuel',minzoom:8,layout:{
+    'icon-image':['match',['coalesce',['get','_fuel'],'other'],'gas','ico-gas','coal','ico-coal','nuclear','ico-nuc','solar','ico-solar','wind','ico-wind','hydro','ico-hydro','ico-plant'],
+    'icon-size':['interpolate',['linear'],['zoom'],8,.5,12,.9,16,1.3],
+    'icon-allow-overlap':true,'icon-pitch-alignment':'map','icon-rotation-alignment':'map',
+    visibility:'visible'},paint:{'icon-opacity':.9}});
+
   /* Labels */
   map.addLayer({id:'slbl',type:'symbol',source:'sub-pt',minzoom:9,layout:{'text-field':KO,'text-size':['interpolate',['linear'],['zoom'],9,9,14,12],'text-offset':[0,1.2],'text-anchor':'top','text-font':['Noto Sans Regular'],'text-max-width':10,'text-allow-overlap':false,'text-optional':true},paint:{'text-color':'#ce93d8','text-halo-color':'rgba(10,14,23,.85)','text-halo-width':2}});
   map.addLayer({id:'plbl',type:'symbol',source:'plants',minzoom:8,layout:{'text-field':KO,'text-size':['interpolate',['linear'],['zoom'],8,10,14,13],'text-offset':[0,1.4],'text-anchor':'top','text-font':['Noto Sans Regular'],'text-max-width':10,'text-allow-overlap':false,'text-optional':true},paint:{'text-color':'#82b1ff','text-halo-color':'rgba(10,14,23,.9)','text-halo-width':2}});
@@ -640,7 +684,7 @@ map.on('load',async()=>{
   map.addLayer({id:'mask',type:'fill',source:'mask',paint:{'fill-color':'#000','fill-opacity':0}});
 
   /* Click */
-  const CL=['ln-c','sc','sf','pc','pfc'];
+  const CL=['ln-c','sc','sf','pc','pfc','sub-ico','plant-ico'];
   map.on('click',e=>{const f=map.queryRenderedFeatures(e.point,{layers:CL});f.length?showI(f[0]):closeI()});
   CL.forEach(l=>{map.on('mouseenter',l,()=>map.getCanvas().style.cursor='pointer');map.on('mouseleave',l,()=>map.getCanvas().style.cursor='')});
 
@@ -661,6 +705,8 @@ map.on('load',async()=>{
     try{await ldAdmin()}catch(e){}
     try{await ldCities()}catch(e){}
   }
+  /* 저장된 색상 복원 */
+  try{restoreClrs()}catch(e){}
 });
 
 /* ═══════ DATA LOADERS ═══════ */
@@ -953,7 +999,7 @@ function togV(c,on){LF[c]=on;const f=mkF();try{map.setFilter('ln-cas',f)}catch(e
 function togAllL(){const t=Object.values(LF).some(v=>!v);Object.keys(LF).forEach(k=>LF[k]=t);document.querySelectorAll('#secL input[type=checkbox]').forEach(cb=>cb.checked=t);const f=mkF();try{map.setFilter('ln-cas',f)}catch(e){}try{map.setFilter('ln-g',f)}catch(e){}try{map.setFilter('ln-c',f)}catch(e){}}
 function togF(type,on){
   const v=on?'visible':'none';
-  if(type==='sub')['sf','so','sg','sc','slbl'].forEach(id=>{try{map.setLayoutProperty(id,'visibility',v)}catch(e){}});
+  if(type==='sub')['sf','so','sg','sc','slbl','sub-ico'].forEach(id=>{try{map.setLayoutProperty(id,'visibility',v)}catch(e){}});
   else if(type==='plt')['pg','pc','plbl'].forEach(id=>{try{map.setLayoutProperty(id,'visibility',v)}catch(e){}});
 }
 
@@ -965,12 +1011,12 @@ function buildFF(){
   if(!a.length)return['literal',false];
   return a.length===1?a[0]:['any',...a];
 }
-function togFuel(f,on){fuelFilters[f]=on;const ff=buildFF();['pfg','pfc'].forEach(id=>{try{map.setFilter(id,ff)}catch(e){}})}
+function togFuel(f,on){fuelFilters[f]=on;const ff=buildFF();['pfg','pfc','plant-ico'].forEach(id=>{try{map.setFilter(id,ff)}catch(e){}})}
 function togAllFuel(){
   const t=Object.values(fuelFilters).some(v=>!v);
   Object.keys(fuelFilters).forEach(k=>fuelFilters[k]=t);
   document.querySelectorAll('#secFuel input[type=checkbox]').forEach(cb=>cb.checked=t);
-  const ff=buildFF();['pfg','pfc'].forEach(id=>{try{map.setFilter(id,ff)}catch(e){}});
+  const ff=buildFF();['pfg','pfc','plant-ico'].forEach(id=>{try{map.setFilter(id,ff)}catch(e){}});
 }
 
 /* ═══════ STATS ═══════ */
@@ -1000,6 +1046,106 @@ function updateStats(){
 }
 function togA(nm){const s=AS[nm];if(!s)return;s.vis=!s.vis;const v=s.vis?'visible':'none';const sid='a'+s.idx;[sid+'f',sid+'l',sid+'t'].forEach(id=>{try{map.setLayoutProperty(id,'visibility',v)}catch(e){}});updMask()}
 function togAllA(){const t=Object.values(AS).some(s=>!s.vis);Object.keys(AS).forEach(nm=>{const s=AS[nm];s.vis=t;const v=t?'visible':'none';const sid='a'+s.idx;[sid+'f',sid+'l',sid+'t'].forEach(id=>{try{map.setLayoutProperty(id,'visibility',v)}catch(e){}})});document.querySelectorAll('#aList input[type=checkbox]').forEach(cb=>cb.checked=t);updMask()}
+
+/* ═══════ COLOR CUSTOMIZATION ═══════ */
+const CLR_KEY='ironweb_colors';
+const CLR_MAP={
+  '765':{layers:['ln-c','ln-g','ln-cas'],prop:'line-color',css:'--v765'},
+  '345':{layers:['ln-c','ln-g','ln-cas'],prop:'line-color',css:'--v345'},
+  '154':{layers:['ln-c','ln-g','ln-cas'],prop:'line-color',css:'--v154'},
+  'sub':{layers:['sc','sg','sf','so'],prop:['circle-color','circle-color','fill-color','line-color'],css:'--sub'},
+  'plt':{layers:['pc','pg'],prop:'circle-color',css:'--plant'},
+  'f-gas':{fuel:'gas',css:'--f-lng'},
+  'f-coal':{fuel:'coal',css:'--f-coal'},
+  'f-nuc':{fuel:'nuclear',css:'--f-nuc'},
+  'f-solar':{fuel:'solar',css:'--f-solar'},
+  'f-wind':{fuel:'wind',css:'--f-wind'},
+  'f-hydro':{fuel:'hydro',css:'--f-hydro'},
+  'f-other':{fuel:'other',css:'--f-other'},
+};
+/* 연료 색상 맵 (fuel filter 레이어에서 사용) */
+let fuelClrs={gas:'#ff9100',coal:'#795548',nuclear:'#76ff03',solar:'#ffd600',wind:'#00e5ff',hydro:'#2196f3',other:'#90a4ae'};
+
+function setClr(id,c){
+  const m=CLR_MAP[id];if(!m)return;
+  document.documentElement.style.setProperty(m.css,c);
+  if(m.fuel){
+    fuelClrs[m.fuel]=c;
+    const FC=buildFuelColor();
+    try{map.setPaintProperty('pfc','circle-color',FC);map.setPaintProperty('pfg','circle-color',FC);
+        map.setPaintProperty('pfc','circle-stroke-color',FC)}catch(e){}
+  }else if(m.layers){
+    m.layers.forEach((lid,i)=>{
+      const p=Array.isArray(m.prop)?m.prop[i]:m.prop;
+      try{
+        if(id.match(/^[0-9]/)){
+          /* 전압별: match 표현식 업데이트 → 개별 레이어 paint만 업데이트 불가 → CSS 변수로 처리 */
+          const VC=buildVoltColor();
+          map.setPaintProperty('ln-c','line-color',VC);
+          map.setPaintProperty('ln-g','line-color',VC);
+        }else{
+          map.setPaintProperty(lid,p,c);
+        }
+      }catch(e){}
+    });
+  }
+  /* localStorage 저장 */
+  const saved=JSON.parse(localStorage.getItem(CLR_KEY)||'{}');
+  saved[id]=c;localStorage.setItem(CLR_KEY,JSON.stringify(saved));
+}
+
+function buildVoltColor(){
+  const s=document.documentElement.style;
+  const g=v=>s.getPropertyValue('--v'+v).trim()||getComputedStyle(document.documentElement).getPropertyValue('--v'+v).trim();
+  return['match',['get','_vc'],765,g('765'),345,g('345'),154,g('154'),66,'#00e5ff',22,'#448aff','#546e7a'];
+}
+function buildFuelColor(){
+  return['match',['coalesce',['get','_fuel'],'other'],'gas',fuelClrs.gas,'coal',fuelClrs.coal,'nuclear',fuelClrs.nuclear,'solar',fuelClrs.solar,'wind',fuelClrs.wind,'hydro',fuelClrs.hydro,fuelClrs.other];
+}
+
+/* 저장된 색상 복원 */
+function restoreClrs(){
+  const saved=JSON.parse(localStorage.getItem(CLR_KEY)||'{}');
+  for(const[id,c]of Object.entries(saved)){
+    const picker=document.querySelector(`.cp[onchange*="'${id}'"]`);
+    if(picker)picker.value=c;
+    setClr(id,c);
+  }
+}
+
+/* ═══════ ISOMETRIC SVG ICONS ═══════ */
+function mkIcon(paths,size=40){
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">${paths}</svg>`;
+  return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+}
+const ICONS={
+  /* 변전소: 변압기 박스 + 절연체 */
+  sub:()=>mkIcon(`<rect x="8" y="16" width="24" height="16" rx="2" fill="#ab47bc" opacity=".9"/><rect x="10" y="12" width="6" height="4" rx="1" fill="#ce93d8"/><rect x="24" y="12" width="6" height="4" rx="1" fill="#ce93d8"/><line x1="13" y1="8" x2="13" y2="12" stroke="#ce93d8" stroke-width="2"/><line x1="27" y1="8" x2="27" y2="12" stroke="#ce93d8" stroke-width="2"/><circle cx="13" cy="7" r="2" fill="#e1bee7"/><circle cx="27" cy="7" r="2" fill="#e1bee7"/>`),
+  /* 발전소(일반): 공장 건물 + 굴뚝 */
+  plant:()=>mkIcon(`<rect x="6" y="14" width="28" height="20" rx="2" fill="#2979ff" opacity=".9"/><rect x="8" y="8" width="5" height="6" rx="1" fill="#448aff"/><rect x="8" y="4" width="3" height="4" rx="0" fill="#82b1ff"/><rect x="24" y="10" width="8" height="4" rx="1" fill="#448aff"/><rect x="12" y="20" width="4" height="6" fill="#1565c0"/><rect x="22" y="20" width="4" height="6" fill="#1565c0"/>`),
+  /* LNG/가스: 가스터빈 + 둥근 탱크 */
+  gas:()=>mkIcon(`<ellipse cx="20" cy="22" rx="14" ry="10" fill="#ff9100" opacity=".85"/><rect x="16" y="6" width="4" height="12" rx="1" fill="#ffb74d"/><circle cx="18" cy="5" r="3" fill="#ffe0b2" opacity=".5"/><rect x="24" y="10" width="3" height="8" rx="1" fill="#ffb74d"/>`),
+  /* 석탄: 공장 + 석탄더미 */
+  coal:()=>mkIcon(`<rect x="8" y="12" width="24" height="18" rx="2" fill="#795548" opacity=".9"/><rect x="10" y="4" width="4" height="8" rx="1" fill="#8d6e63"/><rect x="18" y="6" width="4" height="6" rx="1" fill="#8d6e63"/><ellipse cx="28" cy="32" rx="8" ry="4" fill="#5d4037"/>`),
+  /* 원자력: 돔 원자로 */
+  nuc:()=>mkIcon(`<rect x="8" y="20" width="24" height="14" rx="2" fill="#76ff03" opacity=".8"/><ellipse cx="20" cy="20" rx="12" ry="10" fill="#76ff03" opacity=".6"/><circle cx="20" cy="16" r="4" fill="#b2ff59" opacity=".7"/><circle cx="20" cy="16" r="1.5" fill="#fff"/>`),
+  /* 태양광: 기울어진 패널 */
+  solar:()=>mkIcon(`<polygon points="6,28 14,10 34,10 26,28" fill="#ffd600" opacity=".85"/><line x1="10" y1="19" x2="30" y2="19" stroke="#f9a825" stroke-width="1"/><line x1="14" y1="10" x2="6" y2="28" stroke="#f9a825" stroke-width=".5"/><line x1="20" y1="10" x2="12" y2="28" stroke="#f9a825" stroke-width=".5"/><line x1="28" y1="10" x2="20" y2="28" stroke="#f9a825" stroke-width=".5"/><rect x="18" y="28" width="4" height="6" fill="#9e9d24"/>`),
+  /* 풍력: 터빈 */
+  wind:()=>mkIcon(`<line x1="20" y1="10" x2="20" y2="36" stroke="#00e5ff" stroke-width="2.5"/><circle cx="20" cy="10" r="2.5" fill="#00e5ff"/><line x1="20" y1="10" x2="8" y2="22" stroke="#00e5ff" stroke-width="2" stroke-linecap="round"/><line x1="20" y1="10" x2="32" y2="22" stroke="#00e5ff" stroke-width="2" stroke-linecap="round"/><line x1="20" y1="10" x2="20" y2="0" stroke="#00e5ff" stroke-width="2" stroke-linecap="round"/>`),
+  /* 수력: 댐 */
+  hydro:()=>mkIcon(`<polygon points="4,34 12,8 28,8 36,34" fill="#2196f3" opacity=".85"/><rect x="14" y="14" width="12" height="8" rx="1" fill="#1565c0"/><path d="M6,34 Q12,30 18,34 Q24,30 30,34 Q36,30 40,34" fill="none" stroke="#64b5f6" stroke-width="1.5"/>`),
+};
+
+function registerIcons(){
+  const load=(name,url)=>new Promise(r=>{const img=new Image(40,40);img.onload=()=>{map.addImage(name,img);r()};img.onerror=()=>r();img.src=url});
+  return Promise.all([
+    load('ico-sub',ICONS.sub()),load('ico-plant',ICONS.plant()),
+    load('ico-gas',ICONS.gas()),load('ico-coal',ICONS.coal()),
+    load('ico-nuc',ICONS.nuc()),load('ico-solar',ICONS.solar()),
+    load('ico-wind',ICONS.wind()),load('ico-hydro',ICONS.hydro()),
+  ]);
+}
 
 /* ═══════ UI ═══════ */
 function togS(h){h.classList.toggle('fold');h.nextElementSibling.classList.toggle('hid')}
