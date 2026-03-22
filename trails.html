@@ -17,6 +17,8 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 /* Topbar */
 .topbar{height:48px;background:#0c120e;border-bottom:1px solid #1e2d20;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:0 20px;position:sticky;top:0;z-index:200}
 .topbar-logo{font-family:'Cinzel',serif;font-size:13px;font-weight:700;letter-spacing:.14em;color:#3ecf70}
+.topbar-logo .logo-short{display:none}
+.topbar-logo .logo-full{display:inline}
 .topbar-center{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;color:#d0dcc8;letter-spacing:.08em}
 .topbar-right{display:flex;align-items:center;gap:10px;justify-content:flex-end}
 .badge-live{background:#3ecf7018;border:1px solid #3ecf7040;color:#3ecf70;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;padding:3px 8px;border-radius:3px;letter-spacing:1px;display:flex;align-items:center;gap:4px}
@@ -70,6 +72,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .tc .rk{font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:700;min-width:30px;text-align:right}
 .tc .rk.t3{color:#c4a44a}
 .tc .rk.dm{color:#2a3a2c}
+.tc .info{min-width:0}
 .tc .nr{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .tc .nm{font-size:18px;font-weight:600;color:#e8f0ea}
 .tc .rg{font-family:'IBM Plex Mono',monospace;font-size:13px;color:#7a9a80;font-weight:500}
@@ -104,7 +107,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .map-title{font-family:'IBM Plex Mono',monospace;font-size:14px;color:#b0d8b8;letter-spacing:.1em;text-transform:uppercase;font-weight:600}
 #map{height:calc(100% - 44px);width:100%}
 
-/* Leaflet overrides */
+/* Leaflet */
 .leaflet-control-zoom a{background:#0c120e!important;color:#7a9a80!important;border-color:#1e2d20!important;font-size:16px!important}
 .leaflet-control-zoom a:hover{background:#1a2a1c!important;color:#3ecf70!important}
 .leaflet-control-attribution{background:rgba(8,13,10,.85)!important;color:#3a5640!important;font-size:10px!important}
@@ -124,38 +127,55 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 @keyframes spin{to{transform:rotate(360deg)}}
 .footer{max-width:1200px;margin:32px auto 0;padding:14px 20px;border-top:1px solid #1a2a1c;display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#3a5640;flex-wrap:wrap;gap:8px}
 
-/* ══ Mobile ══ */
+/* ══ Tablet ══ */
 @media(max-width:960px){
   .grid{grid-template-columns:1fr}
   .map-panel{position:relative;top:0;height:400px;order:-1}
   .panel-body{max-height:none}
 }
+
+/* ══ Mobile ══ */
 @media(max-width:768px){
-  .topbar{padding:0 12px;height:44px}
-  .topbar-center span:not(.badge-live){display:none}
+  .topbar{padding:0 14px;height:44px}
+  .topbar-logo .logo-full{display:none}
+  .topbar-logo .logo-short{display:inline}
+  .topbar-logo{font-size:12px}
+  .topbar-center{font-size:13px;gap:6px}
   .topbar-btn{display:none}
   .scan-date{display:none}
   .content{padding:12px}
-  .tabs{overflow-x:auto;padding:0 12px}
+  .tabs{overflow-x:auto;padding:0 14px}
   .tab{padding:10px 14px;font-size:13px;white-space:nowrap}
-  .stats-row{font-size:12px;gap:10px;padding:8px 12px}
+  .stats-row{font-size:11px;gap:8px;padding:8px 12px}
   .month-row{gap:4px}
-  .month-btn{padding:6px 10px;font-size:12px}
-  .tc{padding:14px}
-  .tc .rk{font-size:20px;min-width:26px}
+  .month-btn{padding:7px 11px;font-size:12px}
+
+  /* Trail Card - 모바일 최적화 */
+  .tc{padding:14px 12px}
+  .tc .rw{flex-wrap:wrap}
+  .tc .lt{gap:10px}
+  .tc .rk{font-size:18px;min-width:26px}
   .tc .nm{font-size:16px}
   .tc .rg{font-size:12px}
-  .tc .rt{gap:8px}
+  .tc .rt{width:100%;justify-content:flex-end;margin-top:6px;padding-left:36px}
   .snum{font-size:14px}
   .df{font-size:11px;padding:2px 6px}
   .dt .mt{grid-template-columns:1fr;gap:6px}
-  .map-panel{height:320px}
-  .footer{flex-direction:column;text-align:center}
+  .map-panel{height:300px}
+  .footer{flex-direction:column;text-align:center;gap:4px}
 }
+
+/* ══ Small Mobile ══ */
 @media(max-width:420px){
-  .tc .nr{flex-direction:column;align-items:flex-start;gap:4px}
-  .tc .rt{flex-direction:column;align-items:flex-end;gap:4px}
-  .stats-row .sd{margin-left:0;width:100%;margin-top:4px}
+  .topbar{padding:0 10px}
+  .content{padding:8px}
+  .tc{padding:12px 10px}
+  .tc .rk{font-size:16px;min-width:22px}
+  .tc .nm{font-size:15px}
+  .tc .nr{gap:6px}
+  .sbs{display:none}
+  .stats-row .sd{margin-left:0;width:100%;margin-top:2px;font-size:10px}
+  .map-panel{height:260px}
 }
 </style>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -163,7 +183,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 <body>
 
 <div class="topbar">
-  <a class="topbar-logo" href="https://mav-ash.com">◆ FORGE NEVER SLEEPS</a>
+  <a class="topbar-logo" href="https://mav-ash.com"><span class="logo-full">◆ FORGE NEVER SLEEPS</span><span class="logo-short">◆ FORGE</span></a>
   <div class="topbar-center"><span>TRAILVEIN</span><span class="badge-live"><span class="blink"></span>LIVE</span></div>
   <div class="topbar-right"><span class="scan-date" id="scanDate"></span><a class="topbar-btn" href="https://mav-ash.com">⚡ 전력 대시보드</a></div>
 </div>
@@ -222,7 +242,7 @@ function rList(){
   el.innerHTML=t.map((v,i)=>`<div class="tc ${aI===i?'on':''}" onclick="sT(${i})" style="animation-delay:${i*50}ms">
     <div class="rw"><div class="lt">
       <span class="rk ${v.rank<=3?'t3':'dm'}">${String(v.rank).padStart(2,'0')}</span>
-      <div><div class="nr"><span class="tr">${TM[v.terrain]||'⛰'}</span><span class="nm">${v.name}</span><span class="rg">${v.region}</span>${bd(v.trend)}${sb(v.source_types)}</div>
+      <div class="info"><div class="nr"><span class="tr">${TM[v.terrain]||'⛰'}</span><span class="nm">${v.name}</span><span class="rg">${v.region}</span>${bd(v.trend)}${sb(v.source_types)}</div>
       <div class="tg">${(v.tags||[]).map(x=>`<span class="tgi">#${x}</span>`).join('')}</div></div>
     </div><div class="rt">
       <span class="df d${v.difficulty}">${v.difficulty}</span>
