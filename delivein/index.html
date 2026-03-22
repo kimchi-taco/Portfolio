@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DeliVein — 종로 맛집 큐레이션</title>
   <meta name="description" content="광고 없는 종로 진짜 맛집 가이드. 노포·회식·점심·비즈니스 카테고리별 큐레이션.">
-  <link rel="preconnect" href="https://cdn.jsdelivr.net">
   <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
@@ -13,87 +12,48 @@
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     html{-webkit-font-smoothing:antialiased;scroll-behavior:smooth}
     body{background:#0a0e1a;color:#e0e6f0;font-family:'Pretendard Variable','Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;font-size:16px;line-height:1.6}
-    a{text-decoration:none;color:inherit}
-    button{font-family:inherit;cursor:pointer}
-    ::-webkit-scrollbar{width:5px;height:5px}
-    ::-webkit-scrollbar-track{background:transparent}
-    ::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08);border-radius:3px}
-
-    /* ── Topbar (magic-split 동일) ── */
-    .topbar{
-      position:sticky;top:0;z-index:100;
-      display:flex;align-items:center;justify-content:space-between;
-      height:44px;padding:0 20px;
-      background:#0d1224;border-bottom:1px solid #1e2d4a;
-    }
-    .topbar-forge{
-      font-family:'Cinzel',serif;font-size:12px;font-weight:700;
-      color:#3ecf70;letter-spacing:1.68px;text-transform:uppercase;
-    }
-    .topbar-title{
-      font-size:14px;font-weight:600;color:#e0e6f0;letter-spacing:1px;
-      position:absolute;left:50%;transform:translateX(-50%);
-    }
+    a{text-decoration:none;color:inherit}button{font-family:inherit;cursor:pointer}
+    ::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08);border-radius:3px}
+    .topbar{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;height:44px;padding:0 16px;background:#0d1224;border-bottom:1px solid #1e2d4a}
+    .topbar-forge{font-family:'Cinzel',serif;font-size:13px;font-weight:700;color:#3ecf70;letter-spacing:1.68px;text-transform:uppercase;white-space:nowrap}
+    .topbar-title{font-size:14px;font-weight:600;color:#e0e6f0;letter-spacing:1px;position:absolute;left:50%;transform:translateX(-50%)}
     .topbar-right{font-size:12px;color:rgba(224,230,240,0.4)}
-
-    /* ── Hero ── */
     .hero{padding:28px 20px 20px;border-bottom:1px solid rgba(255,255,255,0.04)}
     .hero-brand{font-size:13px;font-weight:700;color:#ff6b35;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px}
     .hero h1{font-size:26px;font-weight:800;letter-spacing:-0.5px;margin-bottom:6px;color:#fff}
     .hero p{font-size:15px;color:rgba(224,230,240,0.4);line-height:1.5}
-
-    /* ── Tabs ── */
-    .tabs{
-      display:flex;gap:6px;padding:14px 20px;overflow-x:auto;
-      position:sticky;top:44px;z-index:90;
-      background:linear-gradient(180deg,#0a0e1a 85%,transparent);
-      -webkit-overflow-scrolling:touch;
-    }
+    .random-bar{margin:16px 12px 0;display:flex;gap:8px;align-items:center}
+    .random-btn{display:flex;align-items:center;gap:7px;padding:10px 18px;border-radius:10px;font-size:15px;font-weight:700;border:1px solid rgba(255,107,53,0.3);background:linear-gradient(135deg,rgba(255,107,53,0.1),rgba(255,60,20,0.05));color:#ff6b35;transition:all 0.25s;white-space:nowrap}
+    .random-btn:hover{background:rgba(255,107,53,0.18);border-color:rgba(255,107,53,0.5)}
+    .random-btn:active{transform:scale(0.96)}
+    .random-result{flex:1;min-width:0;padding:10px 16px;border-radius:10px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;gap:10px;overflow:hidden;cursor:pointer;transition:all 0.2s}
+    .random-result:hover{background:rgba(255,107,53,0.05);border-color:rgba(255,107,53,0.2)}
+    .random-result.empty{cursor:default;opacity:0.4}
+    .random-result.empty:hover{background:rgba(255,255,255,0.03);border-color:rgba(255,255,255,0.06)}
+    .random-name{font-size:16px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .random-type{font-size:13px;color:rgba(224,230,240,0.4);white-space:nowrap}
+    .random-verdict{font-size:13px;color:rgba(224,230,240,0.5);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:none}
+    @media(min-width:601px){.random-verdict{display:block}}
+    .tabs{display:flex;gap:6px;padding:14px 12px;overflow-x:auto;position:sticky;top:44px;z-index:90;background:linear-gradient(180deg,#0a0e1a 85%,transparent);-webkit-overflow-scrolling:touch}
     .tabs::-webkit-scrollbar{display:none}
-    .tab-btn{
-      display:flex;align-items:center;gap:6px;
-      padding:8px 16px;border-radius:20px;white-space:nowrap;
-      font-size:14px;font-weight:600;border:1px solid rgba(255,255,255,0.08);
-      background:rgba(255,255,255,0.03);color:rgba(224,230,240,0.5);
-      transition:all 0.2s;flex-shrink:0;
-    }
+    .tab-btn{display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:20px;white-space:nowrap;font-size:14px;font-weight:600;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.03);color:rgba(224,230,240,0.5);transition:all 0.2s;flex-shrink:0}
     .tab-btn.active{background:rgba(255,107,53,0.12);border-color:rgba(255,107,53,0.4);color:#ff6b35}
-    .tab-count{
-      font-size:11px;font-weight:700;padding:1px 7px;border-radius:10px;
-      background:rgba(255,255,255,0.05);
-    }
+    .tab-count{font-size:11px;font-weight:700;padding:1px 7px;border-radius:10px;background:rgba(255,255,255,0.05)}
     .tab-btn.active .tab-count{background:rgba(255,107,53,0.2)}
-
-    /* ── Map ── */
-    .map-wrap{
-      margin:0 12px 16px;border-radius:14px;overflow:hidden;
-      border:1px solid #1e2d4a;height:280px;position:relative;
-    }
+    .map-wrap{margin:0 12px 16px;border-radius:14px;overflow:hidden;border:1px solid #1e2d4a;height:280px;position:relative}
     #map{width:100%;height:100%;z-index:1}
     .leaflet-control-attribution{font-size:9px!important;opacity:0.5}
     .leaflet-popup-content{font-family:'Pretendard Variable',sans-serif;font-size:14px;line-height:1.5;color:#222}
     .leaflet-popup-content b{font-size:15px}
-
-    /* ── Stats ── */
     .stats{margin:0 12px 12px;padding:12px 16px;background:rgba(255,255,255,0.02);border-radius:10px;border:1px solid rgba(255,255,255,0.04);font-size:14px;color:rgba(224,230,240,0.45)}
     .stats strong{color:#ff6b35}
-
-    /* ── Cards ── */
     .card-list{padding:0 12px 60px}
-    .card{
-      background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.06);
-      border-radius:12px;padding:18px 20px;margin-bottom:10px;
-      cursor:pointer;transition:all 0.25s;
-    }
+    .card{background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:18px 20px;margin-bottom:10px;cursor:pointer;transition:all 0.25s}
     .card:active{transform:scale(0.99)}
     .card.selected{background:rgba(255,107,53,0.07);border-color:rgba(255,107,53,0.35)}
     .card-header{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px;flex-wrap:wrap}
     .card-name{font-size:20px;font-weight:700;color:#fff;letter-spacing:-0.3px}
-    .card-age{
-      display:inline-block;font-size:12px;font-weight:600;color:#ff6b35;
-      background:rgba(255,107,53,0.12);padding:2px 9px;border-radius:14px;
-      margin-left:8px;vertical-align:middle;
-    }
+    .card-age{display:inline-block;font-size:12px;font-weight:600;color:#ff6b35;background:rgba(255,107,53,0.12);padding:2px 9px;border-radius:14px;margin-left:8px;vertical-align:middle}
     .card-type{font-size:14px;color:rgba(224,230,240,0.4);margin-bottom:4px}
     .card-tags{display:flex;gap:5px;flex-wrap:wrap}
     .tag{font-size:12px;font-weight:500;padding:2px 9px;border-radius:14px}
@@ -102,8 +62,6 @@
     .tag-점심{background:rgba(168,230,207,0.12);color:#a8e6cf}
     .tag-비즈니스{background:rgba(232,197,71,0.12);color:#e8c547}
     .card-verdict{font-size:15px;color:rgba(224,230,240,0.6);margin-top:6px;line-height:1.55}
-
-    /* ── Expanded Detail ── */
     .card-detail{margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.06)}
     .card-desc{font-size:15px;color:rgba(224,230,240,0.5);line-height:1.65;margin-bottom:14px}
     .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 20px;margin-bottom:14px}
@@ -113,156 +71,129 @@
     .info-sub{font-size:13px;color:rgba(224,230,240,0.35);margin-top:1px}
     .menu-title{font-size:12px;font-weight:600;color:rgba(224,230,240,0.3);letter-spacing:0.8px;text-transform:uppercase;margin-bottom:8px}
     .menu-list{display:flex;flex-wrap:wrap;gap:6px}
-    .menu-item{
-      display:flex;gap:10px;align-items:center;
-      background:rgba(255,255,255,0.04);border-radius:8px;padding:7px 12px;
-    }
+    .menu-item{display:flex;gap:10px;align-items:center;background:rgba(255,255,255,0.04);border-radius:8px;padding:7px 12px}
     .menu-item span:first-child{font-size:15px;color:#e0e6f0;font-weight:500}
     .menu-item span:last-child{font-size:14px;color:#ff6b35;font-weight:600}
     .link-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
-    .ext-link{
-      font-size:14px;font-weight:600;padding:7px 14px;border-radius:8px;
-      display:inline-flex;align-items:center;gap:5px;transition:opacity 0.2s;
-    }
+    .ext-link{font-size:14px;font-weight:600;padding:7px 14px;border-radius:8px;display:inline-flex;align-items:center;gap:5px;transition:opacity 0.2s}
     .ext-link:active{opacity:0.7}
     .link-naver{color:#1ec800;background:rgba(30,200,0,0.08)}
     .link-kakao{color:#fee500;background:rgba(254,229,0,0.08)}
     .link-reserve{color:#ff3e6c;background:rgba(255,62,108,0.08)}
-
-    /* ── Footer ── */
     .footer{text-align:center;padding:20px;border-top:1px solid rgba(255,255,255,0.04);margin:0 12px}
     .footer p{font-size:13px;color:rgba(224,230,240,0.15);line-height:1.8}
     .footer .sig{font-size:12px;color:rgba(224,230,240,0.08);margin-top:6px}
-
-    /* ── Mobile ── */
+    @keyframes dice-spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+    .dice-anim{animation:dice-spin 0.4s ease-out}
     @media(max-width:600px){
-      .hero h1{font-size:22px}
-      .hero p{font-size:14px}
-      .topbar-title{font-size:12px}
-      .card-name{font-size:18px}
-      .card-verdict{font-size:14px}
-      .info-grid{grid-template-columns:1fr}
+      .hero h1{font-size:22px}.hero p{font-size:14px}.topbar-title{font-size:12px}
+      .card-name{font-size:18px}.card-verdict{font-size:14px}.info-grid{grid-template-columns:1fr}
       .map-wrap{height:220px;margin:0 8px 12px;border-radius:10px}
-      .card-list{padding:0 8px 40px}
-      .card{padding:16px}
-      .tabs{padding:12px 8px;gap:5px}
-      .tab-btn{padding:7px 12px;font-size:13px}
-      .hero{padding:22px 16px 16px}
+      .card-list{padding:0 8px 40px}.card{padding:16px}.tabs{padding:12px 8px;gap:5px}
+      .tab-btn{padding:7px 12px;font-size:13px}.hero{padding:22px 16px 16px}
+      .random-bar{margin:12px 8px 0}.random-btn{padding:9px 14px;font-size:14px}
+      .random-result{padding:9px 12px}.random-name{font-size:15px}
     }
   </style>
 </head>
 <body>
-  <!-- Topbar -->
   <div class="topbar">
-    <a href="/" class="topbar-forge">⬥ FORGE NEVER SLEEPS</a>
+    <a href="/" class="topbar-forge">⬥ FORGE</a>
     <span class="topbar-title">DELIVEIN</span>
     <span class="topbar-right" id="updateDate"></span>
   </div>
-
   <div id="root"></div>
-
   <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
   <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-
   <script type="text/babel">
-    const { useState, useEffect, useRef } = React;
+    const{useState,useEffect,useRef,useCallback}=React;
+    const FALLBACK=[{id:1,name:"이문설농탕",category:["노포"],since:1904,type:"설농탕",address:"서울 종로구 종로35길 3",phone:"02-733-6526",menu:[{item:"설농탕",price:"13,000원"}],hours:"매일 08:00~21:00",closed:"명절",reservation:false,reservationNote:"현장 대기",capacity:"~60석",coords:[37.5712,126.9910],description:"1904년 개업, 한국 최초 등록 식당.",verdict:"120년 역사의 원조.",source:"manual"}];
+    const CATS=[{key:"all",label:"전체",icon:"🗺️"},{key:"노포",label:"노포 (20년+)",icon:"🏮"},{key:"회식",label:"회식용",icon:"🍻"},{key:"점심",label:"점심식사",icon:"🍚"},{key:"비즈니스",label:"비즈니스",icon:"💼"}];
+    const catColor=c=>c==="노포"?"#ff6b35":c==="비즈니스"?"#e8c547":c==="회식"?"#4ecdc4":"#a8e6cf";
 
-    const FALLBACK = [
-      {id:1,name:"이문설농탕",category:["노포"],since:1904,type:"설농탕",address:"서울 종로구 종로35길 3",phone:"02-733-6526",menu:[{item:"설농탕",price:"13,000원"},{item:"도가니탕",price:"16,000원"}],hours:"매일 08:00~21:00",closed:"명절 당일",reservation:false,reservationNote:"현장 대기",capacity:"~60석",coords:[37.5712,126.9910],description:"1904년 개업, 한국 최초 등록 식당. 4대째 운영.",verdict:"120년 역사의 원조. 관광객이 아닌 단골이 채우는 집.",source:"manual"},
-    ];
+    /* SK서린빌딩 좌표 */
+    const SEORIN={coords:[37.5700,126.9822],name:"SK서린빌딩"};
 
-    const CATS = [
-      {key:"all",label:"전체",icon:"🗺️"},
-      {key:"노포",label:"노포 (20년+)",icon:"🏮"},
-      {key:"회식",label:"회식용",icon:"🍻"},
-      {key:"점심",label:"점심식사",icon:"🍚"},
-      {key:"비즈니스",label:"비즈니스",icon:"💼"},
-    ];
-
-    const catColor = c => c==="노포"?"#ff6b35":c==="비즈니스"?"#e8c547":c==="회식"?"#4ecdc4":"#a8e6cf";
-
-    /* ── Leaflet Map ── */
-    const LeafletMap = ({ restaurants, selected, onSelect }) => {
-      const mapRef = useRef(null);
-      const mapInstance = useRef(null);
-      const markersRef = useRef([]);
-
-      useEffect(() => {
-        if (!mapRef.current || mapInstance.current) return;
-        const map = L.map(mapRef.current, {
-          center: [37.573, 126.985],
-          zoom: 14,
-          zoomControl: false,
-          attributionControl: true,
+    const LeafletMap=({restaurants,selected,onSelect})=>{
+      const mapRef=useRef(null);const mapI=useRef(null);const markers=useRef([]);const seorinRef=useRef(null);
+      useEffect(()=>{
+        if(!mapRef.current||mapI.current)return;
+        const map=L.map(mapRef.current,{center:[37.573,126.985],zoom:14,zoomControl:false,attributionControl:true});
+        L.control.zoom({position:'bottomright'}).addTo(map);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{attribution:'© OSM © CARTO',maxZoom:19}).addTo(map);
+        /* SK서린빌딩 마커 */
+        const sIcon=L.divIcon({className:'',html:'<div style="display:flex;flex-direction:column;align-items:center;pointer-events:none"><div style="background:rgba(62,207,112,0.15);border:1.5px solid #3ecf70;border-radius:6px;padding:2px 8px;font-size:11px;font-weight:700;color:#3ecf70;letter-spacing:0.5px;white-space:nowrap;font-family:Pretendard Variable,sans-serif">SK서린빌딩</div><div style="width:8px;height:8px;border-radius:50%;background:#3ecf70;margin-top:3px;box-shadow:0 0 8px #3ecf7066"></div></div>',iconSize:[90,30],iconAnchor:[45,30]});
+        seorinRef.current=L.marker(SEORIN.coords,{icon:sIcon,interactive:false}).addTo(map);
+        mapI.current=map;setTimeout(()=>map.invalidateSize(),200);
+      },[]);
+      useEffect(()=>{
+        const map=mapI.current;if(!map)return;
+        markers.current.forEach(m=>m.remove());markers.current=[];
+        restaurants.forEach(r=>{
+          if(!r.coords||r.coords[0]===0)return;
+          const color=catColor(r.category[0]);const isSel=selected&&selected.id===r.id;const sz=isSel?14:10;
+          const icon=L.divIcon({className:'',html:'<div style="width:'+sz+'px;height:'+sz+'px;border-radius:50%;background:'+color+';border:2px solid '+(isSel?'#fff':'rgba(0,0,0,0.4)')+';box-shadow:0 0 '+(isSel?'12':'4')+'px '+color+(isSel?'':'44')+';transition:all 0.2s"></div>',iconSize:[sz,sz],iconAnchor:[sz/2,sz/2]});
+          const marker=L.marker(r.coords,{icon}).addTo(map).on('click',()=>onSelect(r));
+          if(isSel){marker.bindPopup('<b>'+r.name+'</b><br>'+r.type+'<br><span style="color:#888">'+r.address+'</span>').openPopup();}
+          markers.current.push(marker);
         });
-        L.control.zoom({ position: 'bottomright' }).addTo(map);
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-          attribution: '&copy; OSM &copy; CARTO',
-          maxZoom: 19,
-        }).addTo(map);
-        mapInstance.current = map;
-        setTimeout(() => map.invalidateSize(), 200);
-      }, []);
-
-      useEffect(() => {
-        const map = mapInstance.current;
-        if (!map) return;
-        markersRef.current.forEach(m => m.remove());
-        markersRef.current = [];
-
-        restaurants.forEach(r => {
-          if (!r.coords || r.coords[0] === 0) return;
-          const color = catColor(r.category[0]);
-          const isSel = selected && selected.id === r.id;
-          const size = isSel ? 14 : 10;
-          const icon = L.divIcon({
-            className: '',
-            html: '<div style="width:'+size+'px;height:'+size+'px;border-radius:50%;background:'+color+';border:2px solid '+(isSel?'#fff':'rgba(0,0,0,0.4)')+';box-shadow:0 0 '+(isSel?'12':'4')+'px '+color+(isSel?'':'44')+';transition:all 0.2s"></div>',
-            iconSize: [size, size],
-            iconAnchor: [size/2, size/2],
-          });
-          const marker = L.marker(r.coords, { icon })
-            .addTo(map)
-            .on('click', () => onSelect(r));
-          if (isSel) {
-            marker.bindPopup('<b>'+r.name+'</b><br>'+r.type+'<br><span style="color:#888">'+r.address+'</span>').openPopup();
-          }
-          markersRef.current.push(marker);
-        });
-      }, [restaurants, selected]);
-
-      useEffect(() => {
-        if (selected && mapInstance.current) {
-          mapInstance.current.flyTo(selected.coords, 16, { duration: 0.5 });
-        }
-      }, [selected]);
-
-      return <div ref={mapRef} id="map" />;
+      },[restaurants,selected]);
+      useEffect(()=>{if(selected&&mapI.current)mapI.current.flyTo(selected.coords,16,{duration:0.5})},[selected]);
+      return <div ref={mapRef} id="map"/>;
     };
 
-    /* ── Card ── */
-    const Card = ({ r, isSel, onClick }) => {
-      const [open, setOpen] = useState(false);
-      const age = 2026 - r.since;
-      const handleClick = () => { onClick(r); setOpen(!isSel ? true : !open); };
+    /* 랜덤픽 컴포넌트 */
+    const RandomPick=({restaurants,onPick})=>{
+      const[picked,setPicked]=useState(null);
+      const[spinning,setSpinning]=useState(false);
+      const roll=()=>{
+        if(restaurants.length===0)return;
+        setSpinning(true);
+        let count=0;const total=8;
+        const iv=setInterval(()=>{
+          const rand=restaurants[Math.floor(Math.random()*restaurants.length)];
+          setPicked(rand);
+          count++;
+          if(count>=total){clearInterval(iv);setSpinning(false);onPick(rand);}
+        },80);
+      };
+      return(
+        <div className="random-bar">
+          <button className="random-btn" onClick={roll}>
+            <span className={spinning?"dice-anim":""} style={{fontSize:18}}>🎲</span>
+            <span>오늘의 랜덤픽</span>
+          </button>
+          {picked?(
+            <div className="random-result" onClick={()=>onPick(picked)}>
+              <span className="random-name">{picked.name}</span>
+              <span className="random-type">{picked.type}</span>
+              <span className="random-verdict">{picked.verdict}</span>
+            </div>
+          ):(
+            <div className="random-result empty">
+              <span style={{fontSize:14,color:'rgba(224,230,240,0.3)'}}>버튼을 눌러 오늘의 맛집을 뽑아보세요</span>
+            </div>
+          )}
+        </div>
+      );
+    };
 
-      return (
-        <div className={"card" + (isSel ? " selected" : "")} onClick={handleClick} id={"r-"+r.id}>
+    const Card=({r,isSel,onClick})=>{
+      const[open,setOpen]=useState(false);const age=2026-r.since;
+      return(
+        <div className={"card"+(isSel?" selected":"")} onClick={()=>{onClick(r);setOpen(!isSel?true:!open)}} id={"r-"+r.id}>
           <div className="card-header">
             <div>
               <span className="card-name">{r.name}</span>
-              {age >= 20 && <span className="card-age">{age}년 전통</span>}
+              {age>=20&&<span className="card-age">{age}년 전통</span>}
               <div className="card-type">{r.type}</div>
             </div>
-            <div className="card-tags">
-              {r.category.map(c => <span key={c} className={"tag tag-"+c}>{c}</span>)}
-            </div>
+            <div className="card-tags">{r.category.map(c=><span key={c} className={"tag tag-"+c}>{c}</span>)}</div>
           </div>
           <div className="card-verdict">{r.verdict}</div>
-
-          {isSel && open && (
+          {isSel&&open&&(
             <div className="card-detail">
               <div className="card-desc">{r.description}</div>
               <div className="info-grid">
@@ -271,31 +202,13 @@
                 <div><div className="info-label">영업시간</div><div className="info-value">{r.hours}</div></div>
                 <div><div className="info-label">휴무</div><div className="info-value">{r.closed}</div></div>
                 <div><div className="info-label">좌석</div><div className="info-value">{r.capacity}</div></div>
-                <div>
-                  <div className="info-label">예약</div>
-                  <div className="info-value">{r.reservation ? "✅ 가능" : "❌ 불가"}</div>
-                  <div className="info-sub">{r.reservationNote}</div>
-                </div>
+                <div><div className="info-label">예약</div><div className="info-value">{r.reservation?"✅ 가능":"❌ 불가"}</div><div className="info-sub">{r.reservationNote}</div></div>
               </div>
-              {r.menu && r.menu.length > 0 && (
-                <div>
-                  <div className="menu-title">메뉴</div>
-                  <div className="menu-list">
-                    {r.menu.map((m,i) => (
-                      <div key={i} className="menu-item">
-                        <span>{m.item}</span>
-                        {m.price && <span>{m.price}</span>}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
+              {r.menu&&r.menu.length>0&&(<div><div className="menu-title">메뉴</div><div className="menu-list">{r.menu.map((m,i)=>(<div key={i} className="menu-item"><span>{m.item}</span>{m.price&&<span>{m.price}</span>}</div>))}</div></div>)}
               <div className="link-row">
                 <a className="ext-link link-naver" href={"https://map.naver.com/v5/search/"+encodeURIComponent(r.name+" "+r.address)} target="_blank" rel="noopener" onClick={e=>e.stopPropagation()}>📍 네이버지도</a>
                 <a className="ext-link link-kakao" href={"https://map.kakao.com/?q="+encodeURIComponent(r.name)} target="_blank" rel="noopener" onClick={e=>e.stopPropagation()}>📍 카카오맵</a>
-                {r.reservation && (
-                  <a className="ext-link link-reserve" href={"https://app.catchtable.co.kr/ct/search/list?keyword="+encodeURIComponent(r.name)} target="_blank" rel="noopener" onClick={e=>e.stopPropagation()}>📅 예약</a>
-                )}
+                {r.reservation&&(<a className="ext-link link-reserve" href={"https://app.catchtable.co.kr/ct/search/list?keyword="+encodeURIComponent(r.name)} target="_blank" rel="noopener" onClick={e=>e.stopPropagation()}>📅 예약</a>)}
               </div>
             </div>
           )}
@@ -303,91 +216,26 @@
       );
     };
 
-    /* ── App ── */
-    function DeliVein() {
-      const [data, setData] = useState(FALLBACK);
-      const [info, setInfo] = useState({ updated:"", total:0 });
-      const [cat, setCat] = useState("all");
-      const [sel, setSel] = useState(null);
-
-      useEffect(() => {
-        fetch("restaurants.json")
-          .then(r => { if(!r.ok) throw new Error(); return r.json(); })
-          .then(d => {
-            if (d.restaurants && d.restaurants.length) {
-              setData(d.restaurants);
-              setInfo({ updated: d.updated, total: d.restaurants.length,
-                manual: (d.source_stats||{}).manual_curated||0,
-                crawled: (d.source_stats||{}).crawled||0 });
-              document.getElementById('updateDate').textContent = d.updated || '';
-            }
-          }).catch(()=>{});
-      }, []);
-
-      const filtered = cat === "all" ? data : data.filter(r => r.category.includes(cat));
-
-      const handleSelect = r => {
-        setSel(r);
-        setTimeout(() => {
-          const el = document.getElementById("r-"+r.id);
-          if (el) el.scrollIntoView({ behavior:"smooth", block:"center" });
-        }, 100);
-      };
-
-      return (
-        <>
-          <div className="hero">
-            <div className="hero-brand">DELIVEIN</div>
-            <h1>종로 맛집 큐레이션</h1>
-            <p>광고성 칭찬 걸러낸, 검증된 {data.length}곳 — 노포 · 회식 · 점심 · 비즈니스</p>
-          </div>
-
-          <div className="tabs">
-            {CATS.map(c => {
-              const cnt = c.key==="all" ? data.length : data.filter(r=>r.category.includes(c.key)).length;
-              return (
-                <button key={c.key} className={"tab-btn"+(cat===c.key?" active":"")}
-                  onClick={()=>{setCat(c.key);setSel(null)}}>
-                  <span>{c.icon}</span><span>{c.label}</span>
-                  <span className="tab-count">{cnt}</span>
-                </button>
-              );
-            })}
-          </div>
-
-          <div className="map-wrap">
-            <LeafletMap restaurants={filtered} selected={sel} onSelect={handleSelect} />
-          </div>
-
-          {cat !== "all" && (
-            <div className="stats">
-              {cat==="노포" && <>🏮 평균 역사 <strong>{Math.round(filtered.reduce((s,r)=>s+(2026-r.since),0)/filtered.length)}년</strong></>}
-              {cat==="비즈니스" && <>💼 전체 예약 가능 · 룸 보유 식당 위주</>}
-              {cat==="회식" && <>🍻 10인 이상 수용 가능 · 단체석/룸 보유</>}
-              {cat==="점심" && <>🍚 1만원대 이하 가성비 · 빠른 회전</>}
-            </div>
-          )}
-
-          <div className="card-list">
-            {filtered.map(r => (
-              <Card key={r.id} r={r} isSel={sel&&sel.id===r.id} onClick={handleSelect} />
-            ))}
-          </div>
-
-          <div className="footer">
-            <p>
-              데이터 기준: {info.updated || "2026-03"} · 전체 {info.total || data.length}곳
-              {info.crawled > 0 && <> (큐레이션 {info.manual}곳 + 크롤링 {info.crawled}곳)</>}<br/>
-              광고·협찬 없음 · 서울미래유산, 미쉐린가이드, 다이닝코드 교차검증<br/>
-              가격·영업시간은 변동될 수 있으니 방문 전 확인 권장
-            </p>
-            <p className="sig">DELIVEIN — by MAV</p>
-          </div>
-        </>
-      );
+    function DeliVein(){
+      const[data,setData]=useState(FALLBACK);const[info,setInfo]=useState({updated:"",total:0});
+      const[cat,setCat]=useState("all");const[sel,setSel]=useState(null);
+      useEffect(()=>{
+        fetch("restaurants.json").then(r=>{if(!r.ok)throw new Error();return r.json()})
+        .then(d=>{if(d.restaurants&&d.restaurants.length){setData(d.restaurants);setInfo({updated:d.updated,total:d.restaurants.length,manual:(d.source_stats||{}).manual_curated||0,crawled:(d.source_stats||{}).crawled||0});document.getElementById('updateDate').textContent=d.updated||''}}).catch(()=>{});
+      },[]);
+      const filtered=cat==="all"?data:data.filter(r=>r.category.includes(cat));
+      const handleSelect=useCallback(r=>{setSel(r);setTimeout(()=>{const el=document.getElementById("r-"+r.id);if(el)el.scrollIntoView({behavior:"smooth",block:"center"})},150)},[]);
+      return(<>
+        <div className="hero"><div className="hero-brand">DELIVEIN</div><h1>종로 맛집 큐레이션</h1><p>광고성 칭찬 걸러낸, 검증된 {data.length}곳 — 노포 · 회식 · 점심 · 비즈니스</p></div>
+        <RandomPick restaurants={filtered} onPick={handleSelect}/>
+        <div className="tabs">{CATS.map(c=>{const cnt=c.key==="all"?data.length:data.filter(r=>r.category.includes(c.key)).length;return(<button key={c.key} className={"tab-btn"+(cat===c.key?" active":"")} onClick={()=>{setCat(c.key);setSel(null)}}><span>{c.icon}</span><span>{c.label}</span><span className="tab-count">{cnt}</span></button>)})}</div>
+        <div className="map-wrap"><LeafletMap restaurants={filtered} selected={sel} onSelect={handleSelect}/></div>
+        {cat!=="all"&&(<div className="stats">{cat==="노포"&&<>🏮 평균 역사 <strong>{Math.round(filtered.reduce((s,r)=>s+(2026-r.since),0)/filtered.length)}년</strong></>}{cat==="비즈니스"&&<>💼 전체 예약 가능 · 룸 보유 식당 위주</>}{cat==="회식"&&<>🍻 10인 이상 수용 가능 · 단체석/룸 보유</>}{cat==="점심"&&<>🍚 1만원대 이하 가성비 · 빠른 회전</>}</div>)}
+        <div className="card-list">{filtered.map(r=>(<Card key={r.id} r={r} isSel={sel&&sel.id===r.id} onClick={handleSelect}/>))}</div>
+        <div className="footer"><p>데이터 기준: {info.updated||"2026-03"} · 전체 {info.total||data.length}곳{info.crawled>0&&<> (큐레이션 {info.manual}곳 + 크롤링 {info.crawled}곳)</>}<br/>광고·협찬 없음 · 서울미래유산, 미쉐린가이드, 다이닝코드 교차검증<br/>가격·영업시간은 변동될 수 있으니 방문 전 확인 권장</p><p className="sig">DELIVEIN — by MAV</p></div>
+      </>);
     }
-
-    ReactDOM.createRoot(document.getElementById("root")).render(<DeliVein />);
+    ReactDOM.createRoot(document.getElementById("root")).render(<DeliVein/>);
   </script>
 </body>
 </html>
