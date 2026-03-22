@@ -1639,6 +1639,76 @@
       "source": "manual",
       "added": "2026-03-23",
       "score": 75
+    },
+    {
+      "name": "관북",
+      "category": [
+        "점심"
+      ],
+      "since": 2024,
+      "type": "순대국",
+      "address": "서울 종로구 종로5길 32-5",
+      "phone": "0507-1402-8721",
+      "menu": [
+        {
+          "item": "항정순대국",
+          "price": "15,000원"
+        },
+        {
+          "item": "관북순대국",
+          "price": "15,000원"
+        }
+      ],
+      "hours": "평일 10~22시(브레이크15~17시)",
+      "closed": "확인필요",
+      "reservation": true,
+      "reservationNote": "예약가능,단체석",
+      "capacity": "1-2층",
+      "coords": [
+        37.5708,
+        126.9805
+      ],
+      "description": "종각역 피맛골 순대국 전문점. 콩갈아넣은 고소한 국물. 블루리본 선정.",
+      "verdict": "블루리본 선정 순대국. 항정살 순대국이 시그니처.",
+      "id": 49,
+      "source": "crawl",
+      "added": "2026-03-23",
+      "score": 50
+    },
+    {
+      "name": "청진동장터순대국",
+      "category": [
+        "점심"
+      ],
+      "since": 2010,
+      "type": "순대국",
+      "address": "서울 종로구 종로5길 40",
+      "phone": "02-735-8055",
+      "menu": [
+        {
+          "item": "순대국",
+          "price": "11,000원"
+        },
+        {
+          "item": "뼈해장국",
+          "price": "11,000원"
+        }
+      ],
+      "hours": "매일 06:30~22:00",
+      "closed": "연중무휴",
+      "reservation": false,
+      "reservationNote": "현장방문",
+      "capacity": "~50석",
+      "coords": [
+        37.5712,
+        126.98
+      ],
+      "description": "광화문역 도보5분. 새벽6시반 오픈 순대국 전문. 직장인 아침해장 성지.",
+      "verdict": "새벽6시반 오픈. 광화문 출근길 해장으로 최적. 고기양 푸짐.",
+      "id": 50,
+      "source": "crawl",
+      "added": "2026-03-23",
+      "score": 50
     }
   ]
 }
