@@ -2050,6 +2050,65 @@
       "reservation": "확인 필요",
       "reservationNote": "확인 필요",
       "capacity": "확인 필요"
+    },
+    {
+      "id": 65,
+      "name": "오제제 광화문",
+      "category": [
+        "점심",
+        "비즈니스"
+      ],
+      "since": 2020,
+      "type": "프리미엄 돈까스",
+      "address": "서울 중구 세종대로 136 지하2층 201호",
+      "phone": "확인 필요",
+      "coords": [
+        37.57,
+        126.9775
+      ],
+      "menu": [
+        {
+          "item": "돈까스",
+          "price": "확인 필요"
+        }
+      ],
+      "hours": "확인 필요",
+      "closed": "확인 필요",
+      "reservation": false,
+      "reservationNote": "확인 필요",
+      "capacity": "확인 필요",
+      "description": "광화문 지하 프리미엄 돈까스 전문점. 두툼한 등심·안심 돈까스가 대표.",
+      "verdict": "광화문 고급 돈까스. 바삭한 튀김옷에 육즙 가득.",
+      "source": "manual_add"
+    },
+    {
+      "id": 66,
+      "name": "동해도 광화문점",
+      "category": [
+        "점심"
+      ],
+      "since": 2020,
+      "type": "무한리필 초밥",
+      "address": "서울 중구 무교로 28 시그너스빌딩 지하1층",
+      "phone": "확인 필요",
+      "coords": [
+        37.5685,
+        126.979
+      ],
+      "menu": [
+        {
+          "item": "무한리필 초밥",
+          "price": "확인 필요"
+        }
+      ],
+      "hours": "확인 필요",
+      "closed": "확인 필요",
+      "reservation": false,
+      "reservationNote": "확인 필요",
+      "capacity": "확인 필요",
+      "description": "광화문 무한리필 초밥 전문점. 다양한 초밥을 원하는 만큼.",
+      "verdict": "무한리필 초밥. 가성비 좋고 점심 직장인에게 인기.",
+      "source": "manual_add"
     }
   ]
 }
