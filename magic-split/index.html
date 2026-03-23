@@ -241,11 +241,13 @@ let currentTab = 'dashboard';
 let scanData = null;
 let historyData = [];
 let stockList = [];
+let aiReports = [];
 
 // ── Init ───────────────────────────────────────────────────
 async function init() {
   await loadLatest();
   await loadHistory();
+  await loadAiReports();
   renderCriteria();
   renderVix();
 }
@@ -275,6 +277,68 @@ async function loadHistory() {
     document.getElementById('tab-history').textContent =
       `📁 추천 로그${historyData.length > 0 ? ' (' + historyData.length + ')' : ''}`;
   } catch(e) {}
+}
+
+async function loadAiReports() {
+  try {
+    const r = await fetch(`${API}/api/magic-split/ai-report`);
+    const j = await r.json();
+    aiReports = (j.data && j.data.reports) ? j.data.reports : [];
+  } catch(e) { aiReports = []; }
+}
+
+function getAiReport(ticker) {
+  return aiReports.find(r => r.ticker === ticker) || null;
+}
+
+function buildNumberTable(aiRpt, currentPrice) {
+  if (!aiRpt) return '';
+  const maxN = parseInt(aiRpt.max_number) || 7;
+  const buyPct = aiRpt.buy_interval_pct || '';
+  const sellPct = aiRpt.sell_target_pct || '';
+  // 넘버별 가격 계산
+  let prices = [currentPrice];
+  // entry_range에서 파싱 시도
+  const entryMatch = (aiRpt.entry_range||'').match(/N\d+[:\s]*[\d,]+/g);
+  if (entryMatch && entryMatch.length > 1) {
+    prices = entryMatch.map(m => parseInt(m.replace(/[^\d]/g,'')));
+  } else {
+    // 3% 간격으로 직접 계산
+    for (let i = 1; i < maxN; i++) {
+      const gap = i < 4 ? 0.03 : (i < 6 ? 0.05 : 0.10);
+      prices.push(Math.round(prices[i-1] * (1 - gap)));
+    }
+  }
+  // 차수별 매수간격/매도목표 파싱
+  function getPct(text, idx, total) {
+    // "전반부 -3%, 후반부 -5%" 패턴 파싱
+    const nums = (text||'').match(/[\d.]+/g);
+    if (!nums) return '-';
+    if (nums.length === 1) return nums[0] + '%';
+    const mid = Math.ceil(total / 2);
+    return (idx < mid ? nums[0] : nums[1] || nums[0]) + '%';
+  }
+  let html = '<table style="width:100%;border-collapse:collapse;font-size:12px">';
+  html += '<tr style="border-bottom:1px solid #1e2d4a">';
+  html += '<th style="padding:7px 6px;text-align:center;color:#6b8aaa;font-weight:700">차수</th>';
+  html += '<th style="padding:7px 6px;text-align:right;color:#6b8aaa;font-weight:700">매수가</th>';
+  html += '<th style="padding:7px 6px;text-align:center;color:#4d9fff;font-weight:700">매수간격</th>';
+  html += '<th style="padding:7px 6px;text-align:center;color:#00d4aa;font-weight:700">매도목표</th>';
+  html += '</tr>';
+  for (let i = 0; i < maxN; i++) {
+    const price = prices[i] || '-';
+    const buyG = i === 0 ? '초기 매수' : '-' + getPct(buyPct, i, maxN);
+    const sellG = '+' + getPct(sellPct, i, maxN);
+    const rowBg = i % 2 === 0 ? '#0a0e1a' : 'transparent';
+    html += '<tr style="background:' + rowBg + ';border-bottom:1px solid #111a2a">';
+    html += '<td style="padding:7px 6px;text-align:center;font-weight:700;color:#a78bfa">N' + (i+1) + '</td>';
+    html += '<td style="padding:7px 6px;text-align:right;font-weight:700;color:#e0e6f0;font-family:monospace">₩' + (typeof price==='number'?price.toLocaleString():price) + '</td>';
+    html += '<td style="padding:7px 6px;text-align:center;color:#4d9fff">' + buyG + '</td>';
+    html += '<td style="padding:7px 6px;text-align:center;color:#00d4aa">' + sellG + '</td>';
+    html += '</tr>';
+  }
+  html += '</table>';
+  return html;
 }
 
 // ── Tabs ───────────────────────────────────────────────────
@@ -510,6 +574,44 @@ function openModal(idx) {
           <div style="color:#8aa4c4;font-size:12px;line-height:1.85">${s.magic_split_tip||''}</div>
         </div>
       </div>
+      ${(()=>{
+        const ai = getAiReport(s.ticker);
+        if (!ai || ai.status !== 'success') return '<div style="background:#1e2d4a18;border:1px solid #1e2d4a;border-radius:10px;padding:14px;margin-top:14px;text-align:center;color:#4d6a8a;font-size:12px">🤖 AI 심층 분석 결과 없음 — 다음 06:20 자동 분석 시 업데이트</div>';
+        const dcColor = (ai.trader_decision||'').includes('편입')?'#00d4aa':(ai.trader_decision||'').includes('보류')?'#ffd166':'#ff6b6b';
+        return '<div style="margin-top:18px;border-top:2px solid #a78bfa30;padding-top:18px">'
+        + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">'
+        + '<div style="display:flex;align-items:center;gap:8px"><span style="font-size:16px">🤖</span><span style="color:#a78bfa;font-size:15px;font-weight:800">AI 멀티에이전트 심층 분석</span></div>'
+        + '<div style="display:flex;gap:8px;align-items:center">'
+        + '<span style="background:' + dcColor + '18;color:' + dcColor + ';font-size:13px;font-weight:800;padding:4px 14px;border-radius:6px">' + (ai.trader_decision||'') + '</span>'
+        + '<span style="color:' + dcColor + ';font-size:12px;font-weight:700">확신도: ' + (ai.confidence||'') + '</span></div></div>'
+        + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">'
+        + [{k:'fundamental',icon:'🏦',label:'펀더멘털',c:'#00d4aa'},{k:'sentiment',icon:'💬',label:'센티먼트',c:'#a78bfa'},{k:'news',icon:'📰',label:'뉴스',c:'#f59e0b'},{k:'technical',icon:'📊',label:'기술적 분석',c:'#4d9fff'}].map(v =>
+            '<div style="background:#060912;border:1px solid ' + v.c + '18;border-radius:10px;padding:14px">'
+            + '<div style="color:' + v.c + ';font-size:12px;font-weight:700;margin-bottom:6px">' + v.icon + ' ' + v.label + '</div>'
+            + '<div style="color:#a0b8ce;font-size:12px;line-height:1.8">' + (ai[v.k]||'분석 없음') + '</div></div>'
+          ).join('')
+        + '</div>'
+        + '<div style="background:#060912;border:1px solid #ff6b6b18;border-radius:10px;padding:14px;margin-bottom:14px">'
+        + '<div style="color:#ff6b6b;font-size:12px;font-weight:700;margin-bottom:6px">🛡️ AI 리스크 평가</div>'
+        + '<div style="color:#a0b8ce;font-size:12px;line-height:1.8">' + (ai.risk_assessment||'') + '</div></div>'
+        + '<div style="background:#060912;border:1px solid #a78bfa18;border-radius:10px;padding:14px;margin-bottom:14px">'
+        + '<div style="color:#a78bfa;font-size:12px;font-weight:700;margin-bottom:6px">📌 AI 한 줄 요약</div>'
+        + '<div style="color:#e0e6f0;font-size:13px;font-weight:600;line-height:1.8">' + (ai.summary||'') + '</div></div>'
+        + '<div style="background:#0d1224;border:1px solid #a78bfa25;border-radius:10px;padding:16px;margin-bottom:14px">'
+        + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">'
+        + '<div style="color:#a78bfa;font-size:13px;font-weight:800">⚙️ 매직스플릿 Pro 추천 설정</div>'
+        + '<div style="color:#4d6a8a;font-size:11px">1회 매수: ' + (ai.suggested_weight||'투자자산 5% 이내') + '</div></div>'
+        + buildNumberTable(ai, s.current_price)
+        + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px">'
+        + '<div style="background:#060912;border:1px solid #00d4aa18;border-radius:8px;padding:10px;text-align:center">'
+        + '<div style="color:#6b8aaa;font-size:10px;margin-bottom:4px">추천 최대 차수</div>'
+        + '<div style="color:#00d4aa;font-size:18px;font-weight:800">' + (ai.max_number||'7') + '</div></div>'
+        + '<div style="background:#060912;border:1px solid ' + ((ai.profit_booster||'').includes('ON')?'#a78bfa':'#1e2d4a') + '18;border-radius:8px;padding:10px;text-align:center">'
+        + '<div style="color:#6b8aaa;font-size:10px;margin-bottom:4px">수익부스터</div>'
+        + '<div style="color:' + ((ai.profit_booster||'').includes('ON')?'#a78bfa':'#4d6a8a') + ';font-size:12px;font-weight:700">' + (ai.profit_booster||'OFF') + '</div></div>'
+        + '</div></div>'
+        + '</div>';
+      })()}
     </div>`;
   document.getElementById('modal').style.display = 'flex';
 }
