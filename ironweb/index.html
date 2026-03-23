@@ -4,10 +4,15 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>IRONWEB - 대한민국 전력 인프라 지도</title>
-<link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet">
-<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+<!-- ★ 로컬 먼저 → CDN 폴백 (VDI/사내망 대응) -->
+<link href="./lib/maplibre-gl.css" rel="stylesheet" onerror="this.href='https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css'">
+<script>
+/* MapLibre 로컬 로딩 시도 → 실패 시 CDN 폴백 */
+function loadScript(src,fb){return new Promise(r=>{const s=document.createElement('script');s.src=src;s.onload=r;s.onerror=()=>{if(fb){const s2=document.createElement('script');s2.src=fb;s2.onload=r;s2.onerror=r;document.head.appendChild(s2)}else r()};document.head.appendChild(s)})}
+</script>
+<script src="./lib/maplibre-gl.js" onerror="this.onerror=null;this.src='https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js'"></script>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+/* ★ 시스템 폰트 — 외부 CDN 불필요 */
 :root{
   --v765:#ff1744;--v345:#ff6d00;--v154:#ffd600;--v66:#00e5ff;--v22:#448aff;--vunk:#546e7a;
   --sub:#ab47bc;--plant:#2979ff;
@@ -18,7 +23,7 @@
   --t1:#e0e3ed;--t2:#6b7a8d;--acc:#00b0ff;--danger:#ff5252;--ok:#66bb6a;--r:10px;
 }
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Noto Sans KR',system-ui;background:var(--bg);color:var(--t1);overflow:hidden}
+body{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif,system-ui;background:var(--bg);color:var(--t1);overflow:hidden}
 #map{position:absolute;inset:0}
 
 /* Status Bar */
@@ -26,12 +31,12 @@ body{font-family:'Noto Sans KR',system-ui;background:var(--bg);color:var(--t1);o
 .sbar.hide{transform:translateY(calc(100% + 40px))}
 .dl-tog{position:absolute;bottom:10px;right:14px;z-index:31;background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:5px 10px;color:var(--t1);font-size:13px;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .2s;user-select:none}
 .dl-tog:hover{border-color:var(--acc);color:var(--acc)}
-.dl-tog kbd{font-size:10px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:3px;padding:1px 5px;font-family:'IBM Plex Mono',monospace;color:var(--t2)}
+.dl-tog kbd{font-size:10px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:3px;padding:1px 5px;font-family:ui-monospace,'SF Mono','Cascadia Code',monospace,monospace;color:var(--t2)}
 .sr{display:flex;align-items:center;gap:8px;padding:4px 14px;background:var(--panel);backdrop-filter:blur(16px);border-top:1px solid var(--border);font-size:11px}
 .sr .ic{width:16px;text-align:center;flex-shrink:0}.sr .lb{flex:1;color:var(--t2)}
-.sr .ss{font-family:'IBM Plex Mono',monospace;font-size:10px;min-width:90px;text-align:right}
+.sr .ss{font-family:ui-monospace,'SF Mono','Cascadia Code',monospace,monospace;font-size:10px;min-width:90px;text-align:right}
 .ss.ld{color:var(--acc)}.ss.ok{color:var(--ok)}.ss.er{color:var(--danger)}
-.sr .rt{background:rgba(0,176,255,.1);border:1px solid rgba(0,176,255,.2);color:var(--acc);font-size:10px;padding:2px 8px;border-radius:4px;cursor:pointer;font-family:'Noto Sans KR'}
+.sr .rt{background:rgba(0,176,255,.1);border:1px solid rgba(0,176,255,.2);color:var(--acc);font-size:10px;padding:2px 8px;border-radius:4px;cursor:pointer;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif}
 .sr .cl{background:none;border:none;color:var(--t2);cursor:pointer;font-size:12px}
 .spb{height:2px;background:rgba(255,255,255,.04);overflow:hidden}
 .spf{height:100%;background:linear-gradient(90deg,var(--acc),#4fc3f7);width:0%;transition:width .5s}
@@ -41,7 +46,7 @@ body{font-family:'Noto Sans KR',system-ui;background:var(--bg);color:var(--t1);o
 .top h1{font-size:14px;font-weight:900;background:linear-gradient(135deg,#e8eaf6,#64b5f6);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .top .sep{width:1px;height:18px;background:var(--border);margin:0 12px}
 .top .sub{font-size:10px;color:var(--t2);font-weight:300}
-.top .zb{margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--acc);background:rgba(0,176,255,.06);border:1px solid rgba(0,176,255,.1);padding:2px 8px;border-radius:4px;pointer-events:auto}
+.top .zb{margin-left:auto;font-family:ui-monospace,'SF Mono','Cascadia Code',monospace,monospace;font-size:10px;color:var(--acc);background:rgba(0,176,255,.06);border:1px solid rgba(0,176,255,.1);padding:2px 8px;border-radius:4px;pointer-events:auto}
 
 .P{background:var(--panel);backdrop-filter:blur(20px);border:1px solid var(--border);border-radius:var(--r);box-shadow:0 8px 32px rgba(0,0,0,.45);z-index:20}
 
@@ -65,9 +70,9 @@ body{font-family:'Noto Sans KR',system-ui;background:var(--bg);color:var(--t1);o
 .cp{width:16px;height:16px;border:none;border-radius:4px;cursor:pointer;padding:0;background:none;flex-shrink:0;-webkit-appearance:none;appearance:none}
 .cp::-webkit-color-swatch-wrapper{padding:0}.cp::-webkit-color-swatch{border:1px solid rgba(255,255,255,.2);border-radius:3px}
 .cp::-moz-color-swatch{border:1px solid rgba(255,255,255,.2);border-radius:3px}
-.cn{font-size:13px;flex:1}.cv{font-family:'IBM Plex Mono',monospace;font-size:12px;color:#b0bec5;font-weight:600}
-.at{font-size:11px;color:var(--acc);cursor:pointer;border:none;background:none;font-family:'Noto Sans KR';padding:2px 0;margin-bottom:4px}.at:hover{text-decoration:underline}
-.qb{display:block;width:100%;text-align:left;background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:6px;padding:7px 10px;color:var(--t1);font-size:13px;font-family:'Noto Sans KR';cursor:pointer;transition:all .12s;margin-bottom:3px}
+.cn{font-size:13px;flex:1}.cv{font-family:ui-monospace,'SF Mono','Cascadia Code',monospace,monospace;font-size:12px;color:#b0bec5;font-weight:600}
+.at{font-size:11px;color:var(--acc);cursor:pointer;border:none;background:none;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;padding:2px 0;margin-bottom:4px}.at:hover{text-decoration:underline}
+.qb{display:block;width:100%;text-align:left;background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:6px;padding:7px 10px;color:var(--t1);font-size:13px;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;cursor:pointer;transition:all .12s;margin-bottom:3px}
 .qb:hover{background:rgba(0,176,255,.06);border-color:rgba(0,176,255,.12)}
 .qb span{font-size:9px;color:var(--t2);margin-left:4px}
 
@@ -78,7 +83,7 @@ body{font-family:'Noto Sans KR',system-ui;background:var(--bg);color:var(--t1);o
 .mr .md::after{content:'';width:6px;height:6px;border-radius:50%;background:transparent;transition:background .15s}
 .mr input:checked~.md{border-color:var(--acc)}.mr input:checked~.md::after{background:var(--acc)}
 
-.cbt{display:block;width:100%;padding:7px;background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:5px;color:var(--t2);font-size:10px;font-family:'Noto Sans KR';cursor:pointer;text-align:center}
+.cbt{display:block;width:100%;padding:7px;background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:5px;color:var(--t2);font-size:10px;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;cursor:pointer;text-align:center}
 .cbt:hover{background:rgba(255,68,68,.06);color:var(--danger)}
 
 /* Right */
@@ -90,13 +95,13 @@ body{font-family:'Noto Sans KR',system-ui;background:var(--bg);color:var(--t1);o
 .ip{position:absolute;top:58px;right:60px;min-width:260px;max-width:330px;display:none;overflow:hidden;z-index:25}
 .ip.vis{display:block}
 .ip .it{font-size:13px;font-weight:700;padding:12px 14px 8px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-.ip .vb2{font-family:'IBM Plex Mono',monospace;font-size:10px;padding:2px 7px;border-radius:3px;font-weight:600}
+.ip .vb2{font-family:ui-monospace,'SF Mono','Cascadia Code',monospace,monospace;font-size:10px;padding:2px 7px;border-radius:3px;font-weight:600}
 .ip .ib2{padding:0 14px 12px;max-height:300px;overflow-y:auto}
 .ir{display:flex;justify-content:space-between;font-size:11px;padding:4px 0;border-bottom:1px solid var(--border)}.ir:last-child{border:none}
 .ik{color:var(--t2)}.iv2{font-weight:500}
 .ip .ix{position:absolute;top:10px;right:10px;background:none;border:none;color:var(--t2);font-size:13px;cursor:pointer}
 
-.zd{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--t2);z-index:20;padding:4px 10px;border-radius:5px}
+.zd{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);font-family:ui-monospace,'SF Mono','Cascadia Code',monospace,monospace;font-size:10px;color:var(--t2);z-index:20;padding:4px 10px;border-radius:5px}
 .fl{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:250;transition:opacity .15s}.fl.go{opacity:.3}
 .toast2{position:absolute;bottom:50px;left:14px;padding:8px 32px 8px 14px;border-radius:8px;font-size:12px;z-index:250;opacity:0;transition:all .3s;pointer-events:none;max-width:280px}.toast2.show{opacity:1;pointer-events:auto}
 .toast2 .tx{cursor:pointer;position:absolute;top:4px;right:8px;font-size:14px;color:rgba(255,255,255,.5);background:none;border:none;line-height:1}.toast2 .tx:hover{color:#fff}
@@ -416,9 +421,22 @@ body{font-family:'Noto Sans KR',system-ui;background:var(--bg);color:var(--t1);o
     <p>좌측 패널 하단 "통계" 섹션에서 전압별 선로 수, 연료별 발전소 수를 확인할 수 있습니다.</p>
   </div>
 
+  <div class="m-sec">
+    <h3>🔌 오프라인/VDI 사용</h3>
+    <p>사내망/VDI에서 외부 CDN이 차단될 경우를 대비한 구성:</p>
+    <ul>
+      <li><b>setup.sh</b> (Mac) 또는 <b>setup.bat</b> (Windows)를 인터넷 환경에서 실행</li>
+      <li>lib/, data/ 폴더에 MapLibre와 행정구역 데이터가 로컬 저장됨</li>
+      <li>ironweb/ 폴더 전체를 VDI로 복사하면 CDN 없이 작동</li>
+      <li>타일 서버 차단 시 자동으로 오프라인 모드 전환 (배경 없음, 인프라 정상)</li>
+    </ul>
+  </div>
+
   <div class="m-sec" style="margin-top:16px;padding-top:12px;border-top:1px solid rgba(255,255,255,.1)">
-    <p style="color:var(--t2);font-size:11px">데이터 출처: OpenStreetMap (Overpass API) · 행정구역: 통계청 · 배경지도: OSM/ArcGIS<br>
-    IndexedDB에 7일간 캐시되며, "🔄 캐시 삭제 후 새로고침"으로 최신 데이터를 받을 수 있습니다.</p>
+    <p style="color:var(--t2);font-size:11px">© 2026 SangHo Ahn. All rights reserved.<br>
+    데이터 출처: OpenStreetMap contributors (ODbL) · Overpass API · 행정구역: 통계청<br>
+    Powered by MapLibre GL JS · 배경지도: OSM / ArcGIS<br>
+    IndexedDB에 30일간 캐시되며, "🔄 캐시 삭제 후 새로고침"으로 최신 데이터를 받을 수 있습니다.</p>
   </div>
 </div>
 </div>
@@ -602,9 +620,13 @@ const PAINT={
   sat: {'raster-brightness-max':1,'raster-brightness-min':0,'raster-saturation':.1,'raster-contrast':.2,'raster-opacity':1}
 };
 
+/* ★ 타일 로드 실패 감지 → 오프라인 모드 자동 전환 */
+let offlineMode=false;
+
 const map=new maplibregl.Map({
   container:'map',preserveDrawingBuffer:true,
   style:{version:8,
+    glyphs:'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf',
     sources:{basemap:{type:'raster',tiles:[TILES.osm],tileSize:256,maxzoom:19,
       attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'}},
     layers:[{id:'bm',type:'raster',source:'basemap',paint:PAINT.osm}]
@@ -625,6 +647,19 @@ map.on('zoom',ud);map.on('move',ud);
 function ud(){const z=Math.round(map.getZoom()),c=map.getCenter();document.getElementById('zb').textContent='Z'+z;document.getElementById('zd').textContent=`Z${z} · ${c.lat.toFixed(2)}°N ${c.lng.toFixed(2)}°E`}
 
 /* ═══════ LAYERS ═══════ */
+/* ★ 타일 에러 감지 — 3회 실패 시 오프라인 모드 */
+let _tileErrors=0;
+map.on('error',e=>{
+  if(e?.error?.status===0||e?.error?.message?.includes('Failed')){
+    _tileErrors++;
+    if(_tileErrors>=3&&!offlineMode){
+      offlineMode=true;
+      map.setPaintProperty('basemap','raster-opacity',0);
+      toast('🔌 타일 서버 차단 — 오프라인 모드 (배경 없음, 인프라 데이터는 정상)',5000);
+    }
+  }
+});
+
 map.on('load',async()=>{
   map.addSource('lines',{type:'geojson',data:EMP,buffer:64});
   map.addSource('sub-pt',{type:'geojson',data:EMP});
@@ -753,7 +788,10 @@ async function ldSubPlant(){
   }
 }
 
-const ADM=['https://raw.githubusercontent.com/southkorea/southkorea-maps/master/kostat/2018/json/skorea-provinces-2018-geo.json'];
+const ADM=[
+  './data/skorea-provinces-2018-geo.json', /* ★ 로컬 먼저 */
+  'https://raw.githubusercontent.com/southkorea/southkorea-maps/master/kostat/2018/json/skorea-provinces-2018-geo.json'
+];
 const ACOL=['#ef5350','#ec407a','#ab47bc','#7e57c2','#5c6bc0','#42a5f5','#26c6da','#26a69a','#66bb6a','#9ccc65','#d4e157','#ffa726','#ff7043','#8d6e63','#78909c','#4dd0e1','#ffee58'];
 let AS={},admGJ=null;
 let CS={},cityGJ=null; /* 주요 도시 state */
@@ -1207,7 +1245,7 @@ function captureArea(){
   c.onmousemove=e=>{if(!se)return;x.clearRect(0,0,c.width,c.height);x.fillStyle='rgba(0,0,0,.5)';x.fillRect(0,0,c.width,c.height);
     const a=Math.min(se.x,e.clientX),b=Math.min(se.y,e.clientY),w=Math.abs(e.clientX-se.x),h=Math.abs(e.clientY-se.y);
     x.clearRect(a,b,w,h);x.strokeStyle='rgba(0,176,255,.8)';x.lineWidth=2;x.setLineDash([6,3]);x.strokeRect(a,b,w,h);
-    x.fillStyle='rgba(0,176,255,.9)';x.font='12px "IBM Plex Mono"';x.setLineDash([]);x.fillText(`${w}×${h}`,a+4,b-6)};
+    x.fillStyle='rgba(0,176,255,.9)';x.font='12px monospace';x.setLineDash([]);x.fillText(`${w}×${h}`,a+4,b-6)};
   c.onmouseup=e=>{if(!se)return;const a=Math.min(se.x,e.clientX),b=Math.min(se.y,e.clientY),w=Math.abs(e.clientX-se.x),h=Math.abs(e.clientY-se.y);
     cancelA();if(w<20||h<20){toast('영역이 너무 작습니다');return}
     const mc=map.getCanvas(),r=devicePixelRatio||1,cc=document.createElement('canvas');cc.width=w*r;cc.height=h*r;
