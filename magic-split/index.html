@@ -137,7 +137,6 @@ a{color:inherit;text-decoration:none}
   <button class="tab" onclick="setTab('history')" id="tab-history">📁 추천 로그</button>
   <button class="tab" onclick="setTab('criteria')" id="tab-criteria">📋 스크리닝 기준</button>
   <button class="tab" onclick="setTab('vix')" id="tab-vix">📡 VIX 게이트</button>
-  <button class="tab" onclick="setTab('ai')" id="tab-ai">🤖 AI 검토</button>
 </div>
 
 <div class="content">
@@ -145,7 +144,6 @@ a{color:inherit;text-decoration:none}
   <div id="pane-history" style="display:none"></div>
   <div id="pane-criteria" style="display:none"></div>
   <div id="pane-vix" style="display:none"></div>
-  <div id="pane-ai" style="display:none"></div>
 </div>
 
 <img id="goldDwarf" class="gold-dwarf" src="gold_dwarf_full.png" alt="Gold Dwarf" />
@@ -230,13 +228,12 @@ async function loadHistory() {
 // ── Tabs ───────────────────────────────────────────────────
 function setTab(tab) {
   currentTab = tab;
-  ['dashboard','history','criteria','vix','ai'].forEach(t => {
+  ['dashboard','history','criteria','vix'].forEach(t => {
     document.getElementById('pane-' + t).style.display = t === tab ? 'block' : 'none';
     document.getElementById('tab-' + t).classList.toggle('active', t === tab);
   });
   var dw=document.getElementById('goldDwarf');if(dw)dw.classList.toggle('hidden',tab!=='dashboard');
   if (tab === 'history') renderHistory();
-  if (tab === 'ai') renderAiReport();
 }
 
 // ── Score Ring SVG ─────────────────────────────────────────
@@ -521,71 +518,59 @@ function renderCriteria() {
       {name:'MA200 괴리율',cond:'±25% 이내',score:11,rat:'평균 회귀 가능성 확인'},
     ]},
     {cat:'오실레이션 품질',icon:'〰️',color:'#ff6b6b',weight:35,desc:'진동·변동성 품질 필터',items:[
-      {name:'연간 역사적변동성',cond:'20%~50%',score:12,rat:'진동폭 적정 범위 확인'},
-      {name:'방향전환 횟수',cond:'60거래일 내 ≥12회',score:12,rat:'진동 반복성 직접 측정'},
-      {name:'RSI 범위',cond:'최근 60일 RSI범위 ≥30pt',score:11,rat:'RSI 진동 강도 확인'},
+      {name:'역사적변동성',cond:'15%~50%',score:12,rat:'진동폭 적정 범위 확인'},
+      {name:'방향전환 횟수',cond:'60일 내 ≥10회',score:12,rat:'진동 반복성 직접 측정'},
+      {name:'RSI 범위',cond:'60일 RSI범위 ≥25pt',score:11,rat:'RSI 진동 강도 확인'},
     ]},
   ];
+  const AI_AGENTS = [
+    {icon:'🏦',name:'펀더멘털',color:'#00d4aa',desc:'재무 건전성, 밸류에이션, 내재가치 평가'},
+    {icon:'💬',name:'센티먼트',color:'#a78bfa',desc:'외국인·기관 매매동향, 투자심리 분석'},
+    {icon:'📰',name:'뉴스',color:'#f59e0b',desc:'이슈·매크로 이벤트의 진동전략 영향'},
+    {icon:'📊',name:'기술적',color:'#4d9fff',desc:'오실레이션 품질, 분할매수 구간 도출'},
+    {icon:'⚡',name:'트레이더',color:'#ff6b6b',desc:'4개 분석 종합 → 편입/보류/제외 판단'},
+    {icon:'🛡️',name:'리스크',color:'#6b8aaa',desc:'공격·보수·중립 3관점 토론 → 비중 제안'},
+  ];
   document.getElementById('pane-criteria').innerHTML = `
-    <!-- 유니버스 구성 섹션 -->
-    <div style="background:#0d1224;border:1px solid #3ecf7025;border-radius:12px;padding:16px;margin-bottom:16px">
-      <div style="color:#3ecf70;font-size:13px;font-weight:700;margin-bottom:10px">🔭 종목 유니버스 구성 방식</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
-        <div style="background:#060912;border:1px solid #3ecf7018;border-radius:10px;padding:14px">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-            <div style="background:#3ecf7020;color:#3ecf70;border-radius:4px;padding:2px 9px;font-size:11px;font-weight:700">A그룹</div>
-            <span style="color:#e0e6f0;font-size:12px;font-weight:700">시총 상위 100개</span>
-          </div>
-          <div style="color:#a0b8ce;font-size:12px;line-height:1.8">KOSPI 전체에서 시가총액 기준 상위 100개 종목. 유동성과 안정성이 검증된 대형주 중심.</div>
+    <div style="background:linear-gradient(135deg,#0d1224,#111a2e);border:1px solid #a78bfa30;border-radius:14px;padding:20px;margin-bottom:20px">
+      <div style="color:#e0e6f0;font-size:17px;font-weight:800;margin-bottom:6px">⚙️ 투자 판단 파이프라인</div>
+      <div style="color:#8aa4c4;font-size:14px;line-height:1.9;margin-bottom:18px">
+        매직스플릿은 <span style="color:#00d4aa;font-weight:700">2단계 직렬 프로세스</span>로 종목을 선별합니다.
+        1단계 정량 스크리닝이 2,500종목을 5~8개로 압축한 뒤, 2단계 AI가 심층 분석하여 최종 편입을 판단합니다.
+      </div>
+      <div style="display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:10px;align-items:center">
+        <div style="background:#00d4aa0d;border:1px solid #00d4aa30;border-radius:12px;padding:16px;text-align:center">
+          <div style="color:#00d4aa;font-size:13px;font-weight:800;margin-bottom:4px">PHASE 1</div>
+          <div style="font-size:15px;font-weight:700;margin-bottom:4px">정량 스크리닝</div>
+          <div style="color:#6b8aaa;font-size:12px;line-height:1.6">scanner.py · 매일 06:00<br>→ A+/A 등급 선별</div>
         </div>
-        <div style="background:#060912;border:1px solid #4d9fff18;border-radius:10px;padding:14px">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-            <div style="background:#4d9fff20;color:#4d9fff;border-radius:4px;padding:2px 9px;font-size:11px;font-weight:700">B그룹</div>
-            <span style="color:#e0e6f0;font-size:12px;font-weight:700">재무 우량 중소형 100개</span>
-          </div>
-          <div style="color:#a0b8ce;font-size:12px;line-height:1.8">시총 100위 밖 종목 중 재무 필터를 통과한 우량주. 매일 다른 종목이 선발될 수 있음.</div>
+        <div style="color:#4d6a8a;font-size:22px">→</div>
+        <div style="background:#a78bfa0d;border:1px solid #a78bfa30;border-radius:12px;padding:16px;text-align:center">
+          <div style="color:#a78bfa;font-size:13px;font-weight:800;margin-bottom:4px">PHASE 2</div>
+          <div style="font-size:15px;font-weight:700;margin-bottom:4px">AI 심층 분석</div>
+          <div style="color:#6b8aaa;font-size:12px;line-height:1.6">Gemini 3 Flash · 06:20<br>→ 편입/보류 판단</div>
+        </div>
+        <div style="color:#4d6a8a;font-size:22px">→</div>
+        <div style="background:#4d9fff0d;border:1px solid #4d9fff30;border-radius:12px;padding:16px;text-align:center">
+          <div style="color:#4d9fff;font-size:13px;font-weight:800;margin-bottom:4px">PHASE 3</div>
+          <div style="font-size:15px;font-weight:700;margin-bottom:4px">결과 전달</div>
+          <div style="color:#6b8aaa;font-size:12px;line-height:1.6">~06:35 완료<br>→ 웹 + 텔레그램</div>
         </div>
       </div>
-      <div style="background:#060912;border-radius:8px;padding:12px">
-        <div style="color:#c0d4e8;font-size:13px;font-weight:700;margin-bottom:7px">📐 B그룹 재무 필터 기준</div>
-        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
-          ${[
-            {label:'시총 최소',cond:'≥ 1,000억원',desc:'소형주 제외'},
-            {label:'PER',cond:'0 < PER < 35',desc:'흑자 + 비고평가'},
-            {label:'PBR',cond:'0.2 ~ 4.0',desc:'극단 배제'},
-            {label:'EPS',cond:'양수',desc:'당기순이익 흑자'},
-          ].map(f=>`
-          <div style="background:#0a0e1a;border-radius:6px;padding:9px 10px">
-            <div style="color:#8aa4c4;font-size:11px;margin-bottom:3px">${f.label}</div>
-            <div style="color:#4d9fff;font-size:13px;font-weight:700;margin-bottom:2px">${f.cond}</div>
-            <div style="color:#8aa4c4;font-size:11px">${f.desc}</div>
-          </div>`).join('')}
-        </div>
-        <div style="margin-top:10px;padding-top:10px;border-top:1px solid #1e2d4a">
-          <div style="color:#c0d4e8;font-size:13px;font-weight:700;margin-bottom:6px">⭐ 우량도 점수 (높을수록 우선 선발)</div>
-          <div style="display:flex;gap:10px;flex-wrap:wrap">
-            ${[
-              {label:'배당 지급 기업',score:'+2pt',color:'#ffd166'},
-              {label:'저PBR (< 1.5)',score:'+1pt',color:'#00d4aa'},
-              {label:'저PER (< 15)',score:'+1pt',color:'#4d9fff'},
-            ].map(q=>`<div style="background:#0a0e1a;border-radius:5px;padding:5px 10px;display:flex;align-items:center;gap:6px">
-              <span style="color:${q.color};font-size:13px;font-weight:700">${q.score}</span>
-              <span style="color:#c0d4e8;font-size:12px">${q.label}</span>
-            </div>`).join('')}
-          </div>
-        </div>
-      </div>
-      <div style="margin-top:10px;color:#8aa4c4;font-size:12px;line-height:1.8">
-        ✦ FinanceDataReader 정상 시: KOSPI 951개 중 A+B = 최대 200개 실시간 구성<br>
-        ✦ SSL 오류 등 장애 시: 90개 풀에서 날짜 시드 기반으로 매일 50개 랜덤 샘플링 (매일 변동)
+    </div>
+    <div style="color:#00d4aa;font-size:14px;font-weight:800;letter-spacing:2px;margin-bottom:10px;margin-top:4px">▎ PHASE 1 — 정량 스크리닝 (scanner.py)</div>
+    <div style="background:#0d1224;border:1px solid #00d4aa20;border-radius:12px;padding:16px;margin-bottom:10px">
+      <div style="color:#8aa4c4;font-size:13px;line-height:1.8;margin-bottom:14px">
+        매일 06:00, Mac Mini에서 KOSPI+KOSDAQ 전 종목(~2,500개)을 9개 정량 기준으로 채점합니다.
+        <span style="color:#00d4aa;font-weight:700">110점 만점</span> 중 85점 이상이면 A+, 70점 이상이면 A 등급입니다.
+        VIX/VKOSPI 게이트를 통과한 종목만 최종 추천됩니다. 비용: <span style="color:#00d4aa">$0 (완전 무료)</span>
       </div>
     </div>
     <div class="criteria-cats">
       ${FULL.map(cat=>`
       <div class="criteria-cat" style="border:1px solid ${cat.color}20">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
-          <div><div style="font-size:18px;margin-bottom:2px">${cat.icon}</div>
-            <div style="color:${cat.color};font-size:13px;font-weight:700">${cat.cat}</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <div><div style="color:${cat.color};font-size:14px;font-weight:700">${cat.icon} ${cat.cat}</div>
             <div style="color:#8aa4c4;font-size:12px">${cat.desc}</div></div>
           <div style="background:${cat.color}18;color:${cat.color};border-radius:6px;padding:3px 10px;font-size:15px;font-weight:700">${cat.weight}pt</div>
         </div>
@@ -600,7 +585,7 @@ function renderCriteria() {
         </div>`).join('')}
       </div>`).join('')}
     </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px">
       <div style="background:#0d1224;border:1px solid #ffd16620;border-radius:12px;padding:16px">
         <div style="color:#ffd166;font-size:12px;font-weight:700;margin-bottom:10px">⭐ 보너스 (최대 +10pt)</div>
         ${[{n:'배당 지급 이력',c:'3년 이상 연속',s:'+3'},{n:'KOSPI200 구성',c:'지수 편입 여부',s:'+2'},{n:'외국인 보유율',c:'5% 이상',s:'+2'},{n:'일평균 거래대금',c:'≥ 100억원',s:'+3'}]
@@ -608,13 +593,44 @@ function renderCriteria() {
       </div>
       <div style="background:#0d1224;border:1px solid #1e2d4a;border-radius:12px;padding:16px">
         <div style="color:#e0e6f0;font-size:12px;font-weight:700;margin-bottom:10px">📈 점수별 편입 등급</div>
-        ${[{g:'A+',r:'85~110pt',n:'적극 편입 · 비중 확대'},{g:'A',r:'70~84pt',n:'일반 편입 기준'},{g:'B',r:'55~69pt',n:'비중 축소하여 편입'},{g:'C',r:'0~54pt',n:'편입 보류 · 재검토'}]
+        ${[{g:'A+',r:'85~110pt',n:'적극 편입 · AI 심층 분석 대상'},{g:'A',r:'70~84pt',n:'편입 권장 · AI 심층 분석 대상'},{g:'B',r:'55~69pt',n:'비중 축소 · AI 분석 미대상'},{g:'C',r:'0~54pt',n:'편입 보류 · AI 분석 미대상'}]
           .map(({g,r,n})=>{const cfg=GRADE_CONFIG[g]; return `<div style="background:${cfg.bg};border:1px solid ${cfg.color}25;border-radius:8px;padding:8px 12px;margin-bottom:7px;display:flex;justify-content:space-between;align-items:center"><div style="display:flex;align-items:center;gap:8px"><span style="color:${cfg.color};font-size:14px;font-weight:700">${g}</span><span style="color:${cfg.color};font-size:11px">${r}</span></div><div style="color:#8aa4c4;font-size:12px">${n}</div></div>`;}).join('')}
       </div>
+    </div>
+    <div style="color:#a78bfa;font-size:14px;font-weight:800;letter-spacing:2px;margin-bottom:10px">▎ PHASE 2 — AI 멀티에이전트 심층 분석</div>
+    <div style="background:#0d1224;border:1px solid #a78bfa20;border-radius:12px;padding:16px;margin-bottom:10px">
+      <div style="color:#8aa4c4;font-size:13px;line-height:1.8;margin-bottom:14px">
+        Phase 1에서 <span style="color:#00d4aa;font-weight:700">A+ / A 등급</span>을 받은 종목만 대상으로,
+        <span style="color:#a78bfa;font-weight:700">Google Gemini 3 Flash</span> 기반 6개 전문 에이전트가
+        독립 분석 후 토론하여 최종 편입 적합성을 판단합니다.
+        매직스플릿의 <span style="color:#ff6b6b;font-weight:700">진동(오실레이션) 전략</span> 관점에 맞춤 튜닝되어 있습니다.
+        비용: <span style="color:#a78bfa">~$6/월</span> (Gemini 3 Flash API)
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px">
+      ${AI_AGENTS.map(a=>`
+      <div style="background:#060912;border:1px solid ${a.color}20;border-radius:10px;padding:14px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+          <span style="font-size:18px">${a.icon}</span>
+          <span style="color:${a.color};font-size:14px;font-weight:800">${a.name}</span>
+        </div>
+        <div style="color:#8aa4c4;font-size:12px;line-height:1.7">${a.desc}</div>
+      </div>`).join('')}
+    </div>
+    <div style="background:#060912;border:1px solid #1e2d4a;border-radius:12px;padding:16px">
+      <div style="color:#4d9fff;font-size:13px;font-weight:700;margin-bottom:9px">🖥️ 일일 자동 실행 (Mac Mini)</div>
+      <pre style="margin:0;font-size:13px;line-height:2.0;color:#a0b8ce;overflow-x:auto">06:00  scanner.py      KOSPI+KOSDAQ 전 종목 정량 스크리닝
+06:15  완료            A+/A 등급 5~8종목 선별 → DB 저장
+06:20  ta_runner.py    Gemini 3 Flash × 6 에이전트 심층 분석
+06:35  완료            리포트 저장 + 텔레그램 알림 + 웹 업데이트
+08:00  확인 가능       출근 전 편입/보류 판단 완료
+09:00  장 시작
+
+데이터 소스 (Phase 1):  yfinance, pykrx (무료)
+AI 엔진 (Phase 2):     Google Gemini 3 Flash Preview (~$6/월)
+알림:                   텔레그램 @goblin247_bot</pre>
     </div>`;
 }
-
-// ── VIX ────────────────────────────────────────────────────
 function renderVix() {
   document.getElementById('pane-vix').innerHTML = `
     <div style="background:#0d1224;border:1px solid #1e2d4a;border-radius:12px;padding:16px;margin-bottom:12px">
@@ -650,7 +666,6 @@ function renderVix() {
 
 // ── AI Report ─────────────────────────────────────────
 async function renderAiReport() {
-  const pane = document.getElementById('pane-ai');
   pane.innerHTML = '<div class="loading-wrap"><div class="spinner"></div><div style="color:#4d6a8a;font-size:12px">AI 분석 로드 중...</div></div>';
   try {
     const r = await fetch(`${API}/api/magic-split/ai-report`);
