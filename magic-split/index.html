@@ -311,12 +311,29 @@ function buildNumberTable(aiRpt, currentPrice) {
   }
   // 차수별 매수간격/매도목표 파싱
   function getPct(text, idx, total) {
-    // "전반부 -3%, 후반부 -5%" 패턴 파싱
-    const nums = (text||'').match(/[\d.]+/g);
+    if (!text) return '-';
+    // Pattern 1: "N1: X%, N2~N7: Y%" — N1만 다른 경우
+    const n1Pat = text.match(/N1[:\s]+(\d+\.?\d*)%[\s\S]*?N2[^%]*?(\d+\.?\d*)%/);
+    if (n1Pat) return (idx === 0 ? n1Pat[1] : n1Pat[2]) + '%';
+    // Pattern 2: "X% (단, 넘버1은 Y% 이상)" — N1 목표가 더 높은 경우
+    const nb1 = text.match(/(\d+\.?\d*)%[^%]*?넘버1은\s*(\d+\.?\d*)%/);
+    if (nb1) return (idx === 0 ? nb1[2] : nb1[1]) + '%';
+    // Pattern 3: "N2~N4: X%, N5~N7: Y%" — 명시적 범위
+    const rangeRe = /N(\d+)[~\-]N(\d+)[:\s]+(\d+\.?\d*)%/g;
+    const ranges = [];
+    let m;
+    while ((m = rangeRe.exec(text)) !== null)
+      ranges.push({ s: parseInt(m[1])-1, e: parseInt(m[2])-1, v: m[3] });
+    if (ranges.length > 0) {
+      const hit = ranges.find(r => idx >= r.s && idx <= r.e);
+      return (hit ? hit.v : ranges[0].v) + '%';
+    }
+    // 기본: 숫자 추출 후 절반 기준 분기
+    const nums = text.match(/\d+\.?\d*(?=%)/g);
     if (!nums) return '-';
     if (nums.length === 1) return nums[0] + '%';
     const mid = Math.ceil(total / 2);
-    return (idx < mid ? nums[0] : nums[1] || nums[0]) + '%';
+    return (idx < mid ? nums[0] : nums[1]) + '%';
   }
   let html = '<table style="width:100%;border-collapse:collapse;font-size:12px">';
   html += '<tr style="border-bottom:1px solid #1e2d4a">';
