@@ -242,12 +242,14 @@ let scanData = null;
 let historyData = [];
 let stockList = [];
 let aiReports = [];
+let changesData = null;
 
 // ── Init ───────────────────────────────────────────────────
 async function init() {
   await loadLatest();
   await loadHistory();
   await loadAiReports();
+  await loadChanges();
   renderCriteria();
   renderVix();
 }
@@ -285,6 +287,46 @@ async function loadAiReports() {
     const j = await r.json();
     aiReports = (j.data && j.data.reports) ? j.data.reports : [];
   } catch(e) { aiReports = []; }
+}
+
+async function loadChanges() {
+  try {
+    const r = await fetch(`${API}/api/magic-split/changes`);
+    const j = await r.json();
+    changesData = j.data || null;
+  } catch(e) { changesData = null; }
+}
+
+function renderChanges() {
+  if (!changesData || changesData.unchanged) return '';
+  const cd=changesData.cur_date||'';
+  const pd=changesData.prev_date||'';
+  let h='<div style="margin-top:24px;border-top:2px solid #a78bfa30;padding-top:18px">';
+  h+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">';
+  h+='<span style="color:#a78bfa;font-size:15px;font-weight:800">📋 주간 변동</span>';
+  h+='<span style="color:#4d6a8a;font-size:12px">('+pd+' → '+cd+')</span></div>';
+  if(changesData.added&&changesData.added.length){
+    h+='<div style="color:#00d4aa;font-size:13px;font-weight:700;margin-bottom:8px">📥 신규 편입 ('+changesData.added.length+'종목)</div>';
+    changesData.added.forEach(s=>{
+      h+='<div style="background:#00d4aa08;border:1px solid #00d4aa20;border-radius:8px;padding:10px 14px;margin-bottom:6px">';
+      h+='<div style="display:flex;justify-content:space-between;align-items:center">';
+      h+='<span style="color:#00d4aa;font-size:13px;font-weight:700">🟢 '+s.name+'</span>';
+      h+='<span style="color:#00d4aa;font-size:12px">'+s.score+'pt ['+s.grade+']</span></div>';
+      h+='<div style="color:#8aa4c4;font-size:12px;margin-top:4px;line-height:1.7">'+(s.summary||'')+'</div></div>';
+    });
+  }
+  if(changesData.removed&&changesData.removed.length){
+    h+='<div style="color:#ff6b6b;font-size:13px;font-weight:700;margin-bottom:8px;margin-top:12px">📤 방출 ('+changesData.removed.length+'종목)</div>';
+    changesData.removed.forEach(s=>{
+      h+='<div style="background:#ff6b6b08;border:1px solid #ff6b6b20;border-radius:8px;padding:10px 14px;margin-bottom:6px">';
+      h+='<div style="display:flex;justify-content:space-between;align-items:center">';
+      h+='<span style="color:#ff6b6b;font-size:13px;font-weight:700">🔴 '+s.name+'</span>';
+      h+='<span style="color:#ff6b6b;font-size:12px">'+s.score+'pt ['+s.grade+']</span></div>';
+      h+='<div style="color:#8aa4c4;font-size:12px;margin-top:4px;line-height:1.7">'+(s.summary||'')+'</div></div>';
+    });
+  }
+  h+='</div>';
+  return h;
 }
 
 function getAiReport(ticker) {
@@ -454,7 +496,7 @@ function renderDashboard(data) {
   stockList = data.recommendations || [];
   const el = document.getElementById('pane-dashboard');
   el.innerHTML = gateBannerHTML(data.market_gate||{}) +
-    `<div class="stock-grid">${stockList.map((s,i) => stockCardHTML(s,i)).join('')}</div>`;
+    `<div class="stock-grid">${stockList.map((s,i) => stockCardHTML(s,i)).join('')}</div>` + renderChanges();
 }
 
 // ── Modal ──────────────────────────────────────────────────
