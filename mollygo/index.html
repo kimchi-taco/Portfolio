@@ -224,7 +224,19 @@
     <header>
       <h1>MollyGo</h1>
       <p>상품 정보만 입력하면 인스타그램 캡션 + 블로그 포스팅이 자동 생성됩니다</p>
+      <button type="button" onclick="apiKeyCard.style.display=apiKeyCard.style.display==='none'?'block':'none'" style="margin-top:8px;background:none;border:1px solid #ddd;border-radius:8px;padding:4px 12px;font-size:12px;color:#999;cursor:pointer;">API Key 설정</button>
     </header>
+
+    <div class="form-card" id="apiKeyCard" style="margin-bottom:16px; display:none;">
+      <div class="form-group">
+        <label>Gemini API Key *</label>
+        <div style="display:flex;gap:8px;">
+          <input type="password" id="apiKeyInput" placeholder="AIza..." style="flex:1;">
+          <button type="button" class="btn" id="saveKeyBtn" style="width:auto;margin-top:0;padding:10px 20px;font-size:14px;">저장</button>
+        </div>
+        <small style="color:#999;margin-top:6px;display:block;">Google AI Studio에서 무료 발급 가능합니다. 키는 브라우저에만 저장됩니다.</small>
+      </div>
+    </div>
 
     <div class="form-card">
       <form id="genForm">
@@ -296,8 +308,24 @@
   </div>
 
   <script>
-    const GEMINI_API_KEY = 'AIzaSyC7sKERvHFtwGce0gkosFY739OhNNCHUo0';
-    const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${GEMINI_API_KEY}`;
+    function getApiKey() { return localStorage.getItem('gemini_api_key') || ''; }
+    function setApiKey(k) { localStorage.setItem('gemini_api_key', k); }
+
+    const apiKeyCard = document.getElementById('apiKeyCard');
+    const apiKeyInput = document.getElementById('apiKeyInput');
+
+    // Show API key card if no key saved
+    if (!getApiKey()) {
+      apiKeyCard.style.display = 'block';
+    }
+    apiKeyInput.value = getApiKey();
+
+    document.getElementById('saveKeyBtn').addEventListener('click', () => {
+      const key = apiKeyInput.value.trim();
+      if (!key) return;
+      setApiKey(key);
+      apiKeyCard.style.display = 'none';
+    });
 
     const loading = document.getElementById('loading');
     const results = document.getElementById('results');
@@ -306,6 +334,15 @@
     let lastResult = null;
 
     document.getElementById('submitBtn').addEventListener('click', async () => {
+      const apiKey = getApiKey();
+      if (!apiKey) {
+        apiKeyCard.style.display = 'block';
+        apiKeyInput.focus();
+        errorEl.textContent = 'Gemini API Key를 먼저 입력해주세요.';
+        errorEl.classList.add('active');
+        return;
+      }
+
       const productName = document.getElementById('productName').value;
       const category = document.getElementById('category').value;
       if (!productName || !category) {
@@ -360,7 +397,8 @@
       document.getElementById('submitBtn').disabled = true;
 
       try {
-        const response = await fetch(GEMINI_URL, {
+        const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+        const response = await fetch(geminiUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
