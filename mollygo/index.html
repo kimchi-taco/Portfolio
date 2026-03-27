@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MollyGo - 뷰티 콘텐츠 자동 생성기</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #faf5f0;
+      color: #333;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    header h1 {
+      font-size: 28px;
+      color: #c06;
+      margin-bottom: 8px;
+    }
+
+    header p {
+      color: #888;
+      font-size: 14px;
+    }
+
+    .form-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      margin-bottom: 32px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-group.full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #555;
+      margin-bottom: 6px;
+    }
+
+    input, textarea, select {
+      padding: 12px 14px;
+      border: 1.5px solid #e0d6cf;
+      border-radius: 10px;
+      font-size: 14px;
+      background: #faf5f0;
+      transition: border-color 0.2s;
+      font-family: inherit;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: #c06;
+    }
+
+    textarea { resize: vertical; min-height: 80px; }
+
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #c06, #e47);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 20px;
+      transition: opacity 0.2s;
+    }
+
+    .btn:hover { opacity: 0.9; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 40px;
+      color: #999;
+    }
+
+    .loading.active { display: block; }
+
+    .spinner {
+      width: 36px;
+      height: 36px;
+      border: 3px solid #eee;
+      border-top-color: #c06;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 16px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .results { display: none; }
+    .results.active { display: block; }
+
+    .result-section {
+      background: #fff;
+      border-radius: 16px;
+      padding: 28px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      margin-bottom: 20px;
+    }
+
+    .result-section h2 {
+      font-size: 16px;
+      color: #c06;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .caption-box {
+      background: #faf5f0;
+      border-radius: 10px;
+      padding: 20px;
+      white-space: pre-wrap;
+      line-height: 1.7;
+      font-size: 14px;
+      margin-bottom: 16px;
+    }
+
+    .hashtags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .hashtag {
+      background: #fce8ef;
+      color: #c06;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 13px;
+    }
+
+    .blog-content {
+      background: #faf5f0;
+      border-radius: 10px;
+      padding: 24px;
+      line-height: 1.8;
+      font-size: 14px;
+    }
+
+    .blog-content h1, .blog-content h2, .blog-content h3 {
+      color: #333;
+      margin: 16px 0 8px;
+    }
+
+    .blog-content h1 { font-size: 20px; }
+    .blog-content h2 { font-size: 17px; }
+    .blog-content h3 { font-size: 15px; }
+    .blog-content p { margin-bottom: 12px; }
+
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 14px;
+      background: #f0e8e3;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 12px;
+      color: #666;
+      margin-top: 12px;
+      transition: background 0.2s;
+    }
+
+    .copy-btn:hover { background: #e4d8d0; }
+    .copy-btn.copied { background: #d4edda; color: #155724; }
+
+    .error {
+      display: none;
+      background: #fff3f3;
+      border: 1px solid #fcc;
+      border-radius: 12px;
+      padding: 16px;
+      color: #c00;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .error.active { display: block; }
+
+    @media (max-width: 600px) {
+      .form-grid { grid-template-columns: 1fr; }
+      .container { padding: 20px 16px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>MollyGo</h1>
+      <p>상품 정보만 입력하면 인스타그램 캡션 + 블로그 포스팅이 자동 생성됩니다</p>
+    </header>
+
+    <div class="form-card">
+      <form id="genForm">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>상품명 *</label>
+            <input type="text" id="productName" placeholder="예: 글로우 세럼 30ml" required>
+          </div>
+          <div class="form-group">
+            <label>카테고리 *</label>
+            <select id="category" required>
+              <option value="">선택하세요</option>
+              <option value="스킨케어">스킨케어</option>
+              <option value="메이크업">메이크업</option>
+              <option value="헤어케어">헤어케어</option>
+              <option value="바디케어">바디케어</option>
+              <option value="향수">향수</option>
+              <option value="네일">네일</option>
+              <option value="선케어">선케어</option>
+              <option value="클렌징">클렌징</option>
+              <option value="마스크팩">마스크팩</option>
+              <option value="뷰티디바이스">뷰티디바이스</option>
+            </select>
+          </div>
+          <div class="form-group full">
+            <label>주요 특징 / 성분</label>
+            <textarea id="features" placeholder="예: 나이아신아마이드 10%, 히알루론산 함유, 저자극, 비건 인증"></textarea>
+          </div>
+          <div class="form-group">
+            <label>톤앤매너</label>
+            <select id="tone">
+              <option value="트렌디하고 친근한">트렌디 & 친근</option>
+              <option value="고급스럽고 세련된">럭셔리 & 세련</option>
+              <option value="전문적이고 신뢰감 있는">전문 & 신뢰</option>
+              <option value="귀엽고 발랄한">귀엽고 발랄</option>
+              <option value="자연스럽고 깨끗한">클린 & 내추럴</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>타겟 고객</label>
+            <input type="text" id="targetAudience" placeholder="예: 20~30대 여성" value="20~30대 여성">
+          </div>
+        </div>
+        <button type="button" class="btn" id="submitBtn">콘텐츠 생성하기</button>
+      </form>
+    </div>
+
+    <div class="loading" id="loading">
+      <div class="spinner"></div>
+      <p>AI가 콘텐츠를 생성하고 있습니다...</p>
+    </div>
+
+    <div class="error" id="error"></div>
+
+    <div class="results" id="results">
+      <div class="result-section">
+        <h2>Instagram 캡션 + 해시태그</h2>
+        <div class="caption-box" id="caption"></div>
+        <div class="hashtags" id="hashtags"></div>
+        <button class="copy-btn" onclick="copyInsta()">복사하기</button>
+      </div>
+
+      <div class="result-section">
+        <h2>블로그 포스팅</h2>
+        <div class="blog-content" id="blogContent"></div>
+        <button class="copy-btn" onclick="copyBlog()">복사하기</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const GEMINI_API_KEY = 'AIzaSyC7sKERvHFtwGce0gkosFY739OhNNCHUo0';
+    const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${GEMINI_API_KEY}`;
+
+    const loading = document.getElementById('loading');
+    const results = document.getElementById('results');
+    const errorEl = document.getElementById('error');
+
+    let lastResult = null;
+
+    document.getElementById('submitBtn').addEventListener('click', async () => {
+      const productName = document.getElementById('productName').value;
+      const category = document.getElementById('category').value;
+      if (!productName || !category) {
+        errorEl.textContent = '상품명과 카테고리를 입력해주세요.';
+        errorEl.classList.add('active');
+        return;
+      }
+
+      const features = document.getElementById('features').value;
+      const tone = document.getElementById('tone').value;
+      const targetAudience = document.getElementById('targetAudience').value;
+
+      const prompt = `당신은 뷰티/화장품 분야 전문 콘텐츠 마케터입니다. 아래 상품 정보를 바탕으로 두 가지 콘텐츠를 생성해주세요.
+
+## 상품 정보
+- 상품명: ${productName}
+- 카테고리: ${category}
+- 주요 특징/성분: ${features || '없음'}
+- 톤앤매너: ${tone || '트렌디하고 친근한'}
+- 타겟 고객: ${targetAudience || '20~30대 여성'}
+
+## 생성할 콘텐츠
+
+### 1. 인스타그램 캡션 + 해시태그
+- 감성적이고 눈길을 끄는 캡션 (3~5줄)
+- 이모지 적절히 활용
+- 관련 해시태그 15~20개 (한글+영문 혼합)
+- CTA(Call to Action) 포함
+
+### 2. 블로그 포스팅
+- SEO 최적화된 제목
+- 도입부 (흥미 유발)
+- 본문 (상품 특징, 사용법, 장점 등 3~4개 소제목으로 구성)
+- 마무리 (구매 유도)
+- 전체 800~1200자 분량
+
+반드시 아래 JSON 형식으로만 응답해주세요 (다른 텍스트 없이):
+{
+  "instagram": {
+    "caption": "캡션 텍스트",
+    "hashtags": ["#해시태그1", "#해시태그2", "#해시태그3"]
+  },
+  "blog": {
+    "title": "블로그 제목",
+    "content": "블로그 전체 내용 (마크다운 형식)"
+  }
+}`;
+
+      loading.classList.add('active');
+      results.classList.remove('active');
+      errorEl.classList.remove('active');
+      document.getElementById('submitBtn').disabled = true;
+
+      try {
+        const response = await fetch(GEMINI_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: {
+              temperature: 0.9,
+              maxOutputTokens: 8192,
+              responseMimeType: 'application/json',
+            },
+          }),
+        });
+
+        if (!response.ok) {
+          const err = await response.json();
+          throw new Error(err.error?.message || `API 오류 ${response.status}`);
+        }
+
+        const data = await response.json();
+        const parts = data.candidates?.[0]?.content?.parts || [];
+        const textPart = parts.filter(p => p.text).pop();
+        const text = textPart?.text;
+
+        if (!text) throw new Error('콘텐츠 생성에 실패했습니다.');
+
+        const cleaned = text.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
+        const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
+        if (!jsonMatch) throw new Error('콘텐츠 파싱에 실패했습니다.');
+
+        const result = JSON.parse(jsonMatch[0]);
+        lastResult = result;
+        renderResults(result);
+      } catch (err) {
+        errorEl.textContent = err.message || '콘텐츠 생성에 실패했습니다.';
+        errorEl.classList.add('active');
+      } finally {
+        loading.classList.remove('active');
+        document.getElementById('submitBtn').disabled = false;
+      }
+    });
+
+    function renderResults(data) {
+      document.getElementById('caption').textContent = data.instagram.caption;
+
+      const hashtagsEl = document.getElementById('hashtags');
+      hashtagsEl.innerHTML = '';
+      data.instagram.hashtags.forEach(tag => {
+        const span = document.createElement('span');
+        span.className = 'hashtag';
+        span.textContent = tag.startsWith('#') ? tag : '#' + tag;
+        hashtagsEl.appendChild(span);
+      });
+
+      document.getElementById('blogContent').innerHTML = renderMarkdown(data.blog.content);
+      results.classList.add('active');
+      results.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function renderMarkdown(md) {
+      return md
+        .replace(/### (.+)/g, '<h3>$1</h3>')
+        .replace(/## (.+)/g, '<h2>$1</h2>')
+        .replace(/# (.+)/g, '<h1>$1</h1>')
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\n\n/g, '</p><p>')
+        .replace(/^/, '<p>')
+        .replace(/$/, '</p>');
+    }
+
+    function copyInsta() {
+      if (!lastResult) return;
+      const text = lastResult.instagram.caption + '\n\n' +
+        lastResult.instagram.hashtags.map(t => t.startsWith('#') ? t : '#' + t).join(' ');
+      copyToClipboard(text, event.target);
+    }
+
+    function copyBlog() {
+      if (!lastResult) return;
+      copyToClipboard(lastResult.blog.title + '\n\n' + lastResult.blog.content, event.target);
+    }
+
+    function copyToClipboard(text, btn) {
+      navigator.clipboard.writeText(text).then(() => {
+        btn.textContent = '복사됨!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = '복사하기';
+          btn.classList.remove('copied');
+        }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>
