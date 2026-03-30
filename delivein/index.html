@@ -220,7 +220,7 @@
       const[data,setData]=useState(FALLBACK);const[info,setInfo]=useState({updated:"",total:0});
       const[cat,setCat]=useState("all");const[sel,setSel]=useState(null);
       useEffect(()=>{
-        fetch("restaurants.json").then(r=>{if(!r.ok)throw new Error();return r.json()})
+        fetch("/delivein/restaurants.json").then(r=>{if(!r.ok)throw new Error();return r.json()})
         .then(d=>{if(d.restaurants&&d.restaurants.length){setData(d.restaurants);setInfo({updated:d.updated,total:d.restaurants.length,manual:(d.source_stats||{}).manual_curated||0,crawled:(d.source_stats||{}).crawled||0});document.getElementById('updateDate').textContent=d.updated||''}}).catch(()=>{});
       },[]);
       const filtered=cat==="all"?data:data.filter(r=>r.category.includes(cat));
