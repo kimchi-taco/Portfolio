@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VAULTHOLD — Forge Never Sleeps</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=DM+Mono:wght@300;400;500&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg:#050a07;--bg2:#0a1410;--bg3:#121e18;--bg4:#1a2820;
+  --b1:rgba(50,180,90,.10);--b2:rgba(50,180,90,.22);--b3:rgba(50,180,90,.42);
+  --tx:#cce8d8;--tx2:#8ec4a4;--tx3:#4a8066;
+  --ac:#3ecf70;--ac2:#58e888;
+  --adim:rgba(62,207,112,.10);--aglow:rgba(62,207,112,.24);
+  --sh:0 0 0 1px rgba(50,180,90,.08),0 8px 32px rgba(0,0,0,.65);
+  --card:rgba(10,20,16,.84);--nav:rgba(5,10,7,.90);
+}
+body.day{
+  --bg:#e8f5ec;--bg2:#d8eede;--bg3:#c4e4cc;--bg4:#aed8b8;
+  --b1:rgba(20,110,50,.12);--b2:rgba(20,110,50,.26);--b3:rgba(20,110,50,.46);
+  --tx:#082018;--tx2:#1e6838;--tx3:#58a870;
+  --ac:#0e7830;--ac2:#188840;
+  --adim:rgba(14,120,48,.10);--aglow:rgba(14,120,48,.18);
+  --sh:0 0 0 1px rgba(20,110,50,.08),0 8px 24px rgba(0,0,0,.10);
+  --card:rgba(232,245,236,.90);--nav:rgba(232,245,236,.94);
+}
+
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--tx);font-family:'Noto Sans KR',sans-serif;font-size:14px;line-height:1.7;overflow-x:hidden;transition:background .6s,color .6s}
+body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.016) 3px,rgba(0,0,0,.016) 4px)}
+a{color:inherit;text-decoration:none}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;height:52px;padding:0 2rem;display:flex;align-items:center;background:var(--nav);backdrop-filter:blur(18px) saturate(1.4);border-bottom:1px solid var(--b2);transition:background .6s,border-color .6s}
+nav::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--ac) 30%,var(--ac2) 65%,transparent);opacity:.7}
+.logo{font-family:'Cinzel',serif;font-size:13px;font-weight:700;color:var(--ac);text-decoration:none;letter-spacing:.14em}
+.nav-center{position:absolute;left:50%;transform:translateX(-50%);font-family:'DM Mono',monospace;font-size:12px;font-weight:500;color:var(--tx);letter-spacing:.14em;text-transform:uppercase;display:flex;align-items:center;gap:8px}
+.nav-right{display:flex;align-items:center;gap:8px;margin-left:auto}
+#tbtn{width:32px;height:32px;border-radius:4px;border:1px solid var(--b2);background:transparent;color:var(--tx2);cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;transition:border-color .2s,color .2s}
+#tbtn:hover{border-color:var(--ac);color:var(--ac)}
+.nav-btn{font-family:'DM Mono',monospace;font-size:10px;padding:6px 14px;border-radius:3px;border:1px solid var(--b2);color:var(--tx2);letter-spacing:.06em;text-transform:uppercase;transition:all .2s;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.nav-btn:hover{border-color:var(--ac);color:var(--ac)}
+
+/* LAYOUT */
+main{padding-top:52px}
+section{max-width:1100px;margin:0 auto;padding:5rem 2rem}
+.slbl{font-family:'DM Mono',monospace;font-size:10px;color:var(--ac);letter-spacing:.16em;text-transform:uppercase;margin-bottom:1rem;display:flex;align-items:center;gap:10px}
+.slbl::before,.slbl::after{content:'';font-size:8px;opacity:.6}
+.stit{font-family:'Cinzel',serif;font-size:clamp(1.6rem,3vw,2.2rem);font-weight:600;color:var(--tx);line-height:1.2;margin-bottom:.75rem;letter-spacing:.04em}
+.sdsc{font-size:14px;color:var(--tx2);max-width:780px;margin-bottom:2.5rem;font-weight:300;line-height:1.8}
+
+/* PROJECTS GRID */
+.pgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--b2);border:1px solid var(--b2);border-radius:4px;overflow:hidden}
+.pc{background:var(--card);padding:1.8rem;display:flex;flex-direction:column;gap:.9rem;transition:background .2s;backdrop-filter:blur(8px)}
+.pc:hover{background:var(--bg3)}
+.pc-head{display:flex;align-items:center;gap:14px}
+.pi{font-size:20px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:var(--adim);border:1px solid var(--b2);border-radius:3px;flex-shrink:0}
+.pn{font-family:'Cinzel',serif;font-size:13px;font-weight:600;color:var(--tx);letter-spacing:.04em;margin-bottom:2px}
+.pbadge{font-family:'DM Mono',monospace;font-size:9px;padding:2px 8px;border-radius:2px;background:var(--adim);color:var(--ac);border:1px solid var(--b2);letter-spacing:.06em;margin-left:auto}
+.pd{font-size:12.5px;color:var(--tx2);font-weight:300;line-height:1.75;flex:1}
+.pts{display:flex;flex-wrap:wrap;gap:5px;margin-top:auto}
+.pt{font-family:'DM Mono',monospace;font-size:9px;padding:2px 7px;border-radius:2px;background:var(--bg4);color:var(--tx3);letter-spacing:.04em;border:1px solid var(--b1)}
+
+/* STATUS */
+.pstatus{display:flex;align-items:center;gap:6px;margin-top:4px}
+.pstatus-dot{width:6px;height:6px;border-radius:50%}
+.pstatus-dot.dev{background:#c4a44a;box-shadow:0 0 6px rgba(196,164,74,.5)}
+.pstatus-dot.live{background:var(--ac);box-shadow:0 0 6px var(--ac)}
+.pstatus-txt{font-family:'DM Mono',monospace;font-size:10px;color:var(--tx3);letter-spacing:.04em}
+
+/* DIVIDER */
+.divider{height:1px;background:linear-gradient(90deg,transparent,var(--b3),transparent);max-width:1100px;margin:0 auto}
+
+/* FOOTER */
+footer{border-top:1px solid var(--b2);padding:1.4rem 2rem;text-align:center;font-family:'DM Mono',monospace;font-size:11px;color:var(--tx2);letter-spacing:.1em;text-transform:uppercase;position:relative}
+footer::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--ac),transparent);opacity:.4}
+footer em{color:var(--ac);font-style:normal}
+
+/* RESPONSIVE */
+@media(max-width:680px){
+  nav{padding:0 1rem}
+  .nav-center{font-size:11px;letter-spacing:.1em}
+  section{padding:3rem 1.25rem}
+  .pgrid{grid-template-columns:1fr}
+  .pc{padding:1.4rem}
+}
+@media(max-width:420px){
+  .pc{padding:1.2rem}
+  .nav-btn{display:none}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="logo" href="https://mav-ash.com">FORGE NEVER SLEEPS</a>
+  <div class="nav-center">VAULTHOLD</div>
+  <div class="nav-right">
+    <a class="nav-btn" href="https://mav-ash.com">MAIN</a>
+    <button id="tbtn"></button>
+  </div>
+</nav>
+
+<main>
+
+<section>
+  <div class="slbl">Vaulthold · Systems</div>
+  <h2 class="stit">황금거위의 부산물</h2>
+  <p class="sdsc">메인 대장간에 올리기엔 아직 이르지만, 이미 돌아가고 있거나 곧 불이 들어올 것들.<br>Mac Mini 위에서 조용히 단조 중입니다.</p>
+
+  <div class="pgrid">
+    <div class="pc">
+      <div class="pc-head">
+        <div class="pi">💬</div>
+        <div>
+          <div class="pn">CoupleLog</div>
+          <div class="pstatus"><span class="pstatus-dot dev"></span><span class="pstatus-txt">개발 중</span></div>
+        </div>
+        <span class="pbadge">BOT</span>
+      </div>
+      <div class="pd">커플 간 감정·가사 데이터를 매일 텔레그램 봇으로 수집하고, AI가 주간 분석 리포트를 생성합니다. 의지는 있는데 방법이 없는 커플을 위한 소통 촉매.</div>
+      <div class="pts">
+        <span class="pt">python-telegram-bot</span>
+        <span class="pt">SQLite</span>
+        <span class="pt">Claude Cowork</span>
+      </div>
+    </div>
+
+    <div class="pc">
+      <div class="pc-head">
+        <div class="pi">📊</div>
+        <div>
+          <div class="pn">ReportForge</div>
+          <div class="pstatus"><span class="pstatus-dot dev"></span><span class="pstatus-txt">Phase 1</span></div>
+        </div>
+        <span class="pbadge">PPT</span>
+      </div>
+      <div class="pd">회사 PPT 보고서의 구조·문체·레이아웃 패턴을 학습하여, 주제만 넣으면 동일 스타일의 PPT를 자동 생성합니다. 자연어 한 마디로 end-to-end 보고서 완성이 목표.</div>
+      <div class="pts">
+        <span class="pt">Gemini</span>
+        <span class="pt">python-pptx</span>
+        <span class="pt">Claude Cowork</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer><em>VAULTHOLD</em> · mav-ash.com · <em id="yr"></em></footer>
+
+<script>
+var dark = true;
+var tbtn = document.getElementById('tbtn');
+
+function applyTheme(d) {
+  dark = d;
+  document.body.classList.toggle('day', !d);
+  tbtn.textContent = d ? '☀️' : '🌙';
+  localStorage.setItem('fns', d ? 'dark' : 'light');
+}
+tbtn.addEventListener('click', function() { applyTheme(!dark); });
+applyTheme(localStorage.getItem('fns') !== 'light');
+
+document.getElementById('yr').textContent = new Date().getFullYear();
+</script>
+</body>
+</html>
