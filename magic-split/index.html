@@ -276,8 +276,9 @@ async function loadHistory() {
     const r = await fetch(`${API}/api/magic-split/history`);
     const j = await r.json();
     historyData = j.data || [];
+    const uniqueStocks = [...new Set(historyData.map(h=>h.ticker))].length;
     document.getElementById('tab-history').textContent =
-      `📁 추천 로그${historyData.length > 0 ? ' (' + historyData.length + ')' : ''}`;
+      `📁 추천 로그${uniqueStocks > 0 ? ' (' + uniqueStocks + '종목)' : ''}`;
   } catch(e) {}
 }
 
@@ -707,63 +708,89 @@ function renderHistory() {
     return;
   }
 
-  const allReturns = historyData.filter(h=>h.return_1m!=null).map(h=>h.return_1m);
-  const avgReturn = allReturns.length ? allReturns.reduce((a,b)=>a+b,0)/allReturns.length : null;
-  const winRate   = allReturns.length ? allReturns.filter(r=>r>0).length/allReturns.length*100 : null;
+  // 종목 중심으로 머지
+  const stockMap = {};
+  historyData.forEach(h => {
+    if (!stockMap[h.ticker]) stockMap[h.ticker] = [];
+    stockMap[h.ticker].push(h);
+  });
 
-  // Group by date
-  const grouped = {};
-  historyData.forEach(h => { if(!grouped[h.scan_date]) grouped[h.scan_date]=[]; grouped[h.scan_date].push(h); });
-  const dates = Object.keys(grouped).sort((a,b)=>b.localeCompare(a));
+  const stocks = Object.values(stockMap).map(records => {
+    records.sort((a,b) => a.scan_date.localeCompare(b.scan_date));
+    const first = records[0];
+    const latest = records[records.length - 1];
+    const returnsWithData = records.filter(r => r.return_1m != null);
+    const firstReturn = first.return_1m;
+    return {
+      ticker: first.ticker,
+      name: first.name,
+      grade: latest.grade,
+      score: latest.score,
+      appearances: records.length,
+      first_date: first.scan_date,
+      latest_date: latest.scan_date,
+      first_entry: first.entry_price,
+      latest_entry: latest.entry_price,
+      return_1m: firstReturn,
+      exit_price: first.exit_price,
+      best_score: Math.max(...records.map(r=>r.score)),
+      dates: records.map(r=>r.scan_date),
+    };
+  }).sort((a,b) => b.appearances - a.appearances || b.score - a.score);
+
+  const uniqueCount = stocks.length;
+  const scanDates = [...new Set(historyData.map(h=>h.scan_date))].sort();
+  const totalScans = scanDates.length;
+  const withReturn = stocks.filter(s => s.return_1m != null);
+  const avgReturn = withReturn.length ? withReturn.reduce((a,s)=>a+s.return_1m,0)/withReturn.length : null;
+  const winRate = withReturn.length ? withReturn.filter(s=>s.return_1m>0).length/withReturn.length*100 : null;
 
   const statsHTML = `<div class="history-stats">
     ${[
-      {label:'총 추천 횟수',  value:historyData.length+'건', color:'#e0e6f0'},
-      {label:'수익률 측정 완료', value:allReturns.length+'건', color:'#4d9fff'},
-      {label:'평균 1개월 수익률', value:avgReturn!=null?`${avgReturn>=0?'▲':'▼'}${Math.abs(avgReturn).toFixed(1)}%`:'집계중',
+      {label:'추천 종목 수',  value:uniqueCount+'종목', color:'#e0e6f0'},
+      {label:'스캔 횟수',  value:totalScans+'회 ('+scanDates[0]+' ~)', color:'#4d9fff'},
+      {label:'평균 수익률', value:avgReturn!=null?`${avgReturn>=0?'▲':'▼'}${Math.abs(avgReturn).toFixed(1)}%`:'집계중',
         color:avgReturn==null?'#4d6a8a':avgReturn>=0?'#00d4aa':'#ff6b6b'},
       {label:'승률 (수익>0)', value:winRate!=null?`${winRate.toFixed(0)}%`:'집계중',
         color:winRate==null?'#4d6a8a':winRate>=60?'#00d4aa':winRate>=40?'#ffd166':'#ff6b6b'},
     ].map(s=>`<div class="stat-box"><div class="stat-label">${s.label}</div><div class="stat-value" style="color:${s.color}">${s.value}</div></div>`).join('')}
   </div>`;
 
-  const groupsHTML = dates.map(date => {
-    const items = grouped[date];
-    const done  = items.filter(i=>i.return_1m!=null);
-    const avgD  = done.length ? done.reduce((a,i)=>a+i.return_1m,0)/done.length : null;
-    const rows  = items.sort((a,b)=>b.score-a.score).map(item=>{
-      const g = GRADE_CONFIG[item.grade]||GRADE_CONFIG['A'];
-      const hasReturn = item.return_1m != null;
-      const daysSince = Math.max(0, Math.floor((Date.now()-new Date(item.scan_date).getTime())/(24*60*60*1000)));
-      const retColor  = !hasReturn?'#4d6a8a':item.return_1m>=5?'#00d4aa':item.return_1m>=0?'#4d9fff':'#ff6b6b';
-      const retVal    = hasReturn ? `<span style="color:${retColor};font-weight:700;font-size:12px">${item.return_1m>=0?'▲':'▼'}${Math.abs(item.return_1m).toFixed(1)}%</span>` : `<span style="color:#4d6a8a;font-size:11px">대기중</span>`;
-      return `<div class="hist-row">
-        <div style="color:${g.color};font-size:11px;font-weight:700;text-align:center">#${item.rank||'-'}</div>
-        <div><span style="font-size:12px;font-weight:700">${item.name}</span><span style="color:#4d6a8a;font-size:10px;margin-left:6px">${item.ticker}</span></div>
-        <div style="text-align:center"><span style="background:${g.bg};color:${g.color};font-size:10px;font-weight:700;padding:1px 7px;border-radius:3px">${item.grade}</span></div>
-        <div style="color:${g.color};font-size:12px;font-weight:700;text-align:center">${item.score}pt</div>
-        <div style="text-align:right"><div style="color:#4d6a8a;font-size:9px">진입가</div><div style="font-size:11px;font-weight:700">₩${(item.entry_price||0).toLocaleString()}</div></div>
-        <div style="text-align:right">
-          ${hasReturn ? `<div style="color:#4d6a8a;font-size:9px">1개월 후가</div><div style="font-size:11px;font-weight:700">₩${(item.exit_price||0).toLocaleString()}</div>` :
-            `<div style="color:#4d6a8a;font-size:9px">D+${daysSince}/D+30</div><div style="background:#1e2d4a;border-radius:3px;height:4px;margin-top:4px"><div style="background:#4d9fff;height:100%;width:${Math.min(daysSince/30*100,100)}%;border-radius:3px"></div></div>`}
-        </div>
-        <div style="text-align:right"><div style="color:#4d6a8a;font-size:9px">1개월 수익률</div>${retVal}</div>
-      </div>`;
-    }).join('');
-    return `<div class="hist-group">
-      <div class="hist-header">
+  const rowsHTML = stocks.map(s => {
+    const g = GRADE_CONFIG[s.grade] || GRADE_CONFIG['A'];
+    const hasReturn = s.return_1m != null;
+    const daysSince = Math.max(0, Math.floor((Date.now()-new Date(s.first_date).getTime())/(24*60*60*1000)));
+    const retColor = !hasReturn?'#4d6a8a':s.return_1m>=5?'#00d4aa':s.return_1m>=0?'#4d9fff':'#ff6b6b';
+    const retVal = hasReturn
+      ? `<span style="color:${retColor};font-weight:700;font-size:13px">${s.return_1m>=0?'▲':'▼'}${Math.abs(s.return_1m).toFixed(1)}%</span>`
+      : `<span style="color:#4d6a8a;font-size:11px">D+${daysSince}/30</span>`;
+    const streakColor = s.appearances >= 5 ? '#00d4aa' : s.appearances >= 3 ? '#4d9fff' : '#4d6a8a';
+    const priceDiff = s.first_entry && s.latest_entry ? ((s.latest_entry - s.first_entry)/s.first_entry*100) : null;
+    return `<div style="background:#0d1224;border:1px solid #1e2d4a;border-radius:10px;padding:14px;margin-bottom:8px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
         <div style="display:flex;align-items:center;gap:10px">
-          <span style="color:#4d9fff;font-size:12px;font-weight:700">📅 ${date}</span>
-          <span style="color:#4d6a8a;font-size:10px">추천 ${items.length}종목</span>
-          ${items[0]?.gate_status?`<span style="background:#4d9fff18;color:#4d9fff;font-size:9px;padding:1px 7px;border-radius:3px">${items[0].gate_status}</span>`:''}
+          <span style="font-size:14px;font-weight:700">${s.name}</span>
+          <span style="color:#4d6a8a;font-size:11px">${s.ticker}</span>
+          <span style="background:${g.bg};color:${g.color};font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px">${s.grade} · ${s.score}pt</span>
         </div>
-        ${avgD!=null?`<div><span style="color:#4d6a8a;font-size:10px;margin-right:8px">이 날 평균</span><span style="color:${avgD>=0?'#00d4aa':'#ff6b6b'};font-weight:700;font-size:12px">${avgD>=0?'▲':'▼'}${Math.abs(avgD).toFixed(1)}%</span></div>`:''}
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="background:${streakColor}18;color:${streakColor};font-size:11px;font-weight:700;padding:3px 10px;border-radius:5px">${s.appearances}회 연속 추천</div>
+          ${retVal}
+        </div>
       </div>
-      ${rows}
+      <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">
+        <div style="color:#4d6a8a;font-size:11px">최초 ${s.first_date} <span style="color:#e0e6f0;font-weight:700">₩${(s.first_entry||0).toLocaleString()}</span></div>
+        ${s.first_date !== s.latest_date ? `<div style="color:#4d6a8a;font-size:11px">최근 ${s.latest_date} <span style="color:#e0e6f0;font-weight:700">₩${(s.latest_entry||0).toLocaleString()}</span>${priceDiff!=null?`<span style="color:${priceDiff>=0?'#ff6b6b':'#4d9fff'};font-size:10px;margin-left:4px">${priceDiff>=0?'▲':'▼'}${Math.abs(priceDiff).toFixed(1)}%</span>`:''}</div>` : ''}
+        ${hasReturn ? `<div style="color:#4d6a8a;font-size:11px">1개월 후 <span style="color:#e0e6f0;font-weight:700">₩${(s.exit_price||0).toLocaleString()}</span></div>` :
+          `<div style="background:#1e2d4a;border-radius:3px;height:4px;width:60px;margin-top:2px"><div style="background:#4d9fff;height:100%;width:${Math.min(daysSince/30*100,100)}%;border-radius:3px"></div></div>`}
+      </div>
+      <div style="display:flex;gap:3px;margin-top:8px">${scanDates.map(d =>
+        `<div style="flex:1;height:4px;border-radius:2px;background:${s.dates.includes(d)?g.color+'80':'#1e2d4a'}" title="${d}"></div>`
+      ).join('')}</div>
     </div>`;
   }).join('');
 
-  el.innerHTML = statsHTML + groupsHTML;
+  el.innerHTML = statsHTML + rowsHTML;
 }
 
 // ── Criteria ───────────────────────────────────────────────
