@@ -383,7 +383,11 @@ function buildNumberTable(aiRpt, currentPrice) {
     }
     // 기본: 숫자 추출 후 절반 기준 분기
     const nums = text.match(/\d+\.?\d*(?=%)/g);
-    if (!nums) return '-';
+    if (!nums) {
+      const bare = text.match(/(\d+\.?\d*)/);
+      if (bare) return bare[1] + '%';
+      return '-';
+    }
     if (nums.length === 1) return nums[0] + '%';
     const mid = Math.ceil(total / 2);
     return (idx < mid ? nums[0] : nums[1]) + '%';
