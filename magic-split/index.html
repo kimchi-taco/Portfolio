@@ -700,14 +700,42 @@ function openModal(idx) {
         + '<div style="color:#a78bfa;font-size:13px;font-weight:800">⚙️ 매직스플릿 Pro 추천 설정</div>'
         + '<div style="color:#4d6a8a;font-size:11px">1회 매수: ' + (ai.suggested_weight||'투자자산 5% 이내') + '</div></div>'
         + buildNumberTable(ai, s.current_price)
-        + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px">'
-        + '<div style="background:#060912;border:1px solid #00d4aa18;border-radius:8px;padding:10px;text-align:center">'
+        + '<div style="background:#060912;border:1px solid #00d4aa18;border-radius:8px;padding:10px;margin-top:12px;text-align:center">'
         + '<div style="color:#6b8aaa;font-size:10px;margin-bottom:4px">추천 최대 차수</div>'
         + '<div style="color:#00d4aa;font-size:18px;font-weight:800">' + (ai.max_number||'7') + '</div></div>'
-        + '<div style="background:#060912;border:1px solid ' + ((ai.profit_booster||'').includes('ON')?'#a78bfa':'#1e2d4a') + '18;border-radius:8px;padding:10px;text-align:center">'
-        + '<div style="color:#6b8aaa;font-size:10px;margin-bottom:4px">수익부스터</div>'
-        + '<div style="color:' + ((ai.profit_booster||'').includes('ON')?'#a78bfa':'#4d6a8a') + ';font-size:12px;font-weight:700">' + (ai.profit_booster||'OFF') + '</div></div>'
-        + '</div></div>'
+        + '</div>'
+        + (()=>{
+            // 수익부스터 박스 — AI 판단 + 정량 계산
+            const mc = s.ms_config || {};
+            const aiPct = ai.booster_reentry_pct;
+            const pct = (aiPct!==undefined && aiPct!==null && aiPct!=='') ? parseFloat(aiPct) : mc.booster_reentry_pct;
+            const reasoning = ai.booster_reasoning || mc.booster_basis || '';
+            const expSell = mc.booster_expected_sell_price;
+            const reentry = (expSell && !isNaN(pct)) ? Math.round(expSell * (1 - pct/100)) : mc.booster_reentry_price;
+            const sellPct = mc.sell_target_pct;
+            const immediate = pct !== undefined && pct <= 0.05;
+            const sensitivity = immediate ? '즉시 재매수' : (pct<=1 ? '매우 민감' : (pct<=3 ? '민감' : (pct<=5 ? '보통' : '신중')));
+            const sensColor = immediate ? '#00d4aa' : (pct<=3 ? '#4d9fff' : (pct<=5 ? '#ffd166' : '#ff6b6b'));
+            return '<div style="background:#0d1224;border:1px solid #a78bfa25;border-radius:10px;padding:16px;margin-bottom:14px">'
+              + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">'
+              + '<div style="color:#a78bfa;font-size:13px;font-weight:800">🚀 수익부스터 — 1차 매도 후 자동 재매수</div>'
+              + '<div style="background:' + sensColor + '18;color:' + sensColor + ';font-size:11px;font-weight:700;padding:3px 10px;border-radius:4px">' + sensitivity + '</div></div>'
+              + '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px">'
+              + '<div style="background:#060912;border-radius:8px;padding:10px;text-align:center">'
+              + '<div style="color:#6b8aaa;font-size:10px;margin-bottom:4px">재매수 민감도</div>'
+              + '<div style="color:' + sensColor + ';font-size:18px;font-weight:800">-' + (pct!==undefined?pct:'?') + '%</div></div>'
+              + '<div style="background:#060912;border-radius:8px;padding:10px;text-align:center">'
+              + '<div style="color:#6b8aaa;font-size:10px;margin-bottom:4px">예상 1차 매도가</div>'
+              + '<div style="color:#00d4aa;font-size:14px;font-weight:700">₩' + (expSell?expSell.toLocaleString():'-') + '</div>'
+              + '<div style="color:#4d6a8a;font-size:9px">+' + (sellPct||'?') + '% 수익</div></div>'
+              + '<div style="background:#060912;border-radius:8px;padding:10px;text-align:center">'
+              + '<div style="color:#6b8aaa;font-size:10px;margin-bottom:4px">재매수 가격</div>'
+              + '<div style="color:#a78bfa;font-size:14px;font-weight:700">₩' + (reentry?reentry.toLocaleString():'-') + '</div>'
+              + '<div style="color:#4d6a8a;font-size:9px">매도가×(1' + (pct!==undefined?'-'+pct:'')+'%)</div></div>'
+              + '</div>'
+              + (reasoning ? '<div style="background:#060912;border-left:3px solid #a78bfa;padding:10px 12px;border-radius:4px"><div style="color:#a78bfa;font-size:11px;font-weight:700;margin-bottom:4px">💡 AI 판단</div><div style="color:#c0d4e8;font-size:12px;line-height:1.7">' + reasoning + '</div></div>' : '')
+              + '</div>';
+          })()
         + '</div>';
       })()}
     </div>`;
