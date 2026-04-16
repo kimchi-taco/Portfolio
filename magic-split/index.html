@@ -105,6 +105,13 @@ a{color:inherit;text-decoration:none}
 .criteria-cat{background:#0d1224;border-radius:12px;padding:16px}
 .criteria-item-box{background:#060912;border-radius:8px;padding:9px 11px;margin-bottom:7px}
 
+/* Market section */
+.market-section{margin-bottom:28px}
+.market-header{display:flex;align-items:center;gap:10px;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #1e2d4a}
+.market-label{font-size:13px;font-weight:700;letter-spacing:.1em}
+.market-count{font-size:11px;color:#6b8aaa;background:#0d1224;border:1px solid #1e2d4a;padding:2px 8px;border-radius:4px}
+.market-warning{background:#ff6b6b0d;border:1px solid #ff6b6b28;border-radius:8px;padding:9px 13px;margin-bottom:12px;display:flex;align-items:flex-start;gap:8px;font-size:11px;color:#ff9090;line-height:1.6}
+
 /* Date selector */
 .date-select{background:#0d1224;border:1px solid #1e2d4a;color:#e0e6f0;font-family:inherit;font-size:11px;padding:6px 10px;border-radius:6px;cursor:pointer}
 
@@ -501,9 +508,29 @@ function stockCardHTML(s, idx) {
 function renderDashboard(data) {
   if (!data) { showEmpty('pane-dashboard'); return; }
   stockList = data.recommendations || [];
+
+  const kospi  = stockList.filter(s => (s.market || 'KOSPI') === 'KOSPI');
+  const kosdaq = stockList.filter(s => s.market === 'KOSDAQ');
+
+  function sectionHTML(label, color, stocks, warning) {
+    if (!stocks.length) return '';
+    const indices = stocks.map(s => stockList.indexOf(s));
+    return `<div class="market-section">
+      <div class="market-header">
+        <span class="market-label" style="color:${color}">${label}</span>
+        <span class="market-count">${stocks.length}종목</span>
+      </div>
+      ${warning ? `<div class="market-warning">⚠️ ${warning}</div>` : ''}
+      <div class="stock-grid">${stocks.map((s,i) => stockCardHTML(s, indices[i])).join('')}</div>
+    </div>`;
+  }
+
   const el = document.getElementById('pane-dashboard');
-  el.innerHTML = gateBannerHTML(data.market_gate||{}) +
-    `<div class="stock-grid">${stockList.map((s,i) => stockCardHTML(s,i)).join('')}</div>` + renderChanges();
+  el.innerHTML = gateBannerHTML(data.market_gate||{})
+    + sectionHTML('KOSPI', '#00d4aa', kospi, '')
+    + sectionHTML('KOSDAQ', '#ffd166', kosdaq,
+        'KOSDAQ 종목은 변동성이 크고 유동성이 낮을 수 있습니다. 스크리닝 점수가 낮더라도 편입 시 리스크 관리를 더욱 철저히 하세요.')
+    + renderChanges();
 }
 
 // ── Modal ──────────────────────────────────────────────────
