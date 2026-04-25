@@ -373,7 +373,7 @@ footer em{color:var(--ac);font-style:normal}
   <div class="pgrid">
     <div class="pc" onclick="window.open('https://mav-ash.com/dash','_blank')" style="cursor:pointer"><div class="pi">⚡</div><div><div class="pn">Dawnwatch</div><div class="pd">SMP·REC·예비율·LNG·원유. 황금거위가 정기적으로 수집. 필요한 지표를 한 화면에.</div></div><div class="pts"><span class="pt">Node.js</span><span class="pt">SQLite</span><span class="pt">KPX API</span><span class="pt">Chart.js</span></div></div>
     <div class="pc" onclick="window.open('/ironweb/','_blank')" style="cursor:pointer"><div class="pi">🗺</div><div><div class="pn">Ironweb</div><div class="pd">전국 전력 인프라 현황을 지도로 예쁘게 보여줍니다. 장표 쓸 떄 누끼 안따도 됨</div></div><div class="pts"><span class="pt">Claude API</span><span class="pt">NLP</span><span class="pt">신호 분석</span></div></div>
-    <div class="pc" onclick="window.open('/delivein/','_blank')" style="cursor:pointer"><div class="pi">🍽</div><div><div class="pn">Delivein</div><div class="pd">성문 안 종탑거리, 노포부터 새 불판까지. 맛잘알 드워프가 직접 먹고 골랐습니다.</div></div><div class="pts"><span class="pt">Naver API</span><span class="pt">Gemini</span><span class="pt">Leaflet.js</span></div></div>
+    <div class="pc" onclick="window.open('https://sikr.kr','_blank')" style="cursor:pointer"><div class="pi">🍽</div><div><div class="pn">Sikr</div><div class="pd">서울 성문 안 든 이방인을 위한 검증 맛집 안내. 드워프가 직접 다녀온 곳만 올립니다.</div></div><div class="pts"><span class="pt">Naver API</span><span class="pt">Gemini</span><span class="pt">Cloudflare</span></div></div>
     <div class="pc" onclick="window.open('https://mav-ash.com/magic-split/','_blank')" style="cursor:pointer"><div class="pi">💰​</div><div><div class="pn">Goldhallow</div><div class="pd">분할매매 시스템용 종목 추천. 감이 아니라 규칙으로 삽니다.</div></div><div class="pts"><span class="pt">투자 자동화</span><span class="pt">퀀트</span><span class="pt">실운영</span></div></div>
     <div class="pc" onclick="window.open('https://mav-ash.com/trails','_blank')" style="cursor:pointer"><div class="pi">🏕️​</div><div><div class="pn">Trailvein</div><div class="pd">SNS 기반으로 백패킹 박지를 시즌별로 추천합니다.<br>Leave No Trace!</div></div><div class="pts"><span class="pt">PM</span><span class="pt">LNG</span><span class="pt">GIS</span><span class="pt">SK E&amp;S</span></div></div>
     <div class="pc" onclick="window.open('/vaulthold','_blank')" style="cursor:pointer"><div class="pi">🏠</div><div><div class="pn">Vaulthold</div><div class="pd">화로는 꺼진 적 없고, 모루 위엔 항상 다음 것이 올라와 있다. 문은 열려 있으니, 구경하고 가시라.</div></div><div class="pts"><span class="pt">Mac Mini</span><span class="pt">n8n</span><span class="pt">셀프호스팅</span></div></div>
@@ -547,9 +547,9 @@ var T = {
     ko: '전국 전력 인프라 현황을 지도로 예쁘게 보여줍니다. 장표 쓸 떄 누끼 안따도 됨',
     en: 'Visualizes nationwide power infrastructure on an interactive map. No more clipping images for slides.'
   },
-  proj_delivein: {
-    ko: '성문 안 종탑거리, 노포부터 새 불판까지. 맛잘알 드워프가 직접 먹고 골랐습니다.',
-    en: 'Bell Tower Street, inside the gates. Old cookfires, new flames — a dwarf picked the best.'
+  proj_sikr: {
+    ko: '서울 성문 안 든 이방인을 위한 검증 맛집 안내. 드워프가 직접 다녀온 곳만 올립니다.',
+    en: 'A vetted restaurant guide for travelers stepping inside Seoul\'s gates. Only the spots a dwarf has tasted himself.'
   },
   proj_goldhallow: {
     ko: '분할매매 시스템용 종목 추천. 감이 아니라 규칙으로 삽니다.',
@@ -565,8 +565,8 @@ var T = {
   },
   // project tags
   proj_tags: {
-    ko: [['Node.js','SQLite','KPX API','Chart.js'],['Claude API','NLP','신호 분석'],['Naver API','Gemini','Leaflet.js'],['투자 자동화','퀀트','실운영'],['PM','LNG','GIS','SK E&S'],['Mac Mini','n8n','셀프호스팅']],
-    en: [['Node.js','SQLite','KPX API','Chart.js'],['Claude API','NLP','Signal Analysis'],['Naver API','Gemini','Leaflet.js'],['Auto Trading','Quant','Live Ops'],['PM','LNG','GIS','SK E&S'],['Mac Mini','n8n','Self-hosted']]
+    ko: [['Node.js','SQLite','KPX API','Chart.js'],['Claude API','NLP','신호 분석'],['Naver API','Gemini','Cloudflare'],['투자 자동화','퀀트','실운영'],['PM','LNG','GIS','SK E&S'],['Mac Mini','n8n','셀프호스팅']],
+    en: [['Node.js','SQLite','KPX API','Chart.js'],['Claude API','NLP','Signal Analysis'],['Naver API','Gemini','Cloudflare'],['Auto Trading','Quant','Live Ops'],['PM','LNG','GIS','SK E&S'],['Mac Mini','n8n','Self-hosted']]
   },
   // contact
   contact_email_label: { ko: '이메일', en: 'Email' },
@@ -618,7 +618,7 @@ function toggleLang() {
     cos[i].textContent = T.career_co[l][i];
   }
   // project descriptions
-  var projKeys = ['proj_dawnwatch','proj_ironweb','proj_delivein','proj_goldhallow','proj_trailvein','proj_vaulthold'];
+  var projKeys = ['proj_dawnwatch','proj_ironweb','proj_sikr','proj_goldhallow','proj_trailvein','proj_vaulthold'];
   var projDescs = document.querySelectorAll('.pc .pd');
   for(var i=0;i<projDescs.length&&i<projKeys.length;i++){
     if(T[projKeys[i]]) projDescs[i].textContent = T[projKeys[i]][l];
