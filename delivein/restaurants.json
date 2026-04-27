@@ -1,9 +1,9 @@
 {
-  "updated": "2026-03-29",
+  "updated": "2026-04-28",
   "source_stats": {
-    "manual_curated": 21,
-    "crawled": 29,
-    "last_crawl": "2026-03-28T03:00:01.904581"
+    "manual_curated": 22,
+    "crawled": 33,
+    "last_crawl": "2026-04-28T03:00:47.602070"
   },
   "restaurants": [
     {
@@ -2172,6 +2172,137 @@
       "id": 68,
       "source": "crawl",
       "added": "2026-03-29",
+      "score": 50
+    },
+    {
+      "name": "깡통만두",
+      "category": [
+        "노포",
+        "점심"
+      ],
+      "since": 1988,
+      "type": "만두",
+      "address": "서울 종로구 북촌로2길 5-6",
+      "phone": "02-794-4243",
+      "menu": [
+        {
+          "item": "칼만두",
+          "price": "10,000원"
+        }
+      ],
+      "hours": "월-토 11:30~21:00",
+      "closed": "일요일",
+      "reservation": false,
+      "reservationNote": "캐치테이블 원격 줄서기 권장",
+      "capacity": "~40석",
+      "coords": [
+        37.5775,
+        126.9855
+      ],
+      "description": "안국역 인근 북촌에서 이북식 손만두를 전문으로 하는 30년 이상의 노포입니다.",
+      "verdict": "자극적이지 않고 담백한 이북식 만두의 정석",
+      "id": 69,
+      "source": "crawl",
+      "added": "2026-04-28",
+      "score": 50
+    },
+    {
+      "name": "호반",
+      "category": [
+        "노포",
+        "회식"
+      ],
+      "since": 1960,
+      "type": "한식",
+      "address": "서울 종로구 삼일대로26길 20",
+      "phone": "02-743-6958",
+      "menu": [
+        {
+          "item": "순대(소)",
+          "price": "25,000원"
+        },
+        {
+          "item": "우설",
+          "price": "35,000원"
+        }
+      ],
+      "hours": "월-토 11:30~22:00",
+      "closed": "일요일",
+      "reservation": true,
+      "reservationNote": "전화 예약 권장",
+      "capacity": "~50석",
+      "coords": [
+        37.5742,
+        126.9895
+      ],
+      "description": "낙원동에서 대를 이어 운영 중인 노포로 대창순대와 다양한 한식 안주가 유명합니다.",
+      "verdict": "낮술 성지로 불리는 애주가들의 숨은 노포 맛집",
+      "id": 70,
+      "source": "crawl",
+      "added": "2026-04-28",
+      "score": 50
+    },
+    {
+      "name": "스파게티가 있는 풍경",
+      "category": [
+        "노포",
+        "점심"
+      ],
+      "since": 2000,
+      "type": "이탈리안",
+      "address": "서울 종로구 새문안로 103",
+      "phone": "02-738-7071",
+      "menu": [
+        {
+          "item": "스파게티",
+          "price": "15,000원~"
+        }
+      ],
+      "hours": "매일 11:30~21:30",
+      "closed": "연중무휴",
+      "reservation": true,
+      "reservationNote": "전화 예약 가능",
+      "capacity": "~40석",
+      "coords": [
+        37.5698,
+        126.9752
+      ],
+      "description": "광화문에서 20년 넘게 자리를 지켜온 1세대 파스타 맛집으로 직장인들의 추억이 담긴 곳입니다.",
+      "verdict": "유행을 타지 않는 클래식한 파스타를 맛볼 수 있는 곳",
+      "id": 71,
+      "source": "crawl",
+      "added": "2026-04-28",
+      "score": 50
+    },
+    {
+      "name": "도마 인사동점",
+      "category": [
+        "점심"
+      ],
+      "since": 2015,
+      "type": "한식 정식",
+      "address": "서울 종로구 인사동8길 6-1",
+      "phone": "02-733-9376",
+      "menu": [
+        {
+          "item": "마약된장찌개 정식",
+          "price": "12,000원"
+        }
+      ],
+      "hours": "매일 11:30~21:00",
+      "closed": "연중무휴",
+      "reservation": false,
+      "reservationNote": "현장 대기",
+      "capacity": "~50석",
+      "coords": [
+        37.5735,
+        126.9858
+      ],
+      "description": "인사동에서 된장찌개와 정갈한 솥밥 정식으로 줄 서서 먹는 맛집입니다.",
+      "verdict": "깔끔한 한 끼 식사를 원하는 직장인과 관광객 모두에게 추천",
+      "id": 72,
+      "source": "crawl",
+      "added": "2026-04-28",
       "score": 50
     }
   ]
