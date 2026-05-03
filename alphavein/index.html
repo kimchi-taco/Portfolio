@@ -133,6 +133,16 @@ td.sector{font-family:'Inter',sans-serif;color:#8b909a;font-size:11px}
 .spark-lbl{font-size:9px;letter-spacing:.16em;color:#8b909a;text-transform:uppercase;margin-bottom:4px}
 .spark-val{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;margin-bottom:4px}
 
+/* Chart range selector + TradingView container */
+.chart-tabs{display:flex;gap:0;border:1px solid #1f242c;margin-bottom:10px;background:#11141a}
+.chart-tab{flex:1;font-family:'JetBrains Mono',monospace;font-size:10px;padding:7px 0;color:#8b909a;letter-spacing:.1em;border-right:1px solid #1f242c;text-transform:uppercase;transition:color .12s,background .12s}
+.chart-tab:last-child{border-right:0}
+.chart-tab:hover{color:#e4e6eb}
+.chart-tab.active{color:#00d4ff;background:#00d4ff14}
+#tv-widget{height:280px;background:#0a0c10;border:1px solid #1f242c;position:relative}
+#tv-widget .tradingview-widget-container,#tv-widget .tradingview-widget-container__widget{width:100%;height:100%}
+.tv-loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:10px;color:#5a5f68;letter-spacing:.16em}
+
 .links{display:flex;gap:10px;flex-wrap:wrap}
 .link-btn{font-family:'JetBrains Mono',monospace;font-size:11px;padding:7px 12px;border:1px solid #2a2e36;color:#8b909a;letter-spacing:.06em;text-transform:uppercase}
 .link-btn:hover{color:#00d4ff;border-color:#00d4ff66}
@@ -188,11 +198,11 @@ td.sector{font-family:'Inter',sans-serif;color:#8b909a;font-size:11px}
 
 <section class="charts">
   <div class="chart-card">
-    <div class="chart-title">Score Distribution <span class="pill" id="dist-count">—</span></div>
+    <div class="chart-title">Score Distribution <span class="pill" id="dist-count">—</span> <span style="margin-left:auto;font-size:9px;color:#5a5f68;letter-spacing:.14em">CLICK BAR TO FILTER</span></div>
     <svg class="chart-svg" id="chart-hist" viewBox="0 0 360 200" preserveAspectRatio="none"></svg>
   </div>
   <div class="chart-card">
-    <div class="chart-title">By Sector</div>
+    <div class="chart-title">By Sector <span style="margin-left:auto;font-size:9px;color:#5a5f68;letter-spacing:.14em">CLICK TO FILTER</span></div>
     <svg class="chart-svg" id="chart-sector" viewBox="0 0 280 200" preserveAspectRatio="none"></svg>
   </div>
   <div class="chart-card">
@@ -204,6 +214,7 @@ td.sector{font-family:'Inter',sans-serif;color:#8b909a;font-size:11px}
 <section class="filters">
   <span class="filters-label">Sector</span>
   <div id="chips" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+  <button id="reset-filters" class="chip" style="display:none;color:#ffb442;border-color:#ffb44266">✕ CLEAR</button>
   <input class="search" id="search" placeholder="TICKER…" autocomplete="off">
 </section>
 
@@ -249,8 +260,15 @@ const CYAN="#00d4ff", GREEN="#3aff9c", AMBER="#ffb442", DIM="#5a5f68";
 let DATA = null;
 let SORT = {key:'total', asc:false};
 let SECTOR = 'ALL';
+let SCORE_RANGE = null;   // {lo, hi} 또는 null
 let SEARCH = '';
 let SELECTED = null;
+
+function applyFilters(){
+  render(); drawHist(); drawSector(); drawScatter();
+  const active = (SECTOR!=='ALL') || SCORE_RANGE || SEARCH;
+  document.getElementById('reset-filters').style.display = active ? 'inline-block' : 'none';
+}
 
 function fmtPct(v, d=1){ return v==null ? '—' : (v*100).toFixed(d)+'%'; }
 function fmtMcap(v){ if(v==null) return '—'; const b=v/1e9; return b>=10 ? b.toFixed(1)+'B' : b.toFixed(2)+'B'; }
@@ -288,7 +306,7 @@ function buildChips(){
     b.className = 'chip'+(name===SECTOR?' active':'');
     const cnt = name === 'ALL' ? DATA.scores.length : DATA.scores.filter(s=>s.sector===name).length;
     b.textContent = `${name} · ${cnt}`;
-    b.onclick = ()=>{ SECTOR=name; document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active')); b.classList.add('active'); render(); drawScatter(); };
+    b.onclick = ()=>{ SECTOR=name; document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active')); b.classList.add('active'); applyFilters(); };
     wrap.appendChild(b);
   });
 }
@@ -296,6 +314,7 @@ function buildChips(){
 function filtered(){
   let xs = DATA.scores.slice();
   if(SECTOR!=='ALL') xs = xs.filter(s=>s.sector===SECTOR);
+  if(SCORE_RANGE) xs = xs.filter(s=>s.total>=SCORE_RANGE.lo && s.total<SCORE_RANGE.hi+(SCORE_RANGE.hi===100?0.001:0));
   if(SEARCH) xs = xs.filter(s=>s.ticker.toLowerCase().includes(SEARCH));
   const k = SORT.key;
   xs.sort((a,b)=>{
@@ -352,7 +371,13 @@ document.querySelectorAll('th').forEach(th=>{
     render();
   };
 });
-document.getElementById('search').addEventListener('input', e=>{ SEARCH = e.target.value.trim().toLowerCase(); render(); drawScatter(); });
+document.getElementById('search').addEventListener('input', e=>{ SEARCH = e.target.value.trim().toLowerCase(); applyFilters(); });
+document.getElementById('reset-filters').addEventListener('click', ()=>{
+  SECTOR='ALL'; SCORE_RANGE=null; SEARCH='';
+  document.getElementById('search').value = '';
+  document.querySelectorAll('.chip').forEach(c=>c.classList.toggle('active', c.textContent.startsWith('ALL ·')));
+  applyFilters();
+});
 
 /* ---------- CHARTS ---------- */
 
@@ -384,12 +409,27 @@ function drawHist(){
     const h = (b.count/maxC)*innerH;
     const y = P.t + innerH - h;
     const accent = b.lo>=80 ? CYAN : b.lo>=60 ? GREEN : b.lo>=40 ? "#7a8392" : DIM;
-    html += `<rect class="bar-rect" x="${x}" y="${y}" width="${bw-4}" height="${h}" fill="${accent}" opacity=".85"/>`;
-    if(b.count>0) html += `<text x="${x+(bw-4)/2}" y="${y-4}" text-anchor="middle" fill="${accent}" font-family="JetBrains Mono" font-size="10" font-weight="700">${b.count}</text>`;
-    html += `<text x="${x+(bw-4)/2}" y="${H-P.b+14}" text-anchor="middle">${b.lo}–${b.hi}</text>`;
+    const isActive = SCORE_RANGE && SCORE_RANGE.lo===b.lo && SCORE_RANGE.hi===b.hi;
+    const opacity = SCORE_RANGE ? (isActive ? '1' : '.22') : '.85';
+    const stroke = isActive ? `stroke="#fff" stroke-width="1.5"` : '';
+    html += `<rect class="bar-rect hist-bar" data-lo="${b.lo}" data-hi="${b.hi}" x="${x}" y="${y}" width="${bw-4}" height="${h}" fill="${accent}" opacity="${opacity}" ${stroke}/>`;
+    if(b.count>0) html += `<text x="${x+(bw-4)/2}" y="${y-4}" text-anchor="middle" fill="${accent}" font-family="JetBrains Mono" font-size="10" font-weight="700" opacity="${SCORE_RANGE && !isActive ? '.4' : '1'}">${b.count}</text>`;
+    html += `<text x="${x+(bw-4)/2}" y="${H-P.b+14}" text-anchor="middle" fill="${isActive?'#00d4ff':'#5a5f68'}" font-weight="${isActive?'700':'400'}">${b.lo}–${b.hi}</text>`;
   });
   html += '</g>';
   svg.innerHTML = html;
+  // 클릭 → SCORE_RANGE 토글
+  svg.querySelectorAll('rect.hist-bar').forEach(r=>{
+    r.addEventListener('click', ()=>{
+      const lo = +r.dataset.lo, hi = +r.dataset.hi;
+      if(SCORE_RANGE && SCORE_RANGE.lo===lo && SCORE_RANGE.hi===hi){
+        SCORE_RANGE = null;  // 같은 막대 재클릭 = 해제
+      } else {
+        SCORE_RANGE = {lo, hi};
+      }
+      applyFilters();
+    });
+  });
 }
 
 function drawSector(){
@@ -414,13 +454,30 @@ function drawSector(){
     const y = P.t + i*rowH;
     const w = (a.count/maxC) * innerW;
     const accent = a.avg>=70 ? CYAN : a.avg>=50 ? GREEN : a.avg>=30 ? AMBER : DIM;
-    html += `<text class="" x="${P.l-8}" y="${y+rowH/2+3}" text-anchor="end" font-family="Inter" font-size="10" fill="#e4e6eb">${a.sector.length>14?a.sector.slice(0,14)+'…':a.sector}</text>`;
-    html += `<rect class="bar-rect" x="${P.l}" y="${y+3}" width="${w}" height="${rowH-6}" fill="${accent}" opacity=".75"/>`;
-    html += `<text x="${P.l+w+5}" y="${y+rowH/2+3}" font-family="JetBrains Mono" font-size="10" fill="${accent}" font-weight="700">${a.count}</text>`;
-    html += `<text x="${P.l+w+5}" y="${y+rowH/2+15}" font-family="JetBrains Mono" font-size="8" fill="#5a5f68">${a.avg.toFixed(0)} avg</text>`;
+    const isActive = SECTOR === a.sector;
+    const dim = (SECTOR!=='ALL' && !isActive) ? '.22' : '.75';
+    const stroke = isActive ? `stroke="#fff" stroke-width="1.5"` : '';
+    const labelFill = isActive ? '#00d4ff' : '#e4e6eb';
+    const labelW = isActive ? '700' : '400';
+    html += `<text class="sector-label" data-sector="${a.sector}" x="${P.l-8}" y="${y+rowH/2+3}" text-anchor="end" font-family="Inter" font-size="10" fill="${labelFill}" font-weight="${labelW}" style="cursor:pointer">${a.sector.length>14?a.sector.slice(0,14)+'…':a.sector}</text>`;
+    html += `<rect class="bar-rect sector-bar" data-sector="${a.sector}" x="${P.l}" y="${y+3}" width="${w}" height="${rowH-6}" fill="${accent}" opacity="${dim}" ${stroke}/>`;
+    html += `<text x="${P.l+w+5}" y="${y+rowH/2+3}" font-family="JetBrains Mono" font-size="10" fill="${accent}" font-weight="700" opacity="${SECTOR!=='ALL'&&!isActive?'.4':'1'}">${a.count}</text>`;
+    html += `<text x="${P.l+w+5}" y="${y+rowH/2+15}" font-family="JetBrains Mono" font-size="8" fill="#5a5f68" opacity="${SECTOR!=='ALL'&&!isActive?'.4':'1'}">${a.avg.toFixed(0)} avg</text>`;
   });
   html += '</g>';
   svg.innerHTML = html;
+  // 클릭 → SECTOR 토글 (chip 동작과 동일)
+  const toggleSector = (sec)=>{
+    SECTOR = (SECTOR===sec) ? 'ALL' : sec;
+    document.querySelectorAll('.chip').forEach(c=>{
+      c.classList.toggle('active', c.textContent.startsWith(SECTOR==='ALL'?'ALL':SECTOR+' ·'));
+    });
+    applyFilters();
+  };
+  svg.querySelectorAll('rect.sector-bar, text.sector-label').forEach(el=>{
+    el.style.cursor='pointer';
+    el.addEventListener('click', ()=>toggleSector(el.dataset.sector));
+  });
 }
 
 function drawScatter(){
@@ -465,7 +522,9 @@ function drawScatter(){
     if(s.roce_mean==null || s.fcf_margin_mean==null) return;
     const cx = xs(s.roce_mean), cy = ys(s.fcf_margin_mean), r = rs(s.market_cap||0.5e9);
     const c = colorFor(s.total);
-    const dim = (SEARCH && !s.ticker.toLowerCase().includes(SEARCH)) ? ' dim' : '';
+    const inSearch = !SEARCH || s.ticker.toLowerCase().includes(SEARCH);
+    const inRange = !SCORE_RANGE || (s.total>=SCORE_RANGE.lo && s.total<=SCORE_RANGE.hi);
+    const dim = (!inSearch || !inRange) ? ' dim' : '';
     html += `<circle class="dot${dim}" data-ticker="${s.ticker}" cx="${cx}" cy="${cy}" r="${r}" fill="${c}" fill-opacity=".55" stroke="${c}"></circle>`;
   });
   // top labels (top 5 by score)
@@ -532,6 +591,19 @@ function showDetail(s){
     </div>
 
     <div class="detail-section">
+      <h4>Price Chart <span style="color:#5a5f68;font-weight:400;letter-spacing:.06em">${s.ticker} · TradingView</span></h4>
+      <div class="chart-tabs" id="tv-tabs">
+        <button class="chart-tab" data-range="1m">1M</button>
+        <button class="chart-tab" data-range="3m">3M</button>
+        <button class="chart-tab" data-range="6m">6M</button>
+        <button class="chart-tab active" data-range="12m">1Y</button>
+        <button class="chart-tab" data-range="60m">5Y</button>
+        <button class="chart-tab" data-range="all">ALL</button>
+      </div>
+      <div id="tv-widget"><div class="tv-loading">LOADING…</div></div>
+    </div>
+
+    <div class="detail-section">
       <h4>Quality Metrics (5y) <span style="color:#5a5f68;font-weight:400;letter-spacing:.06em">FY${s.latest_fy||'—'}</span></h4>
       <div class="kv-grid">
         <div>
@@ -578,6 +650,64 @@ function showDetail(s){
     </div>
   `;
   document.getElementById('detail').classList.add('open');
+  // Wire chart tabs + initial render
+  loadTvChart(s.ticker, '12m');
+  document.querySelectorAll('#tv-tabs .chart-tab').forEach(b=>{
+    b.onclick = ()=>{
+      document.querySelectorAll('#tv-tabs .chart-tab').forEach(c=>c.classList.remove('active'));
+      b.classList.add('active');
+      loadTvChart(s.ticker, b.dataset.range);
+    };
+  });
+}
+
+function loadTvChart(ticker, range){
+  // range: '1m'|'3m'|'6m'|'12m'|'60m'|'all'  →  TradingView "dateRanges" 형식
+  const rangeMap = {'1m':'1M|1D','3m':'3M|1D','6m':'6M|1D','12m':'12M|1D','60m':'60M|1W','all':'ALL|1M'};
+  const tag = rangeMap[range] || '12M|1D';
+  const wrap = document.getElementById('tv-widget');
+  wrap.innerHTML = '<div class="tv-loading">LOADING…</div>';
+  // 위젯은 매번 새 컨테이너로 재생성 (옵션 변경 적용 위해)
+  const c = document.createElement('div');
+  c.className = 'tradingview-widget-container';
+  c.style.width='100%'; c.style.height='100%';
+  const inner = document.createElement('div');
+  inner.className = 'tradingview-widget-container__widget';
+  c.appendChild(inner);
+  const cfg = {
+    symbols: [[ticker, `${ticker}|${tag.split('|')[0]}`]],
+    chartOnly: false,
+    width: '100%',
+    height: '100%',
+    locale: 'en',
+    colorTheme: 'dark',
+    autosize: true,
+    showVolume: false,
+    showMA: false,
+    hideDateRanges: true,
+    hideMarketStatus: false,
+    hideSymbolLogo: true,
+    scalePosition: 'right',
+    scaleMode: 'Normal',
+    fontFamily: 'Inter, sans-serif',
+    fontSize: '10',
+    noTimeScale: false,
+    valuesTracking: '1',
+    changeMode: 'price-and-percent',
+    chartType: 'area',
+    backgroundColor: 'rgba(10,12,16,0)',
+    lineWidth: 2,
+    lineType: 0,
+    dateRanges: [tag]
+  };
+  const script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.async = true;
+  script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-symbol-overview.js';
+  script.text = JSON.stringify(cfg);
+  c.appendChild(script);
+  wrap.innerHTML = '';
+  wrap.appendChild(c);
 }
 
 function closeDetail(){
