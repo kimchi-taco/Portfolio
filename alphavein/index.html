@@ -180,6 +180,16 @@ td.sector{font-family:'Inter',sans-serif;color:#8b909a;font-size:11px}
 .bt-dd-title{font-size:9px;letter-spacing:.18em;color:#8b909a;text-transform:uppercase;margin-bottom:4px;display:flex;align-items:center;gap:8px}
 .bt-dd-title b{color:#ffb442;font-family:'JetBrains Mono',monospace;font-weight:700}
 #bt-dd-chart{width:100%;height:90px;display:block}
+.bt-runs-wrap{padding:16px 22px;background:#0d1015;border-bottom:1px solid #1f242c}
+.bt-runs-title{font-size:10px;letter-spacing:.18em;color:#8b909a;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:10px}
+#bt-runs-chart{width:100%;height:220px;display:block}
+.bt-run-bar{shape-rendering:crispEdges;cursor:default;transition:opacity .12s}
+.bt-run-bar.pos{fill:#00d4ff}
+.bt-run-bar.neg{fill:#ffb442}
+.bt-run-label{font-family:'JetBrains Mono',monospace;font-size:10px;fill:#e4e6eb}
+.bt-run-meta{font-family:'JetBrains Mono',monospace;font-size:9px;fill:#5a5f68}
+.bt-run-current{stroke:#00d4ff;stroke-width:2;fill:none}
+
 .bt-holdings-wrap{padding:16px 22px;border-bottom:1px solid #1f242c}
 .bt-holdings-wrap summary{font-size:10px;letter-spacing:.16em;color:#8b909a;text-transform:uppercase;cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px}
 .bt-holdings-wrap summary::before{content:"›";color:#00d4ff;transition:transform .15s;display:inline-block}
@@ -325,6 +335,10 @@ td.sector{font-family:'Inter',sans-serif;color:#8b909a;font-size:11px}
   <div class="bt-dd-panel">
     <div class="bt-dd-title">PORTFOLIO DRAWDOWN <span style="color:#5a5f68">peak-to-trough</span> · MAX <b id="bt-dd-max">—</b></div>
     <svg id="bt-dd-chart" viewBox="0 0 980 90" preserveAspectRatio="none"></svg>
+  </div>
+  <div class="bt-runs-wrap" id="bt-runs-wrap">
+    <div class="bt-runs-title">RUN COMPARISON <span style="color:#5a5f68">all stored variants · α vs each run's benchmark</span></div>
+    <svg id="bt-runs-chart" viewBox="0 0 980 220" preserveAspectRatio="none"></svg>
   </div>
   <details class="bt-holdings-wrap">
     <summary>Yearly Holdings (TOP picks each January)</summary>
@@ -877,8 +891,69 @@ function renderBacktest(bt){
 
   drawBtChart(bt);
   drawBtDrawdown(bt);
+  drawBtRuns(bt);
   renderBtHoldings(bt);
   renderBtCaveats(bt.caveats || []);
+}
+
+function drawBtRuns(bt){
+  const svg = document.getElementById('bt-runs-chart');
+  const wrap = document.getElementById('bt-runs-wrap');
+  const runs = bt.all_runs || [];
+  if(runs.length < 1){ wrap.style.display='none'; return; }
+  wrap.style.display='';
+
+  const W=980, H=220, P={t:14, r:18, b:14, l:280};
+  const innerW = W-P.l-P.r;
+  const rowH = (H-P.t-P.b) / runs.length;
+
+  const alphas = runs.map(r=>r.alpha_pp);
+  const maxAbs = Math.max(...alphas.map(Math.abs), 5);
+  // 0 line은 P.l + (innerW/2)에 배치, ± 양쪽
+  const xs = (alpha) => P.l + (innerW/2) + (alpha/maxAbs) * (innerW/2);
+  const x0 = P.l + (innerW/2);
+
+  let html = '<g class="bt-axis">';
+  // Tick marks: 0, ±maxAbs/2, ±maxAbs (rounded)
+  const ticks = [-maxAbs, -maxAbs/2, 0, maxAbs/2, maxAbs];
+  ticks.forEach(v=>{
+    const x = xs(v);
+    html += `<line class="gridline" x1="${x}" x2="${x}" y1="${P.t-2}" y2="${H-P.b+2}"/>`;
+    html += `<text class="bt-run-meta" x="${x}" y="${H-P.b+12}" text-anchor="middle">${v>=0?'+':''}${v.toFixed(0)}pp</text>`;
+  });
+  // Zero line bold
+  html += `<line x1="${x0}" x2="${x0}" y1="${P.t-2}" y2="${H-P.b}" stroke="#3a3f48" stroke-width="1.5"/>`;
+  html += '</g>';
+
+  runs.forEach((r,i)=>{
+    const y = P.t + i*rowH;
+    const isCurrent = r.run_id === bt.run_id;
+    const cls = r.alpha_pp >= 0 ? 'pos' : 'neg';
+    const barX = r.alpha_pp >= 0 ? x0 : xs(r.alpha_pp);
+    const barW = Math.abs(xs(r.alpha_pp) - x0);
+
+    // Run label (left side)
+    html += `<text class="bt-run-label" x="${P.l-12}" y="${y+rowH/2-3}" text-anchor="end" font-weight="${isCurrent?'700':'400'}" fill="${isCurrent?'#00d4ff':'#e4e6eb'}">${escape(r.run_id)}</text>`;
+    // Meta line (CAGR / Sharpe / MDD)
+    const meta = `CAGR ${(r.cagr_p*100).toFixed(1)}% · Sh ${r.sharpe.toFixed(2)} · MDD ${(r.mdd*100).toFixed(0)}% · ${r.years.toFixed(1)}y`;
+    html += `<text class="bt-run-meta" x="${P.l-12}" y="${y+rowH/2+10}" text-anchor="end">${escape(meta)}</text>`;
+    // Bar
+    html += `<rect class="bt-run-bar ${cls}" x="${barX.toFixed(1)}" y="${y+rowH/2-9}" width="${Math.max(1,barW).toFixed(1)}" height="18" opacity="${isCurrent?'1':'.7'}"/>`;
+    // Current run마커
+    if(isCurrent){
+      html += `<rect class="bt-run-current" x="${(barX-1).toFixed(1)}" y="${y+rowH/2-10}" width="${(Math.max(1,barW)+2).toFixed(1)}" height="20"/>`;
+    }
+    // Alpha value (오른쪽 또는 왼쪽 끝)
+    const labelX = r.alpha_pp >= 0 ? xs(r.alpha_pp)+6 : xs(r.alpha_pp)-6;
+    const labelAnchor = r.alpha_pp >= 0 ? 'start' : 'end';
+    const labelColor = r.alpha_pp >= 0 ? '#00d4ff' : '#ffb442';
+    html += `<text class="bt-run-label" x="${labelX}" y="${y+rowH/2+3}" text-anchor="${labelAnchor}" fill="${labelColor}" font-weight="700">${r.alpha_pp>=0?'+':''}${r.alpha_pp.toFixed(2)}pp</text>`;
+  });
+
+  // X축 레이블
+  html += `<text class="bt-run-meta" x="${(P.l+W-P.r)/2}" y="${H-2}" text-anchor="middle">ALPHA vs BENCHMARK (CAGR DIFF)</text>`;
+
+  svg.innerHTML = html;
 }
 
 function drawBtDrawdown(bt){
