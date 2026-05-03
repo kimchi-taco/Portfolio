@@ -802,7 +802,12 @@ function loadBacktest(){
 
 function renderBacktest(bt){
   const m = bt.metrics;
-  document.getElementById('bt-meta').textContent =
+  const variantBadge = bt.variant === 'PIT'
+    ? '<span style="font-size:9px;padding:2px 7px;background:#3aff9c14;border:1px solid #3aff9c66;color:#3aff9c;letter-spacing:.1em;margin-right:8px">PIT mcap</span>'
+    : bt.variant === 'LEGACY'
+      ? '<span style="font-size:9px;padding:2px 7px;background:#ffb44214;border:1px solid #ffb44266;color:#ffb442;letter-spacing:.1em;margin-right:8px">LEGACY · look-ahead</span>'
+      : '';
+  document.getElementById('bt-meta').innerHTML = variantBadge +
     `${bt.start} → ${bt.end} · TOP ${bt.n_holdings} · ${bt.rebalance_freq.toUpperCase()} · vs ${bt.benchmark}`;
 
   const fmtPctSigned = v => (v>=0?'+':'') + (v*100).toFixed(1) + '%';
