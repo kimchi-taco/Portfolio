@@ -147,6 +147,51 @@ td.sector{font-family:'Inter',sans-serif;color:#8b909a;font-size:11px}
 .link-btn{font-family:'JetBrains Mono',monospace;font-size:11px;padding:7px 12px;border:1px solid #2a2e36;color:#8b909a;letter-spacing:.06em;text-transform:uppercase}
 .link-btn:hover{color:#00d4ff;border-color:#00d4ff66}
 
+/* Backtest section */
+.backtest{border-top:1px solid #1f242c;padding:0;background:#0a0c10}
+.bt-head{padding:18px 24px;border-bottom:1px solid #1f242c;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.bt-title{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;letter-spacing:.16em;color:#00d4ff}
+.bt-meta{font-size:10px;color:#8b909a;letter-spacing:.1em;text-transform:uppercase}
+.bt-caveat{margin-left:auto;background:#ffb44214;border:1px solid #ffb44266;color:#ffb442;font-size:10px;padding:5px 11px;letter-spacing:.06em;font-family:'JetBrains Mono',monospace;cursor:pointer}
+.bt-caveat:hover{background:#ffb44229}
+.bt-metrics{display:grid;grid-template-columns:repeat(5,1fr);border-bottom:1px solid #1f242c}
+.bt-metric{padding:14px 22px;border-right:1px solid #1f242c;position:relative}
+.bt-metric:last-child{border-right:0}
+.bt-metric::after{content:"";position:absolute;top:0;left:0;width:32px;height:1px;background:#00d4ff}
+.bt-metric.bench::after{background:#5a5f68}
+.bt-metric .lbl{font-size:9px;letter-spacing:.16em;color:#8b909a;text-transform:uppercase;margin-bottom:6px}
+.bt-metric .val{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:600;line-height:1}
+.bt-metric .sub{font-family:'JetBrains Mono',monospace;font-size:10px;color:#5a5f68;margin-top:4px}
+.bt-metric.alpha .val{color:#00d4ff}
+.bt-metric.alpha-neg .val{color:#ffb442}
+.bt-chart-wrap{padding:16px 22px;background:#0d1015;border-bottom:1px solid #1f242c}
+.bt-chart-legend{display:flex;gap:16px;font-size:10px;letter-spacing:.1em;color:#8b909a;margin-bottom:8px}
+.bt-chart-legend i{display:inline-block;width:14px;height:2px;vertical-align:middle;margin-right:6px}
+#bt-chart{width:100%;height:340px;display:block}
+.bt-axis text{font-family:'JetBrains Mono',monospace;font-size:9px;fill:#5a5f68}
+.bt-axis line{stroke:#1f242c;stroke-width:1;shape-rendering:crispEdges}
+.bt-grid{stroke:#14161c;stroke-width:1;shape-rendering:crispEdges}
+.bt-line-p{fill:none;stroke:#00d4ff;stroke-width:1.6}
+.bt-line-b{fill:none;stroke:#5a5f68;stroke-width:1.2;stroke-dasharray:3 3}
+.bt-area-p{fill:url(#bt-grad);opacity:.35}
+.bt-holdings-wrap{padding:16px 22px;border-bottom:1px solid #1f242c}
+.bt-holdings-wrap summary{font-size:10px;letter-spacing:.16em;color:#8b909a;text-transform:uppercase;cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px}
+.bt-holdings-wrap summary::before{content:"›";color:#00d4ff;transition:transform .15s;display:inline-block}
+.bt-holdings-wrap[open] summary::before{transform:rotate(90deg)}
+.bt-holdings-table{margin-top:14px;width:100%;border-collapse:collapse;font-size:11px}
+.bt-holdings-table th{font-size:9px;letter-spacing:.14em;color:#5a5f68;text-transform:uppercase;text-align:left;padding:8px 10px;border-bottom:1px solid #1f242c}
+.bt-holdings-table td{padding:8px 10px;font-family:'JetBrains Mono',monospace;border-bottom:1px solid #14161c;vertical-align:top}
+.bt-holdings-table .yr{color:#00d4ff;font-weight:700}
+.bt-caveat-modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:200;padding:20px}
+.bt-caveat-modal.open{display:flex}
+.bt-caveat-box{background:#0d1015;border:1px solid #ffb44266;max-width:560px;padding:24px;font-size:12px;color:#e4e6eb;line-height:1.7}
+.bt-caveat-box h3{font-size:11px;letter-spacing:.18em;color:#ffb442;text-transform:uppercase;margin-bottom:14px}
+.bt-caveat-box ul{padding-left:18px}
+.bt-caveat-box li{margin-bottom:8px;color:#8b909a}
+.bt-caveat-box li b{color:#e4e6eb;font-weight:600}
+.bt-caveat-close{margin-top:18px;font-family:'JetBrains Mono',monospace;font-size:11px;padding:7px 14px;border:1px solid #2a2e36;color:#8b909a;letter-spacing:.06em}
+.bt-caveat-close:hover{color:#e4e6eb;border-color:#3a3f48}
+
 /* Footer */
 .footer{padding:18px 24px;border-top:1px solid #1f242c;font-size:10px;color:#5a5f68;letter-spacing:.06em;text-align:center}
 .footer a{color:#8b909a}
@@ -249,6 +294,41 @@ td.sector{font-family:'Inter',sans-serif;color:#8b909a;font-size:11px}
   </div>
   <div class="detail-body" id="d-body"></div>
 </aside>
+
+<section class="backtest" id="backtest" style="display:none">
+  <div class="bt-head">
+    <div class="bt-title">BACKTEST</div>
+    <div class="bt-meta" id="bt-meta">—</div>
+    <button class="bt-caveat" onclick="document.getElementById('bt-modal').classList.add('open')">⚠ KNOWN BIASES</button>
+  </div>
+  <div class="bt-metrics" id="bt-metrics"></div>
+  <div class="bt-chart-wrap">
+    <div class="bt-chart-legend">
+      <span><i style="background:#00d4ff"></i>Portfolio NAV</span>
+      <span><i style="background:#5a5f68;border-top:1px dashed #5a5f68"></i>Benchmark (IWM)</span>
+    </div>
+    <svg id="bt-chart" viewBox="0 0 980 340" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="bt-grad" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0%" stop-color="#00d4ff" stop-opacity=".4"/>
+          <stop offset="100%" stop-color="#00d4ff" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+    </svg>
+  </div>
+  <details class="bt-holdings-wrap">
+    <summary>Yearly Holdings (TOP picks each January)</summary>
+    <table class="bt-holdings-table" id="bt-holdings-table"></table>
+  </details>
+</section>
+
+<div class="bt-caveat-modal" id="bt-modal">
+  <div class="bt-caveat-box">
+    <h3>⚠ Known Biases (read before believing the alpha)</h3>
+    <ul id="bt-caveats-list"></ul>
+    <button class="bt-caveat-close" onclick="document.getElementById('bt-modal').classList.remove('open')">CLOSE</button>
+  </div>
+</div>
 
 <footer class="footer">
   Data: SEC EDGAR (XBRL) + Yahoo Finance · Quality Score 0–100 (Buy &amp; Hold weighted) ·
@@ -706,9 +786,141 @@ function closeDetail(){
   SELECTED = null;
   render();
 }
-document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeDetail(); });
+document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ closeDetail(); document.getElementById('bt-modal').classList.remove('open'); } });
+
+/* ---------- BACKTEST ---------- */
+
+function loadBacktest(){
+  fetch('backtest.json?t='+Date.now()).then(r=>{
+    if(!r.ok) throw new Error('no backtest');
+    return r.json();
+  }).then(d=>{
+    document.getElementById('backtest').style.display = '';
+    renderBacktest(d);
+  }).catch(()=>{ /* backtest.json 없으면 섹션 숨김 */ });
+}
+
+function renderBacktest(bt){
+  const m = bt.metrics;
+  document.getElementById('bt-meta').textContent =
+    `${bt.start} → ${bt.end} · TOP ${bt.n_holdings} · ${bt.rebalance_freq.toUpperCase()} · vs ${bt.benchmark}`;
+
+  const fmtPctSigned = v => (v>=0?'+':'') + (v*100).toFixed(1) + '%';
+  const alphaPos = m.alpha_pp >= 0;
+  const cards = [
+    {lbl:'Total Return', p:fmtPctSigned(m.portfolio.total_return), b:fmtPctSigned(m.benchmark.total_return), cls:''},
+    {lbl:'CAGR', p:(m.portfolio.cagr*100).toFixed(2)+'%', b:(m.benchmark.cagr*100).toFixed(2)+'%', cls:''},
+    {lbl:'Max DD', p:(m.portfolio.max_drawdown*100).toFixed(1)+'%', b:(m.benchmark.max_drawdown*100).toFixed(1)+'%', cls:''},
+    {lbl:'Sharpe', p:m.portfolio.sharpe.toFixed(2), b:m.benchmark.sharpe.toFixed(2), cls:''},
+    {lbl:'Alpha (CAGR diff)', p:(alphaPos?'+':'')+m.alpha_pp.toFixed(2)+' pp', b:'', cls: alphaPos?'alpha':'alpha-neg'},
+  ];
+  const root = document.getElementById('bt-metrics');
+  root.innerHTML = '';
+  cards.forEach((c,i)=>{
+    const div = document.createElement('div');
+    div.className = 'bt-metric ' + c.cls + (i===4?' alpha':'');
+    div.innerHTML = `<div class="lbl">${c.lbl}</div>
+                     <div class="val">${c.p}</div>
+                     ${c.b ? `<div class="sub">vs ${c.b}</div>` : `<div class="sub">PORTFOLIO − BENCHMARK</div>`}`;
+    root.appendChild(div);
+  });
+
+  drawBtChart(bt);
+  renderBtHoldings(bt);
+  renderBtCaveats(bt.caveats || []);
+}
+
+function drawBtChart(bt){
+  const svg = document.getElementById('bt-chart');
+  const W=980, H=340, P={t:14, r:14, b:30, l:46};
+  const innerW = W-P.l-P.r, innerH = H-P.t-P.b;
+  const data = bt.nav;
+  if(!data.length) return;
+
+  const navMax = Math.max(...data.map(d=>Math.max(d.p, d.b)));
+  const navMin = Math.min(...data.map(d=>Math.min(d.p, d.b)));
+  const top = navMax * 1.05;
+  const bot = Math.max(0, navMin * 0.95);
+
+  const t0 = new Date(data[0].d).getTime();
+  const t1 = new Date(data[data.length-1].d).getTime();
+  const xs = (iso)=> P.l + (new Date(iso).getTime()-t0)/(t1-t0) * innerW;
+  const ys = (v)=> P.t + (1 - (v-bot)/(top-bot)) * innerH;
+
+  // Year ticks
+  let html = '<g class="bt-axis">';
+  const startY = new Date(data[0].d).getFullYear();
+  const endY = new Date(data[data.length-1].d).getFullYear();
+  for(let y=startY; y<=endY; y++){
+    const iso = `${y}-01-01`;
+    if(new Date(iso).getTime() < t0 || new Date(iso).getTime() > t1) continue;
+    const x = xs(iso);
+    html += `<line class="bt-grid" x1="${x}" x2="${x}" y1="${P.t}" y2="${H-P.b}"/>`;
+    html += `<text x="${x}" y="${H-P.b+14}" text-anchor="middle">${y}</text>`;
+  }
+  // Y ticks (every 1.0 unit, capped to 5)
+  const yStep = top > 5 ? 1 : (top > 2 ? 0.5 : 0.25);
+  for(let v=Math.ceil(bot/yStep)*yStep; v<=top; v+=yStep){
+    const y = ys(v);
+    html += `<line class="bt-grid" x1="${P.l}" x2="${W-P.r}" y1="${y}" y2="${y}"/>`;
+    html += `<text x="${P.l-6}" y="${y+3}" text-anchor="end">${v.toFixed(1)}×</text>`;
+  }
+  html += `<text x="${(P.l+W-P.r)/2}" y="${H-4}" text-anchor="middle" font-size="9">REBALANCE: ANNUAL JAN 1 · NAV NORMALIZED TO 1.00</text>`;
+  html += '</g>';
+
+  // Sample data (max 800 points to keep SVG light)
+  const step = Math.max(1, Math.floor(data.length / 800));
+  const sampled = data.filter((_,i)=>i%step===0);
+  if(sampled[sampled.length-1] !== data[data.length-1]) sampled.push(data[data.length-1]);
+
+  // Portfolio area
+  const ptsP = sampled.map(d=>`${xs(d.d).toFixed(1)},${ys(d.p).toFixed(1)}`).join(' ');
+  const x0 = xs(data[0].d).toFixed(1), x1 = xs(data[data.length-1].d).toFixed(1), yBase = (H-P.b).toFixed(1);
+  html += `<polygon class="bt-area-p" points="${x0},${yBase} ${ptsP} ${x1},${yBase}"/>`;
+
+  // Lines
+  const ptsB = sampled.map(d=>`${xs(d.d).toFixed(1)},${ys(d.b).toFixed(1)}`).join(' ');
+  html += `<polyline class="bt-line-b" points="${ptsB}"/>`;
+  html += `<polyline class="bt-line-p" points="${ptsP}"/>`;
+
+  // End-point markers
+  const last = data[data.length-1];
+  html += `<circle cx="${xs(last.d)}" cy="${ys(last.p)}" r="3" fill="#00d4ff"/>`;
+  html += `<circle cx="${xs(last.d)}" cy="${ys(last.b)}" r="3" fill="#5a5f68"/>`;
+  html += `<text x="${xs(last.d)-6}" y="${ys(last.p)-6}" text-anchor="end" font-family="JetBrains Mono" font-size="10" fill="#00d4ff" font-weight="700">${last.p.toFixed(2)}×</text>`;
+  html += `<text x="${xs(last.d)-6}" y="${ys(last.b)+14}" text-anchor="end" font-family="JetBrains Mono" font-size="10" fill="#8b909a">${last.b.toFixed(2)}×</text>`;
+
+  // Preserve <defs>
+  const defs = svg.querySelector('defs')?.outerHTML || '';
+  svg.innerHTML = defs + html;
+}
+
+function renderBtHoldings(bt){
+  const tbl = document.getElementById('bt-holdings-table');
+  let html = '<thead><tr><th style="width:80px">Year</th><th>Top Holdings (by score, equal weight)</th></tr></thead><tbody>';
+  bt.holdings.forEach(h=>{
+    const yr = h.date.slice(0,4);
+    const tickers = h.items.slice(0,15).map(it=>{
+      const sc = it.score!=null ? it.score.toFixed(0) : '';
+      return `<span style="display:inline-block;margin:2px 6px 2px 0;padding:3px 8px;background:#11141a;border:1px solid #1f242c"><b style="color:#e4e6eb">${it.ticker}</b> <span style="color:#5a5f68">${sc}</span></span>`;
+    }).join('');
+    const more = h.items.length > 15 ? `<span style="color:#5a5f68">+${h.items.length-15}</span>` : '';
+    html += `<tr><td class="yr">${yr}</td><td style="font-family:Inter,sans-serif">${tickers} ${more}</td></tr>`;
+  });
+  html += '</tbody>';
+  tbl.innerHTML = html;
+}
+
+function renderBtCaveats(caveats){
+  const ul = document.getElementById('bt-caveats-list');
+  ul.innerHTML = caveats.map(c=>{
+    const m = c.match(/^([^:]+):\s*(.+)$/);
+    return m ? `<li><b>${escape(m[1])}</b> — ${escape(m[2])}</li>` : `<li>${escape(c)}</li>`;
+  }).join('');
+}
 
 load();
+loadBacktest();
 </script>
 </body>
 </html>
