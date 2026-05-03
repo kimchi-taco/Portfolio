@@ -359,8 +359,8 @@ td.sector{font-family:'Inter',sans-serif;color:#8b909a;font-size:11px}
     <div class="bt-runs-title">RUN COMPARISON <span style="color:#5a5f68">all stored variants · α vs each run's benchmark</span></div>
     <svg id="bt-runs-chart" viewBox="0 0 980 220" preserveAspectRatio="none"></svg>
   </div>
-  <details class="bt-holdings-wrap">
-    <summary>Yearly Holdings (TOP picks each January)</summary>
+  <details class="bt-holdings-wrap" open>
+    <summary>실제 보유 종목 — 매년 1월 TOP 25 (동일가중)</summary>
     <table class="bt-holdings-table" id="bt-holdings-table"></table>
   </details>
 </section>
@@ -885,8 +885,14 @@ function renderBacktest(bt){
     : bt.variant === 'LEGACY'
       ? '<span style="font-size:9px;padding:2px 7px;background:#ffb44214;border:1px solid #ffb44266;color:#ffb442;letter-spacing:.1em;margin-right:8px">LEGACY · look-ahead</span>'
       : '';
+  const eqWeightPct = bt.n_holdings ? (100 / bt.n_holdings).toFixed(1) : '—';
   document.getElementById('bt-meta').innerHTML = variantBadge +
-    `${bt.start} → ${bt.end} · TOP ${bt.n_holdings} · ${bt.rebalance_freq.toUpperCase()} · vs ${bt.benchmark}`;
+    `<div style="line-height:1.5">
+       <div>${bt.start} → ${bt.end} · vs ${bt.benchmark}</div>
+       <div style="font-size:9px;color:#5a5f68;letter-spacing:.1em;text-transform:uppercase">
+         RULE: 매년 1월 Quality Score 상위 ${bt.n_holdings}개 동일가중(${eqWeightPct}%) · 1년 보유 후 재선정
+       </div>
+     </div>`;
 
   const fmtPctSigned = v => (v>=0?'+':'') + (v*100).toFixed(1) + '%';
   const alphaPos = m.alpha_pp >= 0;
