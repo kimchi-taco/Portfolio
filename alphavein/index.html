@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ALPHAVEIN — US Quality Screener</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Cinzel:wght@400;700&display=swap');
 
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{background:#0a0c10;color:#e4e6eb;font-family:'Inter',system-ui,sans-serif;font-size:13px;min-height:100vh;font-feature-settings:'tnum' on, 'lnum' on;-webkit-font-smoothing:antialiased}
@@ -24,13 +24,17 @@ body{background-image:
 }
 
 /* Topbar */
-.topbar{position:sticky;top:0;z-index:50;background:rgba(10,12,16,.92);backdrop-filter:blur(8px);border-bottom:1px solid #1f242c;padding:12px 24px;display:flex;align-items:center;gap:24px}
+.topbar{position:sticky;top:0;z-index:50;background:rgba(10,12,16,.92);backdrop-filter:blur(8px);border-bottom:1px solid #1f242c;padding:12px 24px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:24px}
+.topbar-logo{font-family:'Cinzel',serif;font-size:12px;font-weight:700;letter-spacing:.14em;color:#3ecf70;text-decoration:none;justify-self:start;transition:opacity .15s}
+.topbar-logo:hover{opacity:.75}
+.topbar-center{justify-self:center;text-align:center;display:flex;flex-direction:column;align-items:center;gap:3px}
 .brand{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:13px;letter-spacing:.16em;color:#00d4ff;display:flex;align-items:center;gap:10px}
 .brand::before{content:"";display:inline-block;width:8px;height:8px;background:#00d4ff;box-shadow:0 0 12px #00d4ffaa;animation:pulse 2.4s ease-in-out infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 .brand-sub{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.18em;color:#8b909a;text-transform:uppercase}
-.asof{font-family:'JetBrains Mono',monospace;font-size:10px;color:#8b909a;letter-spacing:.1em;margin-left:auto;text-transform:uppercase}
+.asof{font-family:'JetBrains Mono',monospace;font-size:10px;color:#8b909a;letter-spacing:.1em;justify-self:end;text-transform:uppercase}
 .asof span{color:#e4e6eb;margin-left:8px}
+.hide-mobile{display:inline}
 
 /* KPI strip */
 .kpis{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid #1f242c}
@@ -180,6 +184,12 @@ td.sector{font-family:'Inter',sans-serif;color:#8b909a;font-size:11px}
 .bt-dd-title{font-size:9px;letter-spacing:.18em;color:#8b909a;text-transform:uppercase;margin-bottom:4px;display:flex;align-items:center;gap:8px}
 .bt-dd-title b{color:#ffb442;font-family:'JetBrains Mono',monospace;font-weight:700}
 #bt-dd-chart{width:100%;height:90px;display:block}
+.bt-attr-wrap{padding:16px 22px;background:#0d1015;border-bottom:1px solid #1f242c}
+#bt-attr-chart{width:100%;height:220px;display:block}
+.bt-attr-bar{shape-rendering:crispEdges}
+.bt-attr-bar.pos{fill:#00d4ff}
+.bt-attr-bar.neg{fill:#ffb442}
+
 .bt-runs-wrap{padding:16px 22px;background:#0d1015;border-bottom:1px solid #1f242c}
 .bt-runs-title{font-size:10px;letter-spacing:.18em;color:#8b909a;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:10px}
 #bt-runs-chart{width:100%;height:220px;display:block}
@@ -232,7 +242,11 @@ td.sector{font-family:'Inter',sans-serif;color:#8b909a;font-size:11px}
   .kpis{grid-template-columns:repeat(2,1fr)}
   .detail{width:100%}
   th,td{padding:9px 10px;font-size:11px}
-  .topbar{flex-wrap:wrap;gap:10px;padding:10px 14px}
+  .topbar{grid-template-columns:auto 1fr auto;gap:8px;padding:10px 12px}
+  .hide-mobile{display:none}
+  .brand{font-size:12px}
+  .brand-sub{font-size:9px}
+  .asof{font-size:9px}
   .filters{padding:10px 14px}
   .search{width:100%;margin-top:8px}
   .score-hero{grid-template-columns:1fr;text-align:center}
@@ -243,9 +257,10 @@ td.sector{font-family:'Inter',sans-serif;color:#8b909a;font-size:11px}
 <body>
 
 <header class="topbar">
-  <div>
+  <a href="https://mav-ash.com" class="topbar-logo">⬥ FORGE<span class="hide-mobile"> NEVER SLEEPS</span></a>
+  <div class="topbar-center">
     <div class="brand">ALPHAVEIN</div>
-    <div class="brand-sub" style="margin-top:3px">US Quality Screener · ROCE+FCF · Buy &amp; Hold</div>
+    <div class="brand-sub">US Quality Screener · ROCE+FCF · Buy &amp; Hold</div>
   </div>
   <div class="asof">DATA AS OF<span id="asof">—</span></div>
 </header>
@@ -335,6 +350,10 @@ td.sector{font-family:'Inter',sans-serif;color:#8b909a;font-size:11px}
   <div class="bt-dd-panel">
     <div class="bt-dd-title">PORTFOLIO DRAWDOWN <span style="color:#5a5f68">peak-to-trough</span> · MAX <b id="bt-dd-max">—</b></div>
     <svg id="bt-dd-chart" viewBox="0 0 980 90" preserveAspectRatio="none"></svg>
+  </div>
+  <div class="bt-attr-wrap" id="bt-attr-wrap">
+    <div class="bt-runs-title">SECTOR ATTRIBUTION <span style="color:#5a5f68">contribution to portfolio return (pp)</span></div>
+    <svg id="bt-attr-chart" viewBox="0 0 980 220" preserveAspectRatio="none"></svg>
   </div>
   <div class="bt-runs-wrap" id="bt-runs-wrap">
     <div class="bt-runs-title">RUN COMPARISON <span style="color:#5a5f68">all stored variants · α vs each run's benchmark</span></div>
@@ -891,9 +910,52 @@ function renderBacktest(bt){
 
   drawBtChart(bt);
   drawBtDrawdown(bt);
+  drawBtAttribution(bt);
   drawBtRuns(bt);
   renderBtHoldings(bt);
   renderBtCaveats(bt.caveats || []);
+}
+
+function drawBtAttribution(bt){
+  const svg = document.getElementById('bt-attr-chart');
+  const wrap = document.getElementById('bt-attr-wrap');
+  const arr = (bt.attribution || []).slice();
+  if(!arr.length){ wrap.style.display='none'; return; }
+  wrap.style.display='';
+
+  const W=980, H=220, P={t:14, r:18, b:18, l:200};
+  const innerW = W-P.l-P.r;
+  const rowH = (H-P.t-P.b) / arr.length;
+
+  const maxAbs = Math.max(...arr.map(a=>Math.abs(a.contribution_pp)), 1);
+  const x0 = P.l + (innerW/2);
+  const xs = pp => P.l + (innerW/2) + (pp/maxAbs) * (innerW/2);
+
+  let html = '<g class="bt-axis">';
+  // Tick marks
+  [-maxAbs, -maxAbs/2, 0, maxAbs/2, maxAbs].forEach(v=>{
+    const x = xs(v);
+    html += `<line class="gridline" x1="${x}" x2="${x}" y1="${P.t-2}" y2="${H-P.b+2}"/>`;
+    html += `<text class="bt-run-meta" x="${x}" y="${H-P.b+12}" text-anchor="middle">${v>=0?'+':''}${v.toFixed(0)}pp</text>`;
+  });
+  html += `<line x1="${x0}" x2="${x0}" y1="${P.t-2}" y2="${H-P.b}" stroke="#3a3f48" stroke-width="1.5"/>`;
+  html += '</g>';
+
+  arr.forEach((a,i)=>{
+    const y = P.t + i*rowH;
+    const cls = a.contribution_pp >= 0 ? 'pos' : 'neg';
+    const barX = a.contribution_pp >= 0 ? x0 : xs(a.contribution_pp);
+    const barW = Math.abs(xs(a.contribution_pp) - x0);
+    const labelColor = a.contribution_pp >= 0 ? '#00d4ff' : '#ffb442';
+
+    html += `<text class="bt-run-label" x="${P.l-12}" y="${y+rowH/2-3}" text-anchor="end" font-family="Inter" font-size="11">${escape(a.sector)}</text>`;
+    html += `<text class="bt-run-meta" x="${P.l-12}" y="${y+rowH/2+10}" text-anchor="end">n=${a.n_holdings}</text>`;
+    html += `<rect class="bt-attr-bar ${cls}" x="${barX.toFixed(1)}" y="${y+rowH/2-9}" width="${Math.max(1,barW).toFixed(1)}" height="18" opacity=".75"/>`;
+    const labelX = a.contribution_pp >= 0 ? xs(a.contribution_pp)+6 : xs(a.contribution_pp)-6;
+    const labelAnchor = a.contribution_pp >= 0 ? 'start' : 'end';
+    html += `<text class="bt-run-label" x="${labelX}" y="${y+rowH/2+3}" text-anchor="${labelAnchor}" fill="${labelColor}" font-weight="700">${a.contribution_pp>=0?'+':''}${a.contribution_pp.toFixed(1)}pp</text>`;
+  });
+  svg.innerHTML = html;
 }
 
 function drawBtRuns(bt){
