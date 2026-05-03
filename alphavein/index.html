@@ -270,6 +270,7 @@ function applyFilters(){
   document.getElementById('reset-filters').style.display = active ? 'inline-block' : 'none';
 }
 
+function escape(s){ return String(s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function fmtPct(v, d=1){ return v==null ? '—' : (v*100).toFixed(d)+'%'; }
 function fmtMcap(v){ if(v==null) return '—'; const b=v/1e9; return b>=10 ? b.toFixed(1)+'B' : b.toFixed(2)+'B'; }
 function fmtAdv(v){ if(v==null) return '—'; return '$'+(v/1e6).toFixed(1)+'M'; }
@@ -549,7 +550,9 @@ function showDetail(s){
   SELECTED = s.ticker;
   render();
   document.getElementById('d-ticker').textContent = s.ticker;
-  document.getElementById('d-sector').textContent = [s.sector, s.industry].filter(Boolean).join(' · ');
+  document.getElementById('d-sector').innerHTML =
+    (s.long_name ? `<span style="color:#e4e6eb;font-weight:600">${escape(s.long_name)}</span><br>` : '')
+    + [s.sector, s.industry].filter(Boolean).join(' · ');
   const cik = String(s.cik||'').replace(/^0+/,'');
   const cvVal = cv(s);
   const total = s.total||0, roceP = s.roce_pts||0, cfP = s.cf_pts||0, hgP = s.hidden_gem_pts||0;
@@ -635,6 +638,7 @@ function showDetail(s){
     <div class="detail-section">
       <h4>External</h4>
       <div class="links">
+        ${s.website ? `<a class="link-btn" target="_blank" rel="noopener noreferrer" href="${escape(s.website)}" style="color:#00d4ff;border-color:#00d4ff44">⌂ Company Site</a>` : ''}
         <a class="link-btn" target="_blank" href="https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${cik}&type=10-K&dateb=&owner=include&count=10">SEC EDGAR · 10-K</a>
         <a class="link-btn" target="_blank" href="https://finance.yahoo.com/quote/${s.ticker}">Yahoo Finance</a>
         <a class="link-btn" target="_blank" href="https://stockanalysis.com/stocks/${s.ticker.toLowerCase()}/financials/">StockAnalysis.com</a>
