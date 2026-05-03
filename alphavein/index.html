@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ALPHAVEIN — US Quality Screener</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#0a0c10;color:#e4e6eb;font-family:'Inter',system-ui,sans-serif;font-size:13px;min-height:100vh;font-feature-settings:'tnum' on, 'lnum' on;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;background:none;border:0;color:inherit;cursor:pointer}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-track{background:#0a0c10}
+::-webkit-scrollbar-thumb{background:#2a2e36;border-radius:0}
+::-webkit-scrollbar-thumb:hover{background:#3a3f48}
+
+/* Background grid pattern */
+body{background-image:
+  linear-gradient(rgba(255,255,255,.012) 1px, transparent 1px),
+  linear-gradient(90deg, rgba(255,255,255,.012) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* Topbar */
+.topbar{position:sticky;top:0;z-index:50;background:rgba(10,12,16,.92);backdrop-filter:blur(8px);border-bottom:1px solid #1f242c;padding:12px 24px;display:flex;align-items:center;gap:24px}
+.brand{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:13px;letter-spacing:.16em;color:#00d4ff;display:flex;align-items:center;gap:10px}
+.brand::before{content:"";display:inline-block;width:8px;height:8px;background:#00d4ff;box-shadow:0 0 12px #00d4ffaa;animation:pulse 2.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.brand-sub{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.18em;color:#8b909a;text-transform:uppercase}
+.asof{font-family:'JetBrains Mono',monospace;font-size:10px;color:#8b909a;letter-spacing:.1em;margin-left:auto;text-transform:uppercase}
+.asof span{color:#e4e6eb;margin-left:8px}
+
+/* KPI strip */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid #1f242c}
+.kpi{padding:14px 24px;border-right:1px solid #1f242c;position:relative;overflow:hidden}
+.kpi:last-child{border-right:0}
+.kpi::after{content:"";position:absolute;top:0;left:0;width:32px;height:1px;background:#00d4ff}
+.kpi-label{font-size:10px;letter-spacing:.16em;color:#8b909a;text-transform:uppercase;margin-bottom:6px}
+.kpi-value{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:600;color:#e4e6eb;line-height:1}
+.kpi-sub{font-family:'JetBrains Mono',monospace;font-size:10px;color:#5a5f68;margin-top:4px;letter-spacing:.06em}
+
+/* Charts strip */
+.charts{display:grid;grid-template-columns:1.4fr 1fr 1.6fr;gap:1px;background:#1f242c;border-bottom:1px solid #1f242c}
+.chart-card{background:#0d1015;padding:16px 22px;min-height:240px;display:flex;flex-direction:column}
+.chart-title{font-size:10px;letter-spacing:.18em;color:#8b909a;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.chart-title .pill{font-size:9px;padding:2px 7px;background:#00d4ff14;border:1px solid #00d4ff44;color:#00d4ff;letter-spacing:.1em}
+.chart-svg{flex:1;width:100%;display:block}
+
+/* Filters */
+.filters{padding:12px 24px;border-bottom:1px solid #1f242c;display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:#0a0c10}
+.filters-label{font-size:10px;letter-spacing:.16em;color:#8b909a;text-transform:uppercase;margin-right:4px}
+.chip{font-family:'JetBrains Mono',monospace;font-size:11px;padding:5px 11px;border:1px solid #2a2e36;color:#8b909a;letter-spacing:.06em;transition:all .12s;text-transform:uppercase}
+.chip:hover{color:#e4e6eb;border-color:#3a3f48}
+.chip.active{background:#00d4ff14;border-color:#00d4ff66;color:#00d4ff}
+.search{margin-left:auto;background:#11141a;border:1px solid #2a2e36;color:#e4e6eb;font-family:'JetBrains Mono',monospace;font-size:12px;padding:6px 12px;width:160px;outline:none}
+.search:focus{border-color:#00d4ff66}
+
+/* Table */
+.table-wrap{padding:0;border-bottom:1px solid #1f242c}
+table{width:100%;border-collapse:collapse;font-size:12px}
+thead{background:#0d1015;border-bottom:1px solid #1f242c;position:sticky;top:0}
+th{font-size:10px;font-weight:600;letter-spacing:.14em;color:#8b909a;text-transform:uppercase;text-align:left;padding:11px 16px;cursor:pointer;user-select:none;white-space:nowrap;border-right:1px solid #14161c}
+th:last-child{border-right:0}
+th:hover{color:#e4e6eb}
+th.num{text-align:right}
+th.sorted{color:#00d4ff}
+th.sorted::after{content:" ↓";font-family:'JetBrains Mono',monospace}
+th.sorted.asc::after{content:" ↑"}
+tbody tr{border-bottom:1px solid #14161c;cursor:pointer;transition:background .08s}
+tbody tr:hover{background:#11141a}
+tbody tr.active{background:#0c1a22;border-left:2px solid #00d4ff}
+tbody tr.dim{opacity:.35}
+td{padding:11px 16px;font-family:'JetBrains Mono',monospace;white-space:nowrap}
+td.num{text-align:right}
+td.ticker{font-weight:700;color:#e4e6eb;letter-spacing:.04em}
+td.score{font-weight:700;color:#00d4ff}
+td.sector{font-family:'Inter',sans-serif;color:#8b909a;font-size:11px}
+.bar-cell{position:relative;display:inline-block;width:70px;height:5px;background:#1f242c;vertical-align:middle;margin-left:8px;overflow:hidden}
+.bar-cell > i{position:absolute;left:0;top:0;height:100%;background:linear-gradient(90deg,#00d4ff,#3aff9c);display:block}
+.minibar{display:inline-block;width:48px;height:4px;background:#1f242c;vertical-align:middle;margin-left:6px;position:relative;overflow:hidden}
+.minibar > i{position:absolute;left:0;top:0;height:100%;background:#5b6573}
+.minibar.cyan > i{background:#00d4ff}
+.minibar.amber > i{background:#ffb442}
+.minibar.green > i{background:#3aff9c}
+.muted{color:#5a5f68}
+.dot-row{display:inline-flex;gap:3px;vertical-align:middle;margin-left:6px}
+.dot-row .d{width:6px;height:6px;background:#2a2e36}
+.dot-row .d.on{background:#3aff9c}
+
+/* Detail panel */
+.detail{position:fixed;right:0;top:0;width:520px;height:100vh;background:#0d1015;border-left:1px solid #1f242c;transform:translateX(100%);transition:transform .2s ease;overflow-y:auto;z-index:60}
+.detail.open{transform:translateX(0)}
+.detail-header{padding:18px 24px;border-bottom:1px solid #1f242c;display:flex;align-items:center;gap:12px}
+.detail-title{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;letter-spacing:.04em}
+.detail-sector{font-size:11px;color:#8b909a;letter-spacing:.06em;margin-top:3px}
+.detail-close{margin-left:auto;font-size:18px;color:#8b909a;padding:4px 10px;border:1px solid #2a2e36}
+.detail-close:hover{color:#e4e6eb;border-color:#3a3f48}
+.detail-body{padding:0}
+.detail-section{padding:18px 24px;border-bottom:1px solid #1f242c}
+.detail-section h4{font-size:10px;letter-spacing:.18em;color:#8b909a;text-transform:uppercase;font-weight:600;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
+
+/* Big score visual */
+.score-hero{display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:center;margin-bottom:14px}
+.score-ring{width:88px;height:88px;position:relative}
+.score-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.score-ring .ring-bg{fill:none;stroke:#1f242c;stroke-width:8}
+.score-ring .ring-fg{fill:none;stroke:#00d4ff;stroke-width:8;stroke-linecap:butt;transition:stroke-dasharray .4s}
+.score-ring-center{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center}
+.score-ring-num{font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:700;color:#00d4ff}
+.score-ring-lbl{font-size:8px;letter-spacing:.16em;color:#8b909a;text-transform:uppercase}
+.stack{height:14px;background:#1f242c;display:flex;overflow:hidden;margin-bottom:6px}
+.stack > span{height:100%;display:block}
+.stack .s-roce{background:linear-gradient(90deg,#00d4ff,#0099cc)}
+.stack .s-cf{background:linear-gradient(90deg,#3aff9c,#00cc77)}
+.stack .s-hg{background:linear-gradient(90deg,#ffb442,#cc8800)}
+.stack-legend{display:flex;gap:14px;font-size:10px;color:#8b909a;letter-spacing:.06em}
+.stack-legend i{display:inline-block;width:8px;height:8px;margin-right:5px;vertical-align:middle}
+
+.kv-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 28px}
+.kv-row{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid #14161c;padding-bottom:8px;gap:8px}
+.kv-label{font-size:11px;color:#8b909a;flex-shrink:0}
+.kv-value{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;text-align:right}
+.gauge{margin-top:10px;height:6px;background:#1f242c;position:relative;overflow:hidden}
+.gauge > i{position:absolute;left:0;top:0;height:100%;background:#00d4ff}
+.gauge.amber > i{background:#ffb442}
+.gauge.green > i{background:#3aff9c}
+.gauge-tick{position:absolute;top:-2px;width:1px;height:10px;background:#5a5f68}
+
+.spark-wrap{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:8px}
+.spark{background:#11141a;padding:10px 12px;border:1px solid #1f242c}
+.spark-lbl{font-size:9px;letter-spacing:.16em;color:#8b909a;text-transform:uppercase;margin-bottom:4px}
+.spark-val{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;margin-bottom:4px}
+
+.links{display:flex;gap:10px;flex-wrap:wrap}
+.link-btn{font-family:'JetBrains Mono',monospace;font-size:11px;padding:7px 12px;border:1px solid #2a2e36;color:#8b909a;letter-spacing:.06em;text-transform:uppercase}
+.link-btn:hover{color:#00d4ff;border-color:#00d4ff66}
+
+/* Footer */
+.footer{padding:18px 24px;border-top:1px solid #1f242c;font-size:10px;color:#5a5f68;letter-spacing:.06em;text-align:center}
+.footer a{color:#8b909a}
+.footer a:hover{color:#00d4ff}
+
+/* SVG common */
+.axis text{font-family:'JetBrains Mono',monospace;font-size:9px;fill:#5a5f68;letter-spacing:.06em}
+.axis line, .axis path{stroke:#1f242c;stroke-width:1;fill:none;shape-rendering:crispEdges}
+.gridline{stroke:#14161c;stroke-width:1;shape-rendering:crispEdges}
+.dot{stroke:#0d1015;stroke-width:1;cursor:pointer;transition:opacity .15s}
+.dot:hover{stroke:#fff;stroke-width:2}
+.dot.dim{opacity:.18}
+.dot-label{font-family:'JetBrains Mono',monospace;font-size:9px;fill:#e4e6eb;pointer-events:none;letter-spacing:.04em}
+.bar-rect{shape-rendering:crispEdges;cursor:pointer;transition:opacity .12s}
+.bar-rect:hover{opacity:.85}
+
+@media (max-width:980px){
+  .charts{grid-template-columns:1fr;gap:1px}
+  .chart-card{min-height:200px}
+}
+@media (max-width:760px){
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  .detail{width:100%}
+  th,td{padding:9px 10px;font-size:11px}
+  .topbar{flex-wrap:wrap;gap:10px;padding:10px 14px}
+  .filters{padding:10px 14px}
+  .search{width:100%;margin-top:8px}
+  .score-hero{grid-template-columns:1fr;text-align:center}
+  .score-ring{margin:0 auto}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div>
+    <div class="brand">ALPHAVEIN</div>
+    <div class="brand-sub" style="margin-top:3px">US Quality Screener · ROCE+FCF · Buy &amp; Hold</div>
+  </div>
+  <div class="asof">DATA AS OF<span id="asof">—</span></div>
+</header>
+
+<section class="kpis">
+  <div class="kpi"><div class="kpi-label">Universe</div><div class="kpi-value" id="m-universe">—</div><div class="kpi-sub">SEC FILERS</div></div>
+  <div class="kpi"><div class="kpi-label">In Band</div><div class="kpi-value" id="m-included">—</div><div class="kpi-sub">$300M–$5B · INST≤70%</div></div>
+  <div class="kpi"><div class="kpi-label">Scored</div><div class="kpi-value" id="m-scored">—</div><div class="kpi-sub">PASSED ALL GUARDRAILS</div></div>
+  <div class="kpi"><div class="kpi-label">Avg Score</div><div class="kpi-value" id="m-avg">—</div><div class="kpi-sub" id="m-runat">—</div></div>
+</section>
+
+<section class="charts">
+  <div class="chart-card">
+    <div class="chart-title">Score Distribution <span class="pill" id="dist-count">—</span></div>
+    <svg class="chart-svg" id="chart-hist" viewBox="0 0 360 200" preserveAspectRatio="none"></svg>
+  </div>
+  <div class="chart-card">
+    <div class="chart-title">By Sector</div>
+    <svg class="chart-svg" id="chart-sector" viewBox="0 0 280 200" preserveAspectRatio="none"></svg>
+  </div>
+  <div class="chart-card">
+    <div class="chart-title">ROCE × FCF Margin <span class="pill">SIZE = MCAP</span></div>
+    <svg class="chart-svg" id="chart-scatter" viewBox="0 0 460 240" preserveAspectRatio="none"></svg>
+  </div>
+</section>
+
+<section class="filters">
+  <span class="filters-label">Sector</span>
+  <div id="chips" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+  <input class="search" id="search" placeholder="TICKER…" autocomplete="off">
+</section>
+
+<section class="table-wrap">
+  <table id="tbl">
+    <thead>
+      <tr>
+        <th data-key="rank" class="num">#</th>
+        <th data-key="ticker">Ticker</th>
+        <th data-key="total" class="num sorted">Score</th>
+        <th data-key="roce_mean" class="num">ROCE 5y</th>
+        <th data-key="roce_cv" class="num">CV</th>
+        <th data-key="fcf_margin_mean" class="num">FCF Margin</th>
+        <th data-key="cash_conversion_mean" class="num">CashConv</th>
+        <th data-key="fcf_positive_years" class="num">+y</th>
+        <th data-key="market_cap" class="num">Mcap</th>
+        <th data-key="inst_holding_pct" class="num">Inst%</th>
+        <th data-key="sector">Sector</th>
+      </tr>
+    </thead>
+    <tbody id="tbody"></tbody>
+  </table>
+</section>
+
+<aside class="detail" id="detail">
+  <div class="detail-header">
+    <div>
+      <div class="detail-title" id="d-ticker">—</div>
+      <div class="detail-sector" id="d-sector">—</div>
+    </div>
+    <button class="detail-close" onclick="closeDetail()">✕</button>
+  </div>
+  <div class="detail-body" id="d-body"></div>
+</aside>
+
+<footer class="footer">
+  Data: SEC EDGAR (XBRL) + Yahoo Finance · Quality Score 0–100 (Buy &amp; Hold weighted) ·
+  <a href="https://mav-ash.com">Forge Never Sleeps</a>
+</footer>
+
+<script>
+const CYAN="#00d4ff", GREEN="#3aff9c", AMBER="#ffb442", DIM="#5a5f68";
+let DATA = null;
+let SORT = {key:'total', asc:false};
+let SECTOR = 'ALL';
+let SEARCH = '';
+let SELECTED = null;
+
+function fmtPct(v, d=1){ return v==null ? '—' : (v*100).toFixed(d)+'%'; }
+function fmtMcap(v){ if(v==null) return '—'; const b=v/1e9; return b>=10 ? b.toFixed(1)+'B' : b.toFixed(2)+'B'; }
+function fmtAdv(v){ if(v==null) return '—'; return '$'+(v/1e6).toFixed(1)+'M'; }
+function fmtInt(v){ return v==null ? '—' : Math.round(v); }
+function cv(s){ const m=s.roce_mean, sd=s.roce_std; if(!m||m<=0) return null; return sd/m; }
+function clamp(v, lo, hi){ return Math.max(lo, Math.min(hi, v)); }
+
+function load(){
+  fetch('data.json?t='+Date.now()).then(r=>r.json()).then(d=>{
+    DATA = d;
+    document.getElementById('asof').textContent = d.meta.asof;
+    document.getElementById('m-universe').textContent = d.meta.universe_total.toLocaleString();
+    document.getElementById('m-included').textContent = d.meta.universe_included.toLocaleString();
+    document.getElementById('m-scored').textContent = d.meta.scored_count.toLocaleString();
+    const avg = d.scores.reduce((a,s)=>a+s.total,0)/d.scores.length;
+    document.getElementById('m-avg').textContent = avg.toFixed(1);
+    const ts = new Date(d.meta.generated_at);
+    document.getElementById('m-runat').textContent = 'GEN '+ts.toISOString().slice(0,16).replace('T',' ')+'Z';
+    buildChips();
+    drawHist();
+    drawSector();
+    drawScatter();
+    render();
+  });
+}
+
+function buildChips(){
+  const sectors = new Set(DATA.scores.map(s=>s.sector).filter(Boolean));
+  const wrap = document.getElementById('chips');
+  wrap.innerHTML = '';
+  const all = Array.from(sectors).sort();
+  ['ALL', ...all].forEach(name=>{
+    const b = document.createElement('button');
+    b.className = 'chip'+(name===SECTOR?' active':'');
+    const cnt = name === 'ALL' ? DATA.scores.length : DATA.scores.filter(s=>s.sector===name).length;
+    b.textContent = `${name} · ${cnt}`;
+    b.onclick = ()=>{ SECTOR=name; document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active')); b.classList.add('active'); render(); drawScatter(); };
+    wrap.appendChild(b);
+  });
+}
+
+function filtered(){
+  let xs = DATA.scores.slice();
+  if(SECTOR!=='ALL') xs = xs.filter(s=>s.sector===SECTOR);
+  if(SEARCH) xs = xs.filter(s=>s.ticker.toLowerCase().includes(SEARCH));
+  const k = SORT.key;
+  xs.sort((a,b)=>{
+    let av, bv;
+    if(k==='roce_cv'){ av=cv(a)??Infinity; bv=cv(b)??Infinity; }
+    else if(k==='ticker'||k==='sector'){ av=a[k]||''; bv=b[k]||''; return SORT.asc?av.localeCompare(bv):bv.localeCompare(av); }
+    else if(k==='rank'){ av=DATA.scores.indexOf(a); bv=DATA.scores.indexOf(b); }
+    else { av=a[k]??-Infinity; bv=b[k]??-Infinity; }
+    return SORT.asc ? av-bv : bv-av;
+  });
+  return xs;
+}
+
+function render(){
+  const tbody = document.getElementById('tbody');
+  const xs = filtered();
+  tbody.innerHTML = '';
+  xs.forEach((s, i)=>{
+    const tr = document.createElement('tr');
+    if(SELECTED===s.ticker) tr.classList.add('active');
+    const cvVal = cv(s);
+    const fillPct = clamp(s.total,0,100).toFixed(0);
+    const rocePct = clamp((s.roce_mean||0)*100, 0, 50)/50*100;
+    const fcfPct = clamp((s.fcf_margin_mean||0)*100, 0, 30)/30*100;
+    const fcfYrs = s.fcf_positive_years||0;
+    const dots = [0,1,2,3,4].map(i=>`<span class="d ${i<fcfYrs?'on':''}"></span>`).join('');
+    tr.innerHTML = `
+      <td class="num muted">${i+1}</td>
+      <td class="ticker">${s.ticker}</td>
+      <td class="num score">${s.total.toFixed(0)}<span class="bar-cell"><i style="width:${fillPct}%"></i></span></td>
+      <td class="num">${fmtPct(s.roce_mean)}<span class="minibar cyan"><i style="width:${rocePct}%"></i></span></td>
+      <td class="num ${cvVal!=null && cvVal<0.3?'':'muted'}">${cvVal!=null ? cvVal.toFixed(2) : '—'}</td>
+      <td class="num">${fmtPct(s.fcf_margin_mean)}<span class="minibar green"><i style="width:${fcfPct}%"></i></span></td>
+      <td class="num">${fmtPct(s.cash_conversion_mean, 0)}</td>
+      <td class="num">${fcfYrs}<span class="dot-row">${dots}</span></td>
+      <td class="num">${fmtMcap(s.market_cap)}</td>
+      <td class="num ${s.inst_holding_pct!=null && s.inst_holding_pct<0.5?'':'muted'}">${fmtPct(s.inst_holding_pct,0)}</td>
+      <td class="sector">${s.sector||'—'}</td>
+    `;
+    tr.onclick = ()=>showDetail(s);
+    tbody.appendChild(tr);
+  });
+  document.querySelectorAll('th').forEach(th=>{
+    th.classList.remove('sorted','asc');
+    if(th.dataset.key===SORT.key){ th.classList.add('sorted'); if(SORT.asc) th.classList.add('asc'); }
+  });
+}
+
+document.querySelectorAll('th').forEach(th=>{
+  th.onclick = ()=>{
+    const k = th.dataset.key; if(!k) return;
+    if(SORT.key===k) SORT.asc=!SORT.asc;
+    else { SORT={key:k, asc:(k==='ticker'||k==='sector')}; }
+    render();
+  };
+});
+document.getElementById('search').addEventListener('input', e=>{ SEARCH = e.target.value.trim().toLowerCase(); render(); drawScatter(); });
+
+/* ---------- CHARTS ---------- */
+
+function drawHist(){
+  const svg = document.getElementById('chart-hist');
+  svg.innerHTML = '';
+  const W=360, H=200, P={t:14, r:14, b:28, l:30};
+  const bins = [0,20,40,60,80,100];
+  const buckets = bins.slice(0,-1).map((lo,i)=>({lo, hi:bins[i+1], count:0}));
+  DATA.scores.forEach(s=>{
+    const idx = Math.min(buckets.length-1, Math.floor(s.total/20));
+    buckets[idx].count++;
+  });
+  document.getElementById('dist-count').textContent = `N=${DATA.scores.length}`;
+  const maxC = Math.max(...buckets.map(b=>b.count), 1);
+  const innerW = W-P.l-P.r, innerH = H-P.t-P.b;
+  const bw = innerW / buckets.length;
+
+  // gridlines
+  let html = `<g class="axis">`;
+  [0, .25, .5, .75, 1].forEach(p=>{
+    const y = P.t + innerH*(1-p);
+    html += `<line class="gridline" x1="${P.l}" x2="${W-P.r}" y1="${y}" y2="${y}"/>`;
+    html += `<text x="${P.l-6}" y="${y+3}" text-anchor="end">${Math.round(maxC*p)}</text>`;
+  });
+
+  buckets.forEach((b,i)=>{
+    const x = P.l + i*bw + 2;
+    const h = (b.count/maxC)*innerH;
+    const y = P.t + innerH - h;
+    const accent = b.lo>=80 ? CYAN : b.lo>=60 ? GREEN : b.lo>=40 ? "#7a8392" : DIM;
+    html += `<rect class="bar-rect" x="${x}" y="${y}" width="${bw-4}" height="${h}" fill="${accent}" opacity=".85"/>`;
+    if(b.count>0) html += `<text x="${x+(bw-4)/2}" y="${y-4}" text-anchor="middle" fill="${accent}" font-family="JetBrains Mono" font-size="10" font-weight="700">${b.count}</text>`;
+    html += `<text x="${x+(bw-4)/2}" y="${H-P.b+14}" text-anchor="middle">${b.lo}–${b.hi}</text>`;
+  });
+  html += '</g>';
+  svg.innerHTML = html;
+}
+
+function drawSector(){
+  const svg = document.getElementById('chart-sector');
+  svg.innerHTML = '';
+  const W=280, H=200, P={t:8, r:14, b:8, l:120};
+  const groups = {};
+  DATA.scores.forEach(s=>{
+    const k = s.sector||'(none)';
+    if(!groups[k]) groups[k] = {count:0, sum:0};
+    groups[k].count++;
+    groups[k].sum += s.total;
+  });
+  const arr = Object.entries(groups).map(([k,v])=>({sector:k, count:v.count, avg:v.sum/v.count}))
+    .sort((a,b)=>b.count-a.count).slice(0,8);
+  const maxC = Math.max(...arr.map(a=>a.count), 1);
+  const innerW = W-P.l-P.r;
+  const rowH = (H-P.t-P.b) / arr.length;
+
+  let html = '<g>';
+  arr.forEach((a,i)=>{
+    const y = P.t + i*rowH;
+    const w = (a.count/maxC) * innerW;
+    const accent = a.avg>=70 ? CYAN : a.avg>=50 ? GREEN : a.avg>=30 ? AMBER : DIM;
+    html += `<text class="" x="${P.l-8}" y="${y+rowH/2+3}" text-anchor="end" font-family="Inter" font-size="10" fill="#e4e6eb">${a.sector.length>14?a.sector.slice(0,14)+'…':a.sector}</text>`;
+    html += `<rect class="bar-rect" x="${P.l}" y="${y+3}" width="${w}" height="${rowH-6}" fill="${accent}" opacity=".75"/>`;
+    html += `<text x="${P.l+w+5}" y="${y+rowH/2+3}" font-family="JetBrains Mono" font-size="10" fill="${accent}" font-weight="700">${a.count}</text>`;
+    html += `<text x="${P.l+w+5}" y="${y+rowH/2+15}" font-family="JetBrains Mono" font-size="8" fill="#5a5f68">${a.avg.toFixed(0)} avg</text>`;
+  });
+  html += '</g>';
+  svg.innerHTML = html;
+}
+
+function drawScatter(){
+  const svg = document.getElementById('chart-scatter');
+  svg.innerHTML = '';
+  const W=460, H=240, P={t:14, r:14, b:30, l:36};
+  const innerW = W-P.l-P.r, innerH = H-P.t-P.b;
+  // X: ROCE 0-80%, Y: FCF margin 0-40%
+  const xMax = 0.80, yMax = 0.40;
+  const visible = SECTOR==='ALL' ? DATA.scores : DATA.scores.filter(s=>s.sector===SECTOR);
+
+  const xs = (v)=> P.l + clamp(v,0,xMax)/xMax * innerW;
+  const ys = (v)=> P.t + (1 - clamp(v,0,yMax)/yMax) * innerH;
+  const rs = (mc)=> {
+    const minR=3, maxR=14, lo=Math.log(0.3e9), hi=Math.log(20e9);
+    const t = clamp((Math.log(Math.max(mc,1e8))-lo)/(hi-lo), 0, 1);
+    return minR + t*(maxR-minR);
+  };
+  const colorFor = (sc)=> sc>=80 ? CYAN : sc>=60 ? GREEN : sc>=40 ? AMBER : DIM;
+
+  let html = '<g class="axis">';
+  // gridlines + ticks X
+  [0, 0.2, 0.4, 0.6, 0.8].forEach(v=>{
+    const x = xs(v);
+    html += `<line class="gridline" x1="${x}" x2="${x}" y1="${P.t}" y2="${H-P.b}"/>`;
+    html += `<text x="${x}" y="${H-P.b+14}" text-anchor="middle">${(v*100).toFixed(0)}%</text>`;
+  });
+  // gridlines + ticks Y
+  [0, 0.1, 0.2, 0.3, 0.4].forEach(v=>{
+    const y = ys(v);
+    html += `<line class="gridline" x1="${P.l}" x2="${W-P.r}" y1="${y}" y2="${y}"/>`;
+    html += `<text x="${P.l-6}" y="${y+3}" text-anchor="end">${(v*100).toFixed(0)}%</text>`;
+  });
+  // axis labels
+  html += `<text x="${(P.l+W-P.r)/2}" y="${H-4}" text-anchor="middle" font-size="9">ROCE 5y</text>`;
+  html += `<text x="${10}" y="${(P.t+H-P.b)/2}" text-anchor="middle" font-size="9" transform="rotate(-90 10 ${(P.t+H-P.b)/2})">FCF Margin</text>`;
+  html += '</g>';
+
+  // dots
+  const sorted = visible.slice().sort((a,b)=>(a.market_cap||0)-(b.market_cap||0));
+  sorted.forEach(s=>{
+    if(s.roce_mean==null || s.fcf_margin_mean==null) return;
+    const cx = xs(s.roce_mean), cy = ys(s.fcf_margin_mean), r = rs(s.market_cap||0.5e9);
+    const c = colorFor(s.total);
+    const dim = (SEARCH && !s.ticker.toLowerCase().includes(SEARCH)) ? ' dim' : '';
+    html += `<circle class="dot${dim}" data-ticker="${s.ticker}" cx="${cx}" cy="${cy}" r="${r}" fill="${c}" fill-opacity=".55" stroke="${c}"></circle>`;
+  });
+  // top labels (top 5 by score)
+  visible.slice().sort((a,b)=>b.total-a.total).slice(0,5).forEach(s=>{
+    if(s.roce_mean==null || s.fcf_margin_mean==null) return;
+    const cx = xs(s.roce_mean), cy = ys(s.fcf_margin_mean) - rs(s.market_cap||0.5e9) - 4;
+    html += `<text class="dot-label" x="${cx}" y="${cy}" text-anchor="middle">${s.ticker}</text>`;
+  });
+  svg.innerHTML = html;
+  svg.querySelectorAll('circle.dot').forEach(c=>{
+    c.addEventListener('click', ()=>{
+      const t = c.getAttribute('data-ticker');
+      const s = DATA.scores.find(x=>x.ticker===t);
+      if(s) showDetail(s);
+    });
+  });
+}
+
+/* ---------- DETAIL ---------- */
+
+function showDetail(s){
+  SELECTED = s.ticker;
+  render();
+  document.getElementById('d-ticker').textContent = s.ticker;
+  document.getElementById('d-sector').textContent = [s.sector, s.industry].filter(Boolean).join(' · ');
+  const cik = String(s.cik||'').replace(/^0+/,'');
+  const cvVal = cv(s);
+  const total = s.total||0, roceP = s.roce_pts||0, cfP = s.cf_pts||0, hgP = s.hidden_gem_pts||0;
+  const ringPct = clamp(total,0,100)/100;
+  const C = 2 * Math.PI * 36;
+  const dash = `${ringPct*C} ${C}`;
+  const fcfYrs = s.fcf_positive_years||0;
+  const dotsBig = [0,1,2,3,4].map(i=>`<span class="d" style="width:14px;height:14px;background:${i<fcfYrs?'#3aff9c':'#1f242c'}"></span>`).join('');
+
+  document.getElementById('d-body').innerHTML = `
+    <div class="detail-section">
+      <div class="score-hero">
+        <div class="score-ring">
+          <svg viewBox="0 0 88 88">
+            <circle class="ring-bg" cx="44" cy="44" r="36"/>
+            <circle class="ring-fg" cx="44" cy="44" r="36" stroke-dasharray="${dash}"/>
+          </svg>
+          <div class="score-ring-center">
+            <div class="score-ring-num">${total.toFixed(0)}</div>
+            <div class="score-ring-lbl">SCORE</div>
+          </div>
+        </div>
+        <div>
+          <div class="stack">
+            <span class="s-roce" style="width:${roceP}%"></span>
+            <span class="s-cf" style="width:${cfP}%"></span>
+            <span class="s-hg" style="width:${hgP}%"></span>
+          </div>
+          <div class="stack-legend">
+            <span><i style="background:#00d4ff"></i>ROCE ${roceP.toFixed(0)}/50</span>
+            <span><i style="background:#3aff9c"></i>CF ${cfP.toFixed(0)}/50</span>
+            <span><i style="background:#ffb442"></i>HIDDEN ${hgP.toFixed(0)}/10</span>
+          </div>
+          <div style="margin-top:14px;font-size:11px;color:#8b909a;line-height:1.6">
+            ${total>=80?'High-quality, consistent compounder.':total>=60?'Solid quality, room to improve.':'Borderline — watch consistency.'}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="detail-section">
+      <h4>Quality Metrics (5y) <span style="color:#5a5f68;font-weight:400;letter-spacing:.06em">FY${s.latest_fy||'—'}</span></h4>
+      <div class="kv-grid">
+        <div>
+          <div class="kv-row"><span class="kv-label">Mean ROCE</span><span class="kv-value">${fmtPct(s.roce_mean)}</span></div>
+          <div class="gauge cyan"><i style="width:${clamp((s.roce_mean||0)*100,0,40)/40*100}%"></i></div>
+        </div>
+        <div>
+          <div class="kv-row"><span class="kv-label">CV (σ/μ)</span><span class="kv-value">${cvVal!=null ? cvVal.toFixed(2) : '—'}</span></div>
+          <div class="gauge ${cvVal!=null && cvVal<0.3?'green':'amber'}"><i style="width:${cvVal!=null?clamp(1-cvVal,0,1)*100:0}%"></i></div>
+        </div>
+        <div>
+          <div class="kv-row"><span class="kv-label">FCF Margin</span><span class="kv-value">${fmtPct(s.fcf_margin_mean)}</span></div>
+          <div class="gauge green"><i style="width:${clamp((s.fcf_margin_mean||0)*100,0,30)/30*100}%"></i></div>
+        </div>
+        <div>
+          <div class="kv-row"><span class="kv-label">Cash Conv</span><span class="kv-value">${fmtPct(s.cash_conversion_mean,0)}</span></div>
+          <div class="gauge green"><i style="width:${clamp((s.cash_conversion_mean||0)*100,0,150)/150*100}%"></i></div>
+        </div>
+      </div>
+      <div style="margin-top:16px;display:flex;align-items:center;gap:12px">
+        <span class="kv-label">FCF Positive Years</span>
+        <div style="display:inline-flex;gap:4px">${dotsBig}</div>
+        <span class="kv-value" style="margin-left:auto">${fcfYrs} / 5</span>
+      </div>
+    </div>
+
+    <div class="detail-section">
+      <h4>Market</h4>
+      <div class="spark-wrap">
+        <div class="spark"><div class="spark-lbl">Market Cap</div><div class="spark-val">$${fmtMcap(s.market_cap)}</div><div class="gauge"><i style="width:${clamp((s.market_cap||0)/5e9,0,1)*100}%"></i></div></div>
+        <div class="spark"><div class="spark-lbl">ADV 30d</div><div class="spark-val">${fmtAdv(s.adv_30d)}</div><div class="gauge green"><i style="width:${clamp((s.adv_30d||0)/100e6,0,1)*100}%"></i></div></div>
+        <div class="spark"><div class="spark-lbl">Inst Holding</div><div class="spark-val">${fmtPct(s.inst_holding_pct,0)}</div><div class="gauge ${s.inst_holding_pct&&s.inst_holding_pct<.5?'green':'amber'}"><i style="width:${clamp((s.inst_holding_pct||0)*100,0,100)}%"></i></div></div>
+        <div class="spark"><div class="spark-lbl">CIK</div><div class="spark-val">${cik}</div><div class="kv-label" style="margin-top:6px">SEC FILER ID</div></div>
+      </div>
+    </div>
+
+    <div class="detail-section">
+      <h4>External</h4>
+      <div class="links">
+        <a class="link-btn" target="_blank" href="https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${cik}&type=10-K&dateb=&owner=include&count=10">SEC EDGAR · 10-K</a>
+        <a class="link-btn" target="_blank" href="https://finance.yahoo.com/quote/${s.ticker}">Yahoo Finance</a>
+        <a class="link-btn" target="_blank" href="https://stockanalysis.com/stocks/${s.ticker.toLowerCase()}/financials/">StockAnalysis.com</a>
+      </div>
+    </div>
+  `;
+  document.getElementById('detail').classList.add('open');
+}
+
+function closeDetail(){
+  document.getElementById('detail').classList.remove('open');
+  SELECTED = null;
+  render();
+}
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeDetail(); });
+
+load();
+</script>
+</body>
+</html>
