@@ -174,6 +174,12 @@ td.sector{font-family:'Inter',sans-serif;color:#8b909a;font-size:11px}
 .bt-line-p{fill:none;stroke:#00d4ff;stroke-width:1.6}
 .bt-line-b{fill:none;stroke:#5a5f68;stroke-width:1.2;stroke-dasharray:3 3}
 .bt-area-p{fill:url(#bt-grad);opacity:.35}
+.bt-dd-area{fill:#ffb442;opacity:.25}
+.bt-dd-line{fill:none;stroke:#ffb442;stroke-width:1}
+.bt-dd-panel{padding:6px 22px 14px;background:#0d1015;border-bottom:1px solid #1f242c}
+.bt-dd-title{font-size:9px;letter-spacing:.18em;color:#8b909a;text-transform:uppercase;margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.bt-dd-title b{color:#ffb442;font-family:'JetBrains Mono',monospace;font-weight:700}
+#bt-dd-chart{width:100%;height:90px;display:block}
 .bt-holdings-wrap{padding:16px 22px;border-bottom:1px solid #1f242c}
 .bt-holdings-wrap summary{font-size:10px;letter-spacing:.16em;color:#8b909a;text-transform:uppercase;cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px}
 .bt-holdings-wrap summary::before{content:"›";color:#00d4ff;transition:transform .15s;display:inline-block}
@@ -315,6 +321,10 @@ td.sector{font-family:'Inter',sans-serif;color:#8b909a;font-size:11px}
         </linearGradient>
       </defs>
     </svg>
+  </div>
+  <div class="bt-dd-panel">
+    <div class="bt-dd-title">PORTFOLIO DRAWDOWN <span style="color:#5a5f68">peak-to-trough</span> · MAX <b id="bt-dd-max">—</b></div>
+    <svg id="bt-dd-chart" viewBox="0 0 980 90" preserveAspectRatio="none"></svg>
   </div>
   <details class="bt-holdings-wrap">
     <summary>Yearly Holdings (TOP picks each January)</summary>
@@ -516,34 +526,69 @@ function drawHist(){
 function drawSector(){
   const svg = document.getElementById('chart-sector');
   svg.innerHTML = '';
-  const W=280, H=200, P={t:8, r:14, b:8, l:120};
+  const W=280, H=200, P={t:8, r:14, b:18, l:90};
   const groups = {};
   DATA.scores.forEach(s=>{
     const k = s.sector||'(none)';
-    if(!groups[k]) groups[k] = {count:0, sum:0};
-    groups[k].count++;
-    groups[k].sum += s.total;
+    if(!groups[k]) groups[k] = [];
+    groups[k].push(s.total);
   });
-  const arr = Object.entries(groups).map(([k,v])=>({sector:k, count:v.count, avg:v.sum/v.count}))
-    .sort((a,b)=>b.count-a.count).slice(0,8);
-  const maxC = Math.max(...arr.map(a=>a.count), 1);
+  const arr = Object.entries(groups).map(([sec, scores])=>{
+    scores.sort((a,b)=>a-b);
+    const n = scores.length;
+    return {
+      sector: sec, scores, count: n,
+      min: scores[0], max: scores[n-1],
+      q1: scores[Math.max(0, Math.floor(n*0.25))],
+      q3: scores[Math.max(0, Math.floor(n*0.75))],
+      median: scores[Math.floor(n/2)],
+      avg: scores.reduce((a,b)=>a+b,0)/n,
+    };
+  }).sort((a,b)=>b.avg-a.avg).slice(0,8);
+
   const innerW = W-P.l-P.r;
   const rowH = (H-P.t-P.b) / arr.length;
+  const xs = v => P.l + (Math.max(0, Math.min(100, v))/100) * innerW;
 
   let html = '<g>';
+  // X scale (0/50/100)
+  [0,50,100].forEach(v=>{
+    const x = xs(v);
+    html += `<line class="gridline" x1="${x}" x2="${x}" y1="${P.t}" y2="${H-P.b}"/>`;
+    html += `<text x="${x}" y="${H-P.b+11}" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#5a5f68">${v}</text>`;
+  });
+
   arr.forEach((a,i)=>{
-    const y = P.t + i*rowH;
-    const w = (a.count/maxC) * innerW;
+    const y = P.t + i*rowH + rowH/2;
     const accent = a.avg>=70 ? CYAN : a.avg>=50 ? GREEN : a.avg>=30 ? AMBER : DIM;
     const isActive = SECTOR === a.sector;
-    const dim = (SECTOR!=='ALL' && !isActive) ? '.22' : '.75';
-    const stroke = isActive ? `stroke="#fff" stroke-width="1.5"` : '';
+    const isDim = (SECTOR !== 'ALL' && !isActive);
+    const opacity = isDim ? '.22' : '1';
     const labelFill = isActive ? '#00d4ff' : '#e4e6eb';
     const labelW = isActive ? '700' : '400';
-    html += `<text class="sector-label" data-sector="${a.sector}" x="${P.l-8}" y="${y+rowH/2+3}" text-anchor="end" font-family="Inter" font-size="10" fill="${labelFill}" font-weight="${labelW}" style="cursor:pointer">${a.sector.length>14?a.sector.slice(0,14)+'…':a.sector}</text>`;
-    html += `<rect class="bar-rect sector-bar" data-sector="${a.sector}" x="${P.l}" y="${y+3}" width="${w}" height="${rowH-6}" fill="${accent}" opacity="${dim}" ${stroke}/>`;
-    html += `<text x="${P.l+w+5}" y="${y+rowH/2+3}" font-family="JetBrains Mono" font-size="10" fill="${accent}" font-weight="700" opacity="${SECTOR!=='ALL'&&!isActive?'.4':'1'}">${a.count}</text>`;
-    html += `<text x="${P.l+w+5}" y="${y+rowH/2+15}" font-family="JetBrains Mono" font-size="8" fill="#5a5f68" opacity="${SECTOR!=='ALL'&&!isActive?'.4':'1'}">${a.avg.toFixed(0)} avg</text>`;
+    const lbl = a.sector.length>11 ? a.sector.slice(0,11)+'…' : a.sector;
+
+    html += `<text class="sector-label" data-sector="${a.sector}" x="${P.l-6}" y="${y-1}" text-anchor="end" font-family="Inter" font-size="10" fill="${labelFill}" font-weight="${labelW}" style="cursor:pointer">${lbl}</text>`;
+    html += `<text class="sector-label" data-sector="${a.sector}" x="${P.l-6}" y="${y+9}" text-anchor="end" font-family="JetBrains Mono" font-size="8" fill="#5a5f68" style="cursor:pointer">n=${a.count}</text>`;
+
+    // 클릭 hit-area (행 전체)
+    html += `<rect class="sector-bar" data-sector="${a.sector}" x="${P.l}" y="${y-rowH/2+1}" width="${innerW}" height="${rowH-2}" fill="transparent" style="cursor:pointer"/>`;
+
+    // IQR 박스
+    const xq1 = xs(a.q1), xq3 = xs(a.q3);
+    html += `<rect x="${xq1}" y="${y-5}" width="${Math.max(1,xq3-xq1)}" height="10" fill="${accent}" opacity="${isDim?'.1':'.22'}"/>`;
+    // 양 끝 whiskers
+    html += `<line x1="${xs(a.min)}" x2="${xs(a.max)}" y1="${y}" y2="${y}" stroke="${accent}" stroke-opacity="${isDim?'.15':'.4'}" stroke-width="1"/>`;
+    // 점들 (jitter)
+    a.scores.forEach((sc, idx)=>{
+      const jy = y + ((idx % 3) - 1) * 1.6;
+      html += `<circle cx="${xs(sc)}" cy="${jy}" r="1.6" fill="${accent}" opacity="${isDim?'.3':'.85'}"/>`;
+    });
+    // Median 라인
+    const xmed = xs(a.median);
+    html += `<line x1="${xmed}" x2="${xmed}" y1="${y-7}" y2="${y+7}" stroke="${accent}" stroke-width="2" opacity="${opacity}"/>`;
+    // 평균 숫자 (오른쪽 끝)
+    html += `<text x="${W-P.r+0}" y="${y+3}" text-anchor="end" font-family="JetBrains Mono" font-size="9" fill="${accent}" font-weight="700" opacity="${opacity}">${a.avg.toFixed(0)}</text>`;
   });
   html += '</g>';
   svg.innerHTML = html;
@@ -831,8 +876,68 @@ function renderBacktest(bt){
   });
 
   drawBtChart(bt);
+  drawBtDrawdown(bt);
   renderBtHoldings(bt);
   renderBtCaveats(bt.caveats || []);
+}
+
+function drawBtDrawdown(bt){
+  const svg = document.getElementById('bt-dd-chart');
+  if(!svg || !bt.nav.length) return;
+  const W=980, H=90, P={t:6, r:14, b:18, l:46};
+  const innerW = W-P.l-P.r, innerH = H-P.t-P.b;
+
+  // 누적 peak로부터 drawdown 계산
+  let peak = bt.nav[0].p;
+  const dd = bt.nav.map(d=>{
+    peak = Math.max(peak, d.p);
+    return {d: d.d, dd: d.p/peak - 1};
+  });
+  const minDD = Math.min(...dd.map(x=>x.dd));
+  document.getElementById('bt-dd-max').textContent = (minDD*100).toFixed(1)+'%';
+
+  const t0 = new Date(bt.nav[0].d).getTime();
+  const t1 = new Date(bt.nav[bt.nav.length-1].d).getTime();
+  const xs = (iso)=> P.l + (new Date(iso).getTime()-t0)/(t1-t0) * innerW;
+  // y: 0 (top) ~ minDD (bottom). minDD floor를 -50% 또는 실제 min 중 깊은 쪽
+  const yFloor = Math.min(minDD * 1.05, -0.05);
+  const ys = (v)=> P.t + (v / yFloor) * innerH;  // v는 음수, yFloor도 음수
+
+  // axis + grid
+  let html = '<g class="bt-axis">';
+  // 0% 라인 (위)
+  html += `<line class="bt-grid" x1="${P.l}" x2="${W-P.r}" y1="${P.t}" y2="${P.t}"/>`;
+  html += `<text x="${P.l-6}" y="${P.t+4}" text-anchor="end">0%</text>`;
+  // -10%, -20%, -30%, -40% 등 단계 표시
+  for(let v=-0.1; v>=yFloor; v-=0.1){
+    const y = ys(v);
+    html += `<line class="bt-grid" x1="${P.l}" x2="${W-P.r}" y1="${y}" y2="${y}"/>`;
+    html += `<text x="${P.l-6}" y="${y+3}" text-anchor="end">${(v*100).toFixed(0)}%</text>`;
+  }
+  // 연도 grid (NAV 차트와 정렬)
+  const startY = new Date(bt.nav[0].d).getFullYear();
+  const endY = new Date(bt.nav[bt.nav.length-1].d).getFullYear();
+  for(let y=startY; y<=endY; y++){
+    const iso = `${y}-01-01`;
+    if(new Date(iso).getTime() < t0 || new Date(iso).getTime() > t1) continue;
+    const x = xs(iso);
+    html += `<line class="bt-grid" x1="${x}" x2="${x}" y1="${P.t}" y2="${H-P.b}"/>`;
+    html += `<text x="${x}" y="${H-P.b+12}" text-anchor="middle">${y}</text>`;
+  }
+  html += '</g>';
+
+  // Drawdown area (sample)
+  const step = Math.max(1, Math.floor(dd.length / 800));
+  const sampled = dd.filter((_,i)=>i%step===0);
+  if(sampled[sampled.length-1] !== dd[dd.length-1]) sampled.push(dd[dd.length-1]);
+  const pts = sampled.map(x=>`${xs(x.d).toFixed(1)},${ys(x.dd).toFixed(1)}`).join(' ');
+  const x0 = xs(bt.nav[0].d).toFixed(1);
+  const x1 = xs(bt.nav[bt.nav.length-1].d).toFixed(1);
+  const y0 = P.t.toFixed(1);
+  html += `<polygon class="bt-dd-area" points="${x0},${y0} ${pts} ${x1},${y0}"/>`;
+  html += `<polyline class="bt-dd-line" points="${pts}"/>`;
+
+  svg.innerHTML = html;
 }
 
 function drawBtChart(bt){
