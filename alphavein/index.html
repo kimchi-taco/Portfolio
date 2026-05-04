@@ -45,6 +45,25 @@ body{background-image:
 .kpi-value{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:600;color:#e4e6eb;line-height:1}
 .kpi-sub{font-family:'JetBrains Mono',monospace;font-size:10px;color:#5a5f68;margin-top:4px;letter-spacing:.06em}
 
+/* PIT Backtest Picks (prominent) */
+.bt-picks-wrap{padding:18px 24px;border-bottom:1px solid #1f242c;background:#0d1015}
+.bt-picks-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;flex-wrap:wrap;gap:8px}
+.bt-picks-title{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.18em;color:#00d4ff;font-weight:700}
+.bt-picks-meta{font-family:'JetBrains Mono',monospace;font-size:10px;color:#8b909a;letter-spacing:.08em;margin-left:10px}
+.bt-picks-note{font-size:9px;color:#5a5f68;letter-spacing:.08em;text-transform:uppercase;max-width:340px;text-align:right;line-height:1.5}
+.bt-picks-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+.bt-pick{background:#11141a;border:1px solid #1f242c;padding:10px 12px;cursor:pointer;text-align:left;color:#e4e6eb;transition:all .12s;display:flex;flex-direction:column;gap:4px;position:relative}
+.bt-pick:hover{border-color:#00d4ff66}
+.bt-pick.excluded{border-color:#ffb44233}
+.bt-pick.excluded:hover{border-color:#ffb44288}
+.bt-pick-row{display:flex;align-items:center;justify-content:space-between;font-family:'JetBrains Mono',monospace}
+.bt-pick-ticker{font-size:13px;font-weight:700;letter-spacing:.04em}
+.bt-pick-score{color:#00d4ff;font-size:11px;font-weight:600}
+.bt-pick-sector{font-size:9px;color:#8b909a}
+.bt-pick-status{font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:.08em;text-transform:uppercase}
+.bt-pick-status.ok{color:#3aff9c}
+.bt-pick-status.excluded{color:#ffb442}
+
 /* Charts strip */
 .charts{display:grid;grid-template-columns:1.4fr 1fr 1.6fr;gap:1px;background:#1f242c;border-bottom:1px solid #1f242c}
 .chart-card{background:#0d1015;padding:16px 22px;min-height:240px;display:flex;flex-direction:column}
@@ -243,6 +262,8 @@ td.sector{font-family:'Inter',sans-serif;color:#8b909a;font-size:11px}
   .kpis{grid-template-columns:repeat(2,1fr)}
   .detail{width:100%}
   th,td{padding:9px 10px;font-size:11px}
+  .bt-picks-grid{grid-template-columns:repeat(2,1fr)}
+  .bt-picks-note{max-width:none;text-align:left}
   .topbar{grid-template-columns:auto 1fr auto;gap:8px;padding:10px 12px}
   .brand{font-size:12px}
   .brand-sub{font-size:9px}
@@ -270,6 +291,17 @@ td.sector{font-family:'Inter',sans-serif;color:#8b909a;font-size:11px}
   <div class="kpi"><div class="kpi-label">In Band</div><div class="kpi-value" id="m-included">—</div><div class="kpi-sub">$300M–$5B · INST≤70%</div></div>
   <div class="kpi"><div class="kpi-label">Scored</div><div class="kpi-value" id="m-scored">—</div><div class="kpi-sub">PASSED ALL GUARDRAILS</div></div>
   <div class="kpi"><div class="kpi-label">Avg Score</div><div class="kpi-value" id="m-avg">—</div><div class="kpi-sub" id="m-runat">—</div></div>
+</section>
+
+<section class="bt-picks-wrap" id="bt-picks-wrap" style="display:none">
+  <div class="bt-picks-header">
+    <div>
+      <span class="bt-picks-title">📌 PIT BACKTEST PICKS</span>
+      <span class="bt-picks-meta" id="bt-picks-meta">—</span>
+    </div>
+    <span class="bt-picks-note">PIT 그 시점 통과 종목 · ⚠ 표시 = 현재 시점 가드 미통과 (실시간 매수 신호 X)</span>
+  </div>
+  <div class="bt-picks-grid" id="bt-picks-grid"></div>
 </section>
 
 <section class="charts">
@@ -920,6 +952,42 @@ function renderBacktest(bt){
   drawBtRuns(bt);
   renderBtHoldings(bt);
   renderBtCaveats(bt.caveats || []);
+  drawLatestPicks(bt);
+}
+
+function drawLatestPicks(bt){
+  const wrap = document.getElementById('bt-picks-wrap');
+  const grid = document.getElementById('bt-picks-grid');
+  if(!bt.holdings || !bt.holdings.length){ wrap.style.display='none'; return; }
+  const last = bt.holdings[bt.holdings.length-1];
+  if(!last.items || !last.items.length){ wrap.style.display='none'; return; }
+
+  wrap.style.display='';
+  document.getElementById('bt-picks-meta').textContent =
+    `${last.date} · ${last.items.length}종목 · ${bt.run_id}`;
+
+  grid.innerHTML='';
+  last.items.forEach(it=>{
+    const excluded = !!it.exclusion_now;
+    const chip = document.createElement('div');
+    chip.className = 'bt-pick' + (excluded ? ' excluded' : '');
+    chip.innerHTML = `
+      <div class="bt-pick-row">
+        <span class="bt-pick-ticker">${escape(it.ticker)}</span>
+        <span class="bt-pick-score">${(it.score||0).toFixed(0)}</span>
+      </div>
+      <div class="bt-pick-sector">${escape(it.sector || '—')}</div>
+      <div class="bt-pick-status ${excluded?'excluded':'ok'}">
+        ${excluded ? '⚠ ' + escape(it.exclusion_now) : '✓ 현재도 통과'}
+      </div>
+    `;
+    chip.onclick = ()=>{
+      const inMain = DATA && DATA.scores.find(s => s.ticker === it.ticker);
+      if(inMain) showDetail(inMain);
+      else window.open(`https://finance.yahoo.com/quote/${it.ticker}`, '_blank');
+    };
+    grid.appendChild(chip);
+  });
 }
 
 function drawBtAttribution(bt){
