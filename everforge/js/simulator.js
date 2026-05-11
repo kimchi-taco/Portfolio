@@ -80,26 +80,38 @@ window.EF_project = function(scenario, baseTraj, baseAssum, options) {
   return result;
 };
 
-// Estimate current asset given a hypothetical KOSPI level (others held at current).
-// current = current.json contents (needs .estimate.by_class anchor_value & .market_levels)
-window.EF_estimateAssetForKospi = function(kospiLevel, current) {
-  const lvls = current.market_levels || {};
-  const ko = lvls.KOSPI;
-  if (!ko || !ko.anchor) return current.estimate.estimated_total;
-
+// Estimate current asset given hypothetical proxy levels (others held at current).
+// overrides: {KOSPI: level, NASDAQ: level, ...}  — missing proxies use current.
+// current = current.json contents (needs .estimate.by_class, .market_levels, .market_changes)
+window.EF_estimateAssetForLevels = function(overrides, current) {
+  const lvls    = current.market_levels  || {};
+  const changes = current.market_changes || {};
   const byClass = current.estimate.by_class;
+  // 해외자산은 KRW 환산 위해 환율 변동 반영 (USDKRW change 그대로)
+  const fxFactor = 1 + (changes.USDKRW || 0);
+
   let total = 0;
   for (const [cls, c] of Object.entries(byClass)) {
-    if (c.proxy === 'KOSPI') {
-      // 사용자 KOSPI 가정으로 재계산
-      const change = (kospiLevel / ko.anchor) - 1;
-      total += c.anchor_value * (1 + change);
+    const proxy = c.proxy;
+    const userLevel = overrides[proxy];
+    const lvl = lvls[proxy];
+    if (userLevel != null && lvl && lvl.anchor > 0) {
+      // 사용자 가정으로 anchor → user_level 까지 보간
+      const rawChange = (userLevel / lvl.anchor) - 1;
+      // 해외 프록시는 환율 곱
+      const isForeign = (proxy === 'NASDAQ' || proxy === 'MSCI_EXUS' || proxy === 'GLOBAL_BOND');
+      const effChange = isForeign ? ((1 + rawChange) * fxFactor - 1) : rawChange;
+      total += c.anchor_value * (1 + effChange);
     } else {
-      // 다른 자산군은 현재 추정 그대로
       total += c.current_value;
     }
   }
   return Math.round(total * 10) / 10;
+};
+
+// 후위호환: 기존 호출 그대로 사용 가능
+window.EF_estimateAssetForKospi = function(kospiLevel, current) {
+  return window.EF_estimateAssetForLevels({KOSPI: kospiLevel}, current);
 };
 
 window.EF_depletionYear = function(traj) {

@@ -3,9 +3,9 @@
     "as_of": "2026-05-11",
     "anchor_date": "2026-02-28",
     "anchor_total": 1610.4,
-    "estimated_total": 1763.7,
-    "delta_trillion_krw": 153.3,
-    "delta_pct": 9.52,
+    "estimated_total": 1797.0,
+    "delta_trillion_krw": 186.6,
+    "delta_pct": 11.59,
     "by_class": {
       "domestic_equity": {
         "anchor_value": 394.55,
@@ -13,11 +13,17 @@
         "pct_change": 29.46,
         "proxy": "KOSPI"
       },
-      "foreign_equity": {
-        "anchor_value": 573.3,
-        "current_value": 611.68,
-        "pct_change": 6.69,
-        "proxy": "MSCI_WORLD"
+      "foreign_equity_us": {
+        "anchor_value": 372.65,
+        "current_value": 434.82,
+        "pct_change": 16.68,
+        "proxy": "NASDAQ"
+      },
+      "foreign_equity_row": {
+        "anchor_value": 200.66,
+        "current_value": 210.17,
+        "pct_change": 4.74,
+        "proxy": "MSCI_EXUS"
       },
       "domestic_bond": {
         "anchor_value": 297.92,
@@ -53,7 +59,8 @@
   },
   "market_changes": {
     "KOSPI": 0.2945642797841008,
-    "MSCI_WORLD": 0.0669477306949866,
+    "NASDAQ": 0.16684138140564042,
+    "MSCI_EXUS": 0.04739370140643828,
     "USDKRW": 0.011324323296836983,
     "KR_BOND": 0.0,
     "GLOBAL_BOND": 0.002990451087257373,
@@ -65,9 +72,13 @@
       "anchor": 5791.91,
       "latest": 7498.0
     },
-    "MSCI_WORLD": {
-      "anchor": 190.18,
-      "latest": 200.64
+    "NASDAQ": {
+      "anchor": 22748.86,
+      "latest": 26247.08
+    },
+    "MSCI_EXUS": {
+      "anchor": 73.18,
+      "latest": 75.79
     },
     "USDKRW": {
       "anchor": 1438.5,

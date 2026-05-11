@@ -59,13 +59,15 @@ const EF = {
 
   // 자산군 한글 라벨
   CLASS_KO: {
-    domestic_equity: '국내주식',
-    foreign_equity:  '해외주식',
-    domestic_bond:   '국내채권',
-    foreign_bond:    '해외채권',
-    alternative:     '대체투자',
-    cash:            '단기자금',
-    welfare_other:   '복지·기타',
+    domestic_equity:    '국내주식',
+    foreign_equity:     '해외주식',
+    foreign_equity_us:  '해외주식 (미국)',
+    foreign_equity_row: '해외주식 (그 외)',
+    domestic_bond:      '국내채권',
+    foreign_bond:       '해외채권',
+    alternative:        '대체투자',
+    cash:               '단기자금',
+    welfare_other:      '복지·기타',
   },
 };
 

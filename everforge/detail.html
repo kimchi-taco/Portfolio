@@ -25,42 +25,10 @@
 
 <div class="ef-container">
 
-  <!-- 현재 시점 가정 (KOSPI 레벨) -->
-  <section class="ef-section">
-    <div class="ef-section-label">Today's Market · Anchor</div>
-    <h2 class="ef-section-title">지금 KOSPI가 X라면, 자산은?</h2>
-    <p class="ef-section-desc">국내주식이 전체 자산의 약 24.5%. KOSPI 한 줄로 현재 추정 자산이 출렁이고, 그 값이 forecast의 새 출발점이 됩니다.</p>
-
-    <div class="ef-sliders" style="grid-template-columns: 2fr 1fr">
-      <div class="ef-slider">
-        <div class="ef-slider-head">
-          <div class="ef-slider-name">KOSPI 지수 (현재 가정) <small>국내주식 자산군에만 즉시 반영</small></div>
-          <div class="ef-slider-val" id="kospi-val">—</div>
-        </div>
-        <input type="range" id="kospi-input">
-        <div class="ef-slider-meta"><span id="kospi-min">—</span><span id="kospi-anchor-mark">anchor: —</span><span id="kospi-max">—</span></div>
-        <div class="ef-slider-base">최근 yfinance 종가: <em id="kospi-latest">—</em> · NPS 공시일(<span id="kospi-anchor-date">—</span>) 종가: <em id="kospi-anchor-base">—</em></div>
-      </div>
-
-      <div class="ef-slider" style="background:var(--bg-3);display:flex;flex-direction:column;justify-content:center">
-        <div class="ef-counter-label" style="margin-bottom:6px">슬라이더 기준 추정 자산</div>
-        <div style="font-family:var(--ff-mono);font-size:30px;font-weight:600;color:var(--gold-0);line-height:1.05">
-          <span id="anchor-current">—</span><span style="font-size:13px;color:var(--tx-2);margin-left:6px">조원</span>
-        </div>
-        <div style="font-family:var(--ff-mono);font-size:11px;color:var(--tx-3);margin-top:6px">
-          NPS 공시 대비 <span id="anchor-delta">—</span>
-        </div>
-        <div style="margin-top:10px">
-          <button id="kospi-reset" class="ef-btn ghost" style="width:100%;justify-content:center;font-size:10px;padding:8px 12px">↺ 실측 KOSPI로 복귀</button>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <section class="ef-section">
     <div class="ef-section-label">Scenario Engineering · Long-term Assumptions</div>
     <h2 class="ef-section-title">고갈 시점을 움직여보세요</h2>
-    <p class="ef-section-desc">위에서 정한 현재 자산을 출발점으로, 아래 5개 장기 가정에 따라 미래가 결정됩니다. 기본값은 정부 5차 재정추계(2023).</p>
+    <p class="ef-section-desc">5개 장기 가정을 만지면 미래가 출렁입니다. 기본값은 정부 5차 재정추계(2023). 아래에서 시장 지수도 함께 조정할 수 있습니다.</p>
 
     <!-- SLIDERS -->
     <div class="ef-sliders" id="sliders">
@@ -118,6 +86,56 @@
         <button id="reset-btn" class="ef-btn ghost" style="width:100%;justify-content:center">↺ 정부 기본값으로 리셋</button>
         <button id="bear-btn" class="ef-btn ghost" style="width:100%;justify-content:center;border-color:var(--red);color:var(--red)">▼ 비관 시나리오 적용</button>
         <button id="bull-btn" class="ef-btn ghost" style="width:100%;justify-content:center;border-color:var(--green);color:var(--green)">▲ 낙관 시나리오 적용</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 현재 시점 시장 가정 (KOSPI + NASDAQ) -->
+  <section class="ef-section">
+    <div class="ef-section-label">Today's Market · Anchor</div>
+    <h2 class="ef-section-title">지금 시장이 X라면, 자산은?</h2>
+    <p class="ef-section-desc">
+      KOSPI는 국내주식(24.5%), NASDAQ은 해외주식 중 미국 부분(<span id="us-share-display">—</span>%)에 즉시 반영됩니다.
+      슬라이더로 만든 현재 자산이 위 forecast의 새 출발점이 됩니다.
+      <span style="color:var(--tx-3)">미국 비중은 NPS 분기 보유종목 공시(<span id="us-ratio-asof">—</span>) 기준.</span>
+    </p>
+
+    <div class="ef-sliders">
+      <div class="ef-slider">
+        <div class="ef-slider-head">
+          <div class="ef-slider-name">KOSPI 지수 <small>국내주식 자산군에 반영</small></div>
+          <div class="ef-slider-val" id="kospi-val">—</div>
+        </div>
+        <input type="range" id="kospi-input">
+        <div class="ef-slider-meta"><span id="kospi-min">—</span><span id="kospi-anchor-mark">anchor: —</span><span id="kospi-max">—</span></div>
+        <div class="ef-slider-base">최근 종가: <em id="kospi-latest">—</em> · NPS 공시일(<span id="kospi-anchor-date">—</span>) 종가: <em id="kospi-anchor-base">—</em></div>
+      </div>
+
+      <div class="ef-slider">
+        <div class="ef-slider-head">
+          <div class="ef-slider-name">NASDAQ 지수 <small>해외주식 중 미국 부분에 반영 (환율 포함)</small></div>
+          <div class="ef-slider-val" id="nasdaq-val">—</div>
+        </div>
+        <input type="range" id="nasdaq-input">
+        <div class="ef-slider-meta"><span id="nasdaq-min">—</span><span id="nasdaq-anchor-mark">anchor: —</span><span id="nasdaq-max">—</span></div>
+        <div class="ef-slider-base">최근 종가: <em id="nasdaq-latest">—</em> · NPS 공시일 종가: <em id="nasdaq-anchor-base">—</em></div>
+      </div>
+    </div>
+
+    <div class="ef-sliders" style="grid-template-columns: 1fr 1fr; margin-top: 1px">
+      <div class="ef-slider" style="background:var(--bg-3);display:flex;flex-direction:column;justify-content:center">
+        <div class="ef-counter-label" style="margin-bottom:6px">슬라이더 기준 추정 자산</div>
+        <div style="font-family:var(--ff-mono);font-size:30px;font-weight:600;color:var(--gold-0);line-height:1.05">
+          <span id="anchor-current">—</span><span style="font-size:13px;color:var(--tx-2);margin-left:6px">조원</span>
+        </div>
+        <div style="font-family:var(--ff-mono);font-size:11px;color:var(--tx-3);margin-top:6px">
+          NPS 공시 대비 <span id="anchor-delta">—</span>
+        </div>
+      </div>
+
+      <div class="ef-slider" style="display:flex;flex-direction:column;justify-content:center;gap:8px">
+        <button id="market-reset" class="ef-btn ghost" style="width:100%;justify-content:center">↺ 양쪽 실측값으로 복귀</button>
+        <button id="market-anchor" class="ef-btn ghost" style="width:100%;justify-content:center">⏱ NPS 공시일 시점으로</button>
       </div>
     </div>
   </section>
@@ -253,29 +271,69 @@ document.getElementById('reset-btn').addEventListener('click', () => setScenario
 document.getElementById('bear-btn').addEventListener('click', () => setScenario(presetBear));
 document.getElementById('bull-btn').addEventListener('click', () => setScenario(presetBull));
 
-// ─── KOSPI anchor slider ─────────────────────────────────────
-const koLevels = (current.market_levels || {}).KOSPI;
-const koAnchorBase = koLevels && koLevels.anchor ? koLevels.anchor : 6000;
-const koLatest = koLevels && koLevels.latest ? koLevels.latest : koAnchorBase;
-// 슬라이더 range: anchor 대비 -40% ~ +80% 정도 (50 단위)
-const koMin = Math.max(2000, Math.round((koAnchorBase * 0.6) / 50) * 50);
-const koMax = Math.round((koAnchorBase * 1.8) / 50) * 50;
+// ─── Market index sliders (KOSPI + NASDAQ) ──────────────────
+const lvls = current.market_levels || {};
 
-const koInput = document.getElementById('kospi-input');
-koInput.min = koMin; koInput.max = koMax; koInput.step = 50;
-koInput.value = Math.round(koLatest / 50) * 50;
+// 지수별 슬라이더 사양: step 단위, range factor (anchor 대비)
+const INDEX_SPECS = {
+  KOSPI:  { step: 50,  minMult: 0.5, maxMult: 1.8, defaultMin: 5000  },
+  NASDAQ: { step: 100, minMult: 0.5, maxMult: 1.8, defaultMin: 10000 },
+};
 
-document.getElementById('kospi-min').textContent = koMin.toLocaleString();
-document.getElementById('kospi-max').textContent = koMax.toLocaleString();
-document.getElementById('kospi-anchor-mark').textContent = `anchor ${koAnchorBase.toLocaleString()}`;
-document.getElementById('kospi-anchor-base').textContent = koAnchorBase.toLocaleString();
-document.getElementById('kospi-latest').textContent = koLatest.toLocaleString();
+function buildIndexSlider(proxy, prefix) {
+  const spec = INDEX_SPECS[proxy];
+  const l = lvls[proxy];
+  const anchorBase = l && l.anchor ? l.anchor : spec.defaultMin;
+  const latest = l && l.latest ? l.latest : anchorBase;
+  const min = Math.max(spec.step, Math.round((anchorBase * spec.minMult) / spec.step) * spec.step);
+  const max = Math.round((anchorBase * spec.maxMult) / spec.step) * spec.step;
+  const input = document.getElementById(`${prefix}-input`);
+  input.min = min; input.max = max; input.step = spec.step;
+  input.value = Math.round(latest / spec.step) * spec.step;
+
+  document.getElementById(`${prefix}-min`).textContent = min.toLocaleString();
+  document.getElementById(`${prefix}-max`).textContent = max.toLocaleString();
+  document.getElementById(`${prefix}-anchor-mark`).textContent = `anchor ${anchorBase.toLocaleString()}`;
+  document.getElementById(`${prefix}-anchor-base`).textContent = anchorBase.toLocaleString();
+  document.getElementById(`${prefix}-latest`).textContent = Math.round(latest).toLocaleString();
+
+  return { input, anchorBase, latest, spec };
+}
+
+const ko = buildIndexSlider('KOSPI',  'kospi');
+const nq = buildIndexSlider('NASDAQ', 'nasdaq');
+
 document.getElementById('kospi-anchor-date').textContent = current.anchor.as_of;
 
-function refreshKospi() {
-  const k = parseFloat(koInput.value);
-  document.getElementById('kospi-val').textContent = k.toLocaleString();
-  const est = EF_estimateAssetForKospi(k, current);
+// 미국 비중 메타정보 표시
+const usRatio = current.estimate.by_class?.foreign_equity_us
+  ? (current.estimate.by_class.foreign_equity_us.anchor_value
+     / (current.estimate.by_class.foreign_equity_us.anchor_value
+        + current.estimate.by_class.foreign_equity_row.anchor_value)) * 100
+  : null;
+document.getElementById('us-share-display').textContent = usRatio ? usRatio.toFixed(1) : '—';
+document.getElementById('us-ratio-asof').textContent = current.anchor.as_of || '—';
+
+function readMarketOverrides() {
+  return {
+    KOSPI:  parseFloat(ko.input.value),
+    NASDAQ: parseFloat(nq.input.value),
+  };
+}
+
+function refreshMarket() {
+  const overrides = readMarketOverrides();
+  document.getElementById('kospi-val').textContent  = overrides.KOSPI.toLocaleString();
+  document.getElementById('nasdaq-val').textContent = overrides.NASDAQ.toLocaleString();
+
+  // 슬라이더값이 latest와 동일하면 회색, 다르면 골드
+  for (const [proxy, sl] of [['KOSPI', ko], ['NASDAQ', nq]]) {
+    const valEl = document.getElementById(`${proxy.toLowerCase()}-val`);
+    const offLatest = Math.abs(overrides[proxy] - sl.latest) > sl.spec.step / 2;
+    valEl.style.color = offLatest ? 'var(--gold-0)' : 'var(--tx-1)';
+  }
+
+  const est = EF_estimateAssetForLevels(overrides, current);
   document.getElementById('anchor-current').textContent = EF.fmt.bigKrw(est);
   const delta = est - current.anchor.total;
   const deltaEl = document.getElementById('anchor-delta');
@@ -283,12 +341,19 @@ function refreshKospi() {
   deltaEl.textContent = `${sign}${EF.fmt.bigKrw(delta)}조 (${sign}${((delta/current.anchor.total)*100).toFixed(1)}%)`;
   deltaEl.style.color = delta >= 0 ? 'var(--green)' : 'var(--red)';
 }
-koInput.addEventListener('input', () => { refreshKospi(); refresh(); });
-document.getElementById('kospi-reset').addEventListener('click', () => {
-  koInput.value = Math.round(koLatest / 50) * 50;
-  refreshKospi(); refresh();
+ko.input.addEventListener('input', () => { refreshMarket(); refresh(); });
+nq.input.addEventListener('input', () => { refreshMarket(); refresh(); });
+document.getElementById('market-reset').addEventListener('click', () => {
+  ko.input.value = Math.round(ko.latest / ko.spec.step) * ko.spec.step;
+  nq.input.value = Math.round(nq.latest / nq.spec.step) * nq.spec.step;
+  refreshMarket(); refresh();
 });
-refreshKospi();
+document.getElementById('market-anchor').addEventListener('click', () => {
+  ko.input.value = Math.round(ko.anchorBase / ko.spec.step) * ko.spec.step;
+  nq.input.value = Math.round(nq.anchorBase / nq.spec.step) * nq.spec.step;
+  refreshMarket(); refresh();
+});
+refreshMarket();
 
 // ─── Chart setup ─────────────────────────────────────────────
 const ctx = document.getElementById('chart-canvas').getContext('2d');
@@ -368,11 +433,13 @@ const anchorYear = years.includes(todayYear) ? todayYear : years.reduce((a, b) =
 
 function refresh() {
   const scenario = readScenario();
-  const kospiLevel = parseFloat(koInput.value);
-  const estimatedNow = EF_estimateAssetForKospi(kospiLevel, current);
-  // KOSPI 슬라이더가 실측값과 다르면 startBalance override 적용
-  const useOverride = Math.abs(estimatedNow - current.estimate.estimated_total) > 0.1
-                   || Math.abs(parseFloat(koInput.value) - koLatest) > 1;
+  const overrides = readMarketOverrides();
+  const estimatedNow = EF_estimateAssetForLevels(overrides, current);
+  // 시장 슬라이더가 실측값과 차이가 나거나, 추정 자산이 base와 다르면 override 적용
+  const offMarket = Math.abs(overrides.KOSPI - ko.latest)  > ko.spec.step / 2
+                 || Math.abs(overrides.NASDAQ - nq.latest) > nq.spec.step / 2;
+  const useOverride = offMarket
+    || Math.abs(estimatedNow - current.estimate.estimated_total) > 0.1;
   const projOptions = useOverride
     ? { startYear: anchorYear, startBalance: estimatedNow }
     : {};
