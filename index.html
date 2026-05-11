@@ -161,13 +161,6 @@ body.day .dch{background:rgba(0,0,0,.05)}
 .pd{font-size:12.5px;color:var(--tx2);font-weight:300;line-height:1.75;flex:1}
 .pts{display:flex;flex-wrap:wrap;gap:5px;margin-top:auto}
 .pt{font-family:'DM Mono',monospace;font-size:9px;padding:2px 7px;border-radius:2px;background:var(--bg4);color:var(--tx3);letter-spacing:.04em;border:1px solid var(--b1)}
-.pc-live{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--b1);border:1px solid var(--b2);border-radius:2px;overflow:hidden;margin-top:2px}
-.pc-live-cell{background:var(--bg4);padding:7px 10px}
-.pc-live-l{font-family:'DM Mono',monospace;font-size:8px;color:var(--tx3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:2px}
-.pc-live-v{font-family:'DM Mono',monospace;font-size:14px;color:var(--ac2);font-weight:500;line-height:1.1}
-.pc-live-u{font-family:'DM Mono',monospace;font-size:9px;color:var(--tx3);margin-top:1px}
-.pc.featured{position:relative}
-.pc.featured::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#e8b339,transparent);opacity:.7}
 
 /* CONTACT */
 .cgrid{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:start}
@@ -402,7 +395,7 @@ footer em{color:var(--ac);font-style:normal}
     <div class="pc" onclick="window.open('/ironweb/','_blank')" style="cursor:pointer"><div class="pi">🗺</div><div><div class="pn">Ironweb</div><div class="pd">전국 전력 인프라 현황을 지도로 예쁘게 보여줍니다. 장표 쓸 떄 누끼 안따도 됨</div></div><div class="pts"><span class="pt">Claude API</span><span class="pt">NLP</span><span class="pt">신호 분석</span></div></div>
     <div class="pc" onclick="window.open('https://sikr.kr','_blank')" style="cursor:pointer"><div class="pi">🍽</div><div><div class="pn">Sikr</div><div class="pd">서울 성문 안 든 이방인을 위한 검증 맛집 안내. 드워프가 직접 다녀온 곳만 올립니다.</div></div><div class="pts"><span class="pt">Naver API</span><span class="pt">Gemini</span><span class="pt">Cloudflare</span></div></div>
     <div class="pc" onclick="window.open('https://mav-ash.com/magic-split/','_blank')" style="cursor:pointer"><div class="pi">💰​</div><div><div class="pn">Goldhallow</div><div class="pd">분할매매 시스템용 종목 추천. 감이 아니라 규칙으로 삽니다.</div></div><div class="pts"><span class="pt">투자 자동화</span><span class="pt">퀀트</span><span class="pt">실운영</span></div></div>
-    <div class="pc featured" onclick="window.open('/everforge/','_blank')" style="cursor:pointer"><div class="pi">⚒️</div><div><div class="pn">Everforge</div><div class="pd">국민연금, 정말 고갈될까? 슬라이더 한 번 움직이면 미래가 출렁입니다. 정부 5차 재정추계 기반.</div></div><div class="pc-live"><div class="pc-live-cell"><div class="pc-live-l">현재 추정 자산</div><div class="pc-live-v" id="pcEfTotal">—</div><div class="pc-live-u">조원 · NPS 보정</div></div><div class="pc-live-cell"><div class="pc-live-l">예상 고갈</div><div class="pc-live-v" id="pcEfDep">—</div><div class="pc-live-u" id="pcEfDepQuip">정부 5차</div></div></div><div class="pts"><span class="pt">Python</span><span class="pt">Chart.js</span><span class="pt">NPS 공시</span><span class="pt">KOSIS</span></div></div>
+    <div class="pc" onclick="window.open('/everforge/','_blank')" style="cursor:pointer"><div class="pi">⚒️</div><div><div class="pn">Everforge</div><div class="pd">국민연금, 정말 고갈될까? 슬라이더 한 번 움직이면 미래가 출렁입니다. 정부 5차 재정추계 기반.</div></div><div class="pts"><span class="pt">Python</span><span class="pt">Chart.js</span><span class="pt">NPS 공시</span><span class="pt">KOSIS</span></div></div>
     <div class="pc" onclick="window.open('https://mav-ash.com/trails','_blank')" style="cursor:pointer"><div class="pi">🏕️​</div><div><div class="pn">Trailvein</div><div class="pd">SNS 기반으로 백패킹 박지를 시즌별로 추천합니다.<br>Leave No Trace!</div></div><div class="pts"><span class="pt">PM</span><span class="pt">LNG</span><span class="pt">GIS</span><span class="pt">SK E&amp;S</span></div></div>
     <div class="pc" onclick="window.open('/vaulthold','_blank')" style="cursor:pointer"><div class="pi">🏠</div><div><div class="pn">Vaulthold</div><div class="pd">화로는 꺼진 적 없고, 모루 위엔 항상 다음 것이 올라와 있다. 문은 열려 있으니, 구경하고 가시라.</div></div><div class="pts"><span class="pt">Mac Mini</span><span class="pt">n8n</span><span class="pt">셀프호스팅</span></div></div>
   </div>
@@ -536,10 +529,6 @@ async function fetchEverforge(){
     }
     var badge = document.getElementById('efBadge');
     if(badge) badge.textContent = e.as_of;
-    // 프로젝트 그리드 안의 라이브 카드도 채움
-    st('pcEfTotal', fmt(e.estimated_total));
-    st('pcEfDep', base.depletion_year?base.depletion_year+'년':'—');
-    if(depQuip) st('pcEfDepQuip', depQuip);
   }catch(err){
     var t = document.getElementById('efTotal'); if(t) t.textContent='ERR';
   }
