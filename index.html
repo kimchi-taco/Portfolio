@@ -351,6 +351,26 @@ footer em{color:var(--ac);font-style:normal}
 
 <div class="divider"></div>
 
+<section id="everforge-watch">
+  <div class="slbl">National Pension · Live Estimate</div>
+  <h2 class="stit">Everforge — 국민연금 가시화</h2>
+  <p class="sdsc">정부 5차 재정추계 + NPS 월간공시 + 시장 보간으로 산출한 현재 추정 자산과 고갈 시점.<br>슬라이더로 가정 바꾸면 미래가 어떻게 출렁이는지 확인할 수 있습니다.</p>
+  <div class="dcard">
+    <div class="dch"><div class="dchl"><div class="dcdot"></div><span class="dctit">NPS · Real-time Asset Estimate</span></div><span class="dcbadge" id="efBadge">LIVE</span></div>
+    <div class="dcg">
+      <div class="dcs"><div class="dcsl">현재 추정 자산</div><div class="dcsv" id="efTotal" style="color:var(--ac)">—</div><div class="dcsu">조원</div></div>
+      <div class="dcs"><div class="dcsl">NPS 공시 대비</div><div class="dcsv" id="efDelta" style="color:#5ae888">—</div><div class="dcsu" id="efDeltaPct">—</div></div>
+      <div class="dcs"><div class="dcsl">예상 고갈 (정부 5차)</div><div class="dcsv" id="efDep" style="color:#fbbf24">—</div><div class="dcsu" id="efDepQuip">—</div></div>
+      <div class="dcs"><div class="dcsl">기금 최대 시점</div><div class="dcsv" id="efPeak" style="color:#60a5fa">—</div><div class="dcsu" id="efPeakBal">—</div></div>
+      <div class="dcs"><div class="dcsl">국내주식 (KOSPI)</div><div class="dcsv" id="efKOSPI" style="color:#a78bfa">—</div><div class="dcsu">조원</div></div>
+      <div class="dcs"><div class="dcsl">미국주식 (NASDAQ)</div><div class="dcsv" id="efNASDAQ" style="color:#fb923c">—</div><div class="dcsu">조원</div></div>
+    </div>
+    <div class="dcft"><span class="dcftx">KOSPI · NASDAQ 슬라이더로 자산 재계산, 5개 장기 가정으로 고갈 시점 시뮬</span><a href="/everforge/" class="dcln">ENTER EVERFORGE →</a></div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
 <section id="career">
   <div class="slbl">Career</div>
   <h2 class="stit">무용담</h2>
@@ -480,6 +500,41 @@ async function fetchDash(){
 }
 fetchDash();
 setInterval(fetchDash,5*60*1000);
+
+async function fetchEverforge(){
+  try{
+    var [c,f] = await Promise.all([
+      fetch('/everforge/data/current.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.json()),
+      fetch('/everforge/data/forecasts.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.json()),
+    ]);
+    var e = c.estimate, by = e.by_class, base = f.scenarios.base.summary;
+    var fmt = function(v,d){d=d==null?1:d;return v==null||isNaN(v)?'—':v.toLocaleString('ko-KR',{minimumFractionDigits:d,maximumFractionDigits:d});};
+    st('efTotal', fmt(e.estimated_total));
+    var delta = e.delta_trillion_krw;
+    st('efDelta', (delta>=0?'+':'')+fmt(delta));
+    st('efDeltaPct', (delta>=0?'+':'')+e.delta_pct.toFixed(2)+'%');
+    var deltaEl = document.getElementById('efDelta');
+    if(deltaEl) deltaEl.style.color = delta>=0?'#5ae888':'#f87171';
+    st('efDep', base.depletion_year?base.depletion_year+'년':'—');
+    var depQuip='', diff = base.depletion_year ? base.depletion_year - new Date().getFullYear() : null;
+    if(diff!=null){
+      if(diff<=30) depQuip='올해 신생아 '+diff+'살'; else if(diff<=50) depQuip='약 '+diff+'년 후'; else depQuip='먼 미래';
+    }
+    st('efDepQuip', depQuip);
+    st('efPeak', base.peak_year+'년');
+    st('efPeakBal', fmt(base.peak_balance)+'조');
+    if(by){
+      if(by.domestic_equity) st('efKOSPI', fmt(by.domestic_equity.current_value));
+      if(by.foreign_equity_us) st('efNASDAQ', fmt(by.foreign_equity_us.current_value));
+    }
+    var badge = document.getElementById('efBadge');
+    if(badge) badge.textContent = e.as_of;
+  }catch(err){
+    var t = document.getElementById('efTotal'); if(t) t.textContent='ERR';
+  }
+}
+fetchEverforge();
+setInterval(fetchEverforge,10*60*1000);
 
 </script>
 
