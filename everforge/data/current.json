@@ -60,6 +60,27 @@
     "ALT_BLEND": 0.0,
     "CASH": 0.0
   },
+  "market_levels": {
+    "KOSPI": {
+      "anchor": 5791.91,
+      "latest": 7498.0
+    },
+    "MSCI_WORLD": {
+      "anchor": 190.18,
+      "latest": 200.64
+    },
+    "USDKRW": {
+      "anchor": 1438.5,
+      "latest": 1454.79
+    },
+    "KR_BOND": null,
+    "GLOBAL_BOND": {
+      "anchor": 100.0,
+      "latest": 99.18
+    },
+    "ALT_BLEND": null,
+    "CASH": null
+  },
   "anchor": {
     "as_of": "2026-02-28",
     "total": 1610.4

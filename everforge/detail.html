@@ -25,10 +25,42 @@
 
 <div class="ef-container">
 
+  <!-- 현재 시점 가정 (KOSPI 레벨) -->
   <section class="ef-section">
-    <div class="ef-section-label">Scenario Engineering</div>
+    <div class="ef-section-label">Today's Market · Anchor</div>
+    <h2 class="ef-section-title">지금 KOSPI가 X라면, 자산은?</h2>
+    <p class="ef-section-desc">국내주식이 전체 자산의 약 24.5%. KOSPI 한 줄로 현재 추정 자산이 출렁이고, 그 값이 forecast의 새 출발점이 됩니다.</p>
+
+    <div class="ef-sliders" style="grid-template-columns: 2fr 1fr">
+      <div class="ef-slider" data-key="kospi_level" data-step="50">
+        <div class="ef-slider-head">
+          <div class="ef-slider-name">KOSPI 지수 (현재 가정) <small>국내주식 자산군에만 즉시 반영</small></div>
+          <div class="ef-slider-val" id="kospi-val">—</div>
+        </div>
+        <input type="range" id="kospi-input">
+        <div class="ef-slider-meta"><span id="kospi-min">—</span><span id="kospi-anchor-mark">anchor: —</span><span id="kospi-max">—</span></div>
+        <div class="ef-slider-base">최근 yfinance 종가: <em id="kospi-latest">—</em> · NPS 공시일(<span id="kospi-anchor-date">—</span>) 종가: <em id="kospi-anchor-base">—</em></div>
+      </div>
+
+      <div class="ef-slider" style="background:var(--bg-3);display:flex;flex-direction:column;justify-content:center">
+        <div class="ef-counter-label" style="margin-bottom:6px">슬라이더 기준 추정 자산</div>
+        <div style="font-family:var(--ff-mono);font-size:30px;font-weight:600;color:var(--gold-0);line-height:1.05">
+          <span id="anchor-current">—</span><span style="font-size:13px;color:var(--tx-2);margin-left:6px">조원</span>
+        </div>
+        <div style="font-family:var(--ff-mono);font-size:11px;color:var(--tx-3);margin-top:6px">
+          NPS 공시 대비 <span id="anchor-delta">—</span>
+        </div>
+        <div style="margin-top:10px">
+          <button id="kospi-reset" class="ef-btn ghost" style="width:100%;justify-content:center;font-size:10px;padding:8px 12px">↺ 실측 KOSPI로 복귀</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="ef-section">
+    <div class="ef-section-label">Scenario Engineering · Long-term Assumptions</div>
     <h2 class="ef-section-title">고갈 시점을 움직여보세요</h2>
-    <p class="ef-section-desc">5개 변수만 바꾸면 미래가 출렁입니다. 기본값은 정부 5차 재정추계(2023). 슬라이더는 그 가정의 perturbation입니다.</p>
+    <p class="ef-section-desc">위에서 정한 현재 자산을 출발점으로, 아래 5개 장기 가정에 따라 미래가 결정됩니다. 기본값은 정부 5차 재정추계(2023).</p>
 
     <!-- SLIDERS -->
     <div class="ef-sliders" id="sliders">
@@ -155,10 +187,11 @@
 <script>
 (async function() {
 
-let forecasts, assum, baseTraj, baseAssum;
+let forecasts, assum, current, baseTraj, baseAssum;
 try {
   forecasts = await EF.loadJson('data/forecasts.json');
   assum     = await EF.loadJson('data/assumptions.json');
+  current   = await EF.loadJson('data/current.json');
 } catch (e) {
   document.querySelector('.ef-section-title').textContent = '데이터 로드 실패';
   console.error(e); return;
@@ -219,6 +252,43 @@ function setScenario(s) {
 document.getElementById('reset-btn').addEventListener('click', () => setScenario(baseAssum));
 document.getElementById('bear-btn').addEventListener('click', () => setScenario(presetBear));
 document.getElementById('bull-btn').addEventListener('click', () => setScenario(presetBull));
+
+// ─── KOSPI anchor slider ─────────────────────────────────────
+const koLevels = (current.market_levels || {}).KOSPI;
+const koAnchorBase = koLevels && koLevels.anchor ? koLevels.anchor : 6000;
+const koLatest = koLevels && koLevels.latest ? koLevels.latest : koAnchorBase;
+// 슬라이더 range: anchor 대비 -40% ~ +80% 정도 (50 단위)
+const koMin = Math.max(2000, Math.round((koAnchorBase * 0.6) / 50) * 50);
+const koMax = Math.round((koAnchorBase * 1.8) / 50) * 50;
+
+const koInput = document.getElementById('kospi-input');
+koInput.min = koMin; koInput.max = koMax; koInput.step = 50;
+koInput.value = Math.round(koLatest / 50) * 50;
+
+document.getElementById('kospi-min').textContent = koMin.toLocaleString();
+document.getElementById('kospi-max').textContent = koMax.toLocaleString();
+document.getElementById('kospi-anchor-mark').textContent = `anchor ${koAnchorBase.toLocaleString()}`;
+document.getElementById('kospi-anchor-base').textContent = koAnchorBase.toLocaleString();
+document.getElementById('kospi-latest').textContent = koLatest.toLocaleString();
+document.getElementById('kospi-anchor-date').textContent = current.anchor.as_of;
+
+function refreshKospi() {
+  const k = parseFloat(koInput.value);
+  document.getElementById('kospi-val').textContent = k.toLocaleString();
+  const est = EF_estimateAssetForKospi(k, current);
+  document.getElementById('anchor-current').textContent = EF.fmt.bigKrw(est);
+  const delta = est - current.anchor.total;
+  const deltaEl = document.getElementById('anchor-delta');
+  const sign = delta >= 0 ? '+' : '';
+  deltaEl.textContent = `${sign}${EF.fmt.bigKrw(delta)}조 (${sign}${((delta/current.anchor.total)*100).toFixed(1)}%)`;
+  deltaEl.style.color = delta >= 0 ? 'var(--green)' : 'var(--red)';
+}
+koInput.addEventListener('input', () => { refreshKospi(); refresh(); });
+document.getElementById('kospi-reset').addEventListener('click', () => {
+  koInput.value = Math.round(koLatest / 50) * 50;
+  refreshKospi(); refresh();
+});
+refreshKospi();
 
 // ─── Chart setup ─────────────────────────────────────────────
 const ctx = document.getElementById('chart-canvas').getContext('2d');
@@ -291,10 +361,22 @@ const chart = new Chart(ctx, {
 });
 
 const baseDep = EF_depletionYear(baseTraj);
+// forecast의 새 anchor 연도: 사용자가 KOSPI를 만지면 그 연도부터 perturb 시작
+// baseTraj의 가장 가까운 연도(현재 연도 또는 직전 연도)를 사용
+const todayYear = new Date().getFullYear();
+const anchorYear = years.includes(todayYear) ? todayYear : years.reduce((a, b) => b <= todayYear ? b : a, years[0]);
 
 function refresh() {
   const scenario = readScenario();
-  const traj = EF_project(scenario, baseTraj, baseAssum);
+  const kospiLevel = parseFloat(koInput.value);
+  const estimatedNow = EF_estimateAssetForKospi(kospiLevel, current);
+  // KOSPI 슬라이더가 실측값과 다르면 startBalance override 적용
+  const useOverride = Math.abs(estimatedNow - current.estimate.estimated_total) > 0.1
+                   || Math.abs(parseFloat(koInput.value) - koLatest) > 1;
+  const projOptions = useOverride
+    ? { startYear: anchorYear, startBalance: estimatedNow }
+    : {};
+  const traj = EF_project(scenario, baseTraj, baseAssum, projOptions);
   const series = years.map(y => (traj[y] || {balance:0}).balance);
   chart.data.datasets[1].data = series;
   chart.update('none');
