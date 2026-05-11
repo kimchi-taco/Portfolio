@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Everforge — 시뮬레이터</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+KR:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/everforge.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<nav class="ef-nav">
+  <a href="/everforge/" class="brand">EVERFORGE</a>
+  <ul class="nav-links">
+    <li><a href="/everforge/">개요</a></li>
+    <li><a href="/everforge/detail.html" class="active">시뮬레이터</a></li>
+    <li><a href="/everforge/about.html">설명</a></li>
+    <li><a href="/" style="color:var(--tx-3)">⬥ FORGE</a></li>
+  </ul>
+  <div class="nav-meta"><span class="pulse"></span><span>SIM MODE</span></div>
+</nav>
+
+<div class="ef-container">
+
+  <section class="ef-section">
+    <div class="ef-section-label">Scenario Engineering</div>
+    <h2 class="ef-section-title">고갈 시점을 움직여보세요</h2>
+    <p class="ef-section-desc">5개 변수만 바꾸면 미래가 출렁입니다. 기본값은 정부 5차 재정추계(2023). 슬라이더는 그 가정의 perturbation입니다.</p>
+
+    <!-- SLIDERS -->
+    <div class="ef-sliders" id="sliders">
+      <div class="ef-slider" data-key="real_return_rate" data-min="2.0" data-max="7.0" data-step="0.1" data-unit="%" data-scale="0.01">
+        <div class="ef-slider-head">
+          <div class="ef-slider-name">실질 운용수익률 <small>장기 평균, 인플레 제외</small></div>
+          <div class="ef-slider-val">—</div>
+        </div>
+        <input type="range">
+        <div class="ef-slider-meta"><span>2%</span><span>7%</span></div>
+        <div class="ef-slider-base">정부 기본값: <em>4.5%</em></div>
+      </div>
+
+      <div class="ef-slider" data-key="real_wage_growth" data-min="0.0" data-max="3.5" data-step="0.1" data-unit="%" data-scale="0.01">
+        <div class="ef-slider-head">
+          <div class="ef-slider-name">실질 임금상승률 <small>가입자 평균 소득 증가율</small></div>
+          <div class="ef-slider-val">—</div>
+        </div>
+        <input type="range">
+        <div class="ef-slider-meta"><span>0%</span><span>3.5%</span></div>
+        <div class="ef-slider-base">정부 기본값: <em>1.9%</em></div>
+      </div>
+
+      <div class="ef-slider" data-key="fertility_rate" data-min="0.5" data-max="1.6" data-step="0.01" data-unit="명" data-scale="1">
+        <div class="ef-slider-head">
+          <div class="ef-slider-name">합계출산율 <small>장기 수렴값 (20년 lag 적용)</small></div>
+          <div class="ef-slider-val">—</div>
+        </div>
+        <input type="range">
+        <div class="ef-slider-meta"><span>0.5</span><span>1.6</span></div>
+        <div class="ef-slider-base">정부 기본값: <em>1.21</em></div>
+      </div>
+
+      <div class="ef-slider" data-key="contribution_rate" data-min="9.0" data-max="18.0" data-step="0.5" data-unit="%" data-scale="0.01">
+        <div class="ef-slider-head">
+          <div class="ef-slider-name">보험료율 <small>가입자 소득 대비 납부 비율</small></div>
+          <div class="ef-slider-val">—</div>
+        </div>
+        <input type="range">
+        <div class="ef-slider-meta"><span>9%</span><span>18%</span></div>
+        <div class="ef-slider-base">현행 (1998년부터): <em>9%</em></div>
+      </div>
+
+      <div class="ef-slider" data-key="replacement_rate" data-min="30" data-max="50" data-step="1" data-unit="%" data-scale="0.01">
+        <div class="ef-slider-head">
+          <div class="ef-slider-name">소득대체율 <small>퇴직 전 소득 대비 연금</small></div>
+          <div class="ef-slider-val">—</div>
+        </div>
+        <input type="range">
+        <div class="ef-slider-meta"><span>30%</span><span>50%</span></div>
+        <div class="ef-slider-base">2028년 이후 (현재 인하 중): <em>40%</em></div>
+      </div>
+
+      <div class="ef-slider" style="display:flex;flex-direction:column;justify-content:center;align-items:center;gap:10px">
+        <button id="reset-btn" class="ef-btn ghost" style="width:100%;justify-content:center">↺ 정부 기본값으로 리셋</button>
+        <button id="bear-btn" class="ef-btn ghost" style="width:100%;justify-content:center;border-color:var(--red);color:var(--red)">▼ 비관 시나리오 적용</button>
+        <button id="bull-btn" class="ef-btn ghost" style="width:100%;justify-content:center;border-color:var(--green);color:var(--green)">▲ 낙관 시나리오 적용</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESULT SUMMARY -->
+  <section class="ef-section">
+    <div class="ef-result-bar">
+      <div class="ef-result-item">
+        <div class="ef-result-label">예상 고갈 연도</div>
+        <div class="ef-result-value" id="r-depletion">—</div>
+      </div>
+      <div class="ef-result-item">
+        <div class="ef-result-label">적립금 최대 시점</div>
+        <div class="ef-result-value" id="r-peak">—</div>
+      </div>
+      <div class="ef-result-item">
+        <div class="ef-result-label">기본 대비 변화</div>
+        <div class="ef-result-value" id="r-delta">—</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CHART -->
+  <section class="ef-section">
+    <div class="ef-chart-card">
+      <div class="ef-chart-head">
+        <h3>적립기금 추이</h3>
+        <div class="ef-chart-legend">
+          <span><span class="dot" style="background:#8d97ad"></span>정부 기본</span>
+          <span><span class="dot" style="background:#e8b339"></span>내 시나리오</span>
+        </div>
+      </div>
+      <canvas id="chart-canvas"></canvas>
+    </div>
+  </section>
+
+  <!-- TABLE -->
+  <section class="ef-section">
+    <div class="ef-section-label">Year-by-year</div>
+    <h2 class="ef-section-title">연도별 상세</h2>
+    <p class="ef-section-desc">슬라이더로 만든 시나리오의 연간 수입 · 지출 · 운용수익 · 잔액 (조원).</p>
+    <div class="ef-table-wrap" style="max-height:520px;overflow-y:auto">
+      <table class="ef-table" id="year-table">
+        <thead>
+          <tr>
+            <th>연도</th>
+            <th>잔액</th>
+            <th>수입 (보험료)</th>
+            <th>지출 (급여)</th>
+            <th>운용수익</th>
+            <th>순변동</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer class="ef-footer">
+    ⬥ <em>EVERFORGE</em> ⬥ &nbsp;
+    <a href="/everforge/about.html">모델 한계 확인 →</a>
+  </footer>
+</div>
+
+<script src="js/utils.js"></script>
+<script src="js/simulator.js"></script>
+<script>
+(async function() {
+
+let forecasts, assum, baseTraj, baseAssum;
+try {
+  forecasts = await EF.loadJson('data/forecasts.json');
+  assum     = await EF.loadJson('data/assumptions.json');
+} catch (e) {
+  document.querySelector('.ef-section-title').textContent = '데이터 로드 실패';
+  console.error(e); return;
+}
+
+baseTraj  = forecasts.scenarios.base.trajectory;
+baseAssum = forecasts.scenarios.base.assumptions;
+const presetBear = forecasts.scenarios.bear.assumptions;
+const presetBull = forecasts.scenarios.bull.assumptions;
+
+// ─── slider init ─────────────────────────────────────────────
+const sliders = {};
+document.querySelectorAll('.ef-slider[data-key]').forEach(el => {
+  const key = el.dataset.key;
+  const min = parseFloat(el.dataset.min);
+  const max = parseFloat(el.dataset.max);
+  const step = parseFloat(el.dataset.step);
+  const unit = el.dataset.unit;
+  const scale = parseFloat(el.dataset.scale);
+  const input = el.querySelector('input[type=range]');
+  const valEl = el.querySelector('.ef-slider-val');
+  const baseValue = baseAssum[key] / scale;
+
+  input.min = min; input.max = max; input.step = step;
+  input.value = baseValue;
+  sliders[key] = { input, valEl, scale, unit };
+
+  const updateVal = () => {
+    const v = parseFloat(input.value);
+    valEl.textContent = (step >= 1 ? v.toFixed(0) : v.toFixed(step < 0.1 ? 2 : 1)) + unit;
+    // gold accent when off-base
+    if (Math.abs(v - baseValue) < 1e-6) {
+      valEl.style.color = 'var(--tx-1)';
+    } else {
+      valEl.style.color = 'var(--gold-0)';
+    }
+  };
+  input.addEventListener('input', () => { updateVal(); refresh(); });
+  updateVal();
+});
+
+function readScenario() {
+  const s = {};
+  Object.entries(sliders).forEach(([key, sl]) => {
+    s[key] = parseFloat(sl.input.value) * sl.scale;
+  });
+  return s;
+}
+function setScenario(s) {
+  Object.entries(sliders).forEach(([key, sl]) => {
+    if (s[key] != null) {
+      sl.input.value = s[key] / sl.scale;
+      sl.input.dispatchEvent(new Event('input'));
+    }
+  });
+}
+
+document.getElementById('reset-btn').addEventListener('click', () => setScenario(baseAssum));
+document.getElementById('bear-btn').addEventListener('click', () => setScenario(presetBear));
+document.getElementById('bull-btn').addEventListener('click', () => setScenario(presetBull));
+
+// ─── Chart setup ─────────────────────────────────────────────
+const ctx = document.getElementById('chart-canvas').getContext('2d');
+const years = Object.keys(baseTraj).map(Number).sort((a,b) => a-b);
+const baseSeries = years.map(y => baseTraj[y].balance);
+
+const chart = new Chart(ctx, {
+  type: 'line',
+  data: {
+    labels: years,
+    datasets: [
+      {
+        label: '정부 기본',
+        data: baseSeries,
+        borderColor: '#8d97ad',
+        backgroundColor: 'rgba(141, 151, 173, 0.06)',
+        borderWidth: 1.5,
+        borderDash: [4, 4],
+        pointRadius: 0,
+        tension: 0.25,
+        fill: true,
+      },
+      {
+        label: '내 시나리오',
+        data: baseSeries,
+        borderColor: '#e8b339',
+        backgroundColor: 'rgba(232, 179, 57, 0.10)',
+        borderWidth: 2.5,
+        pointRadius: 0,
+        pointHoverRadius: 5,
+        pointHoverBackgroundColor: '#e8b339',
+        tension: 0.25,
+        fill: true,
+      },
+    ],
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    interaction: { mode: 'index', intersect: false },
+    scales: {
+      x: {
+        grid: { color: 'rgba(160,180,220,0.04)' },
+        ticks: { color: '#8d97ad', font: { family: 'JetBrains Mono', size: 11 } },
+      },
+      y: {
+        grid: { color: 'rgba(160,180,220,0.06)' },
+        ticks: {
+          color: '#8d97ad',
+          font: { family: 'JetBrains Mono', size: 11 },
+          callback: v => `${(v/1000).toFixed(1)}천조`,
+        },
+        title: { display: true, text: '적립기금 (조원)', color: '#5a6378', font: { size: 11 } },
+      },
+    },
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: '#0a0d12',
+        borderColor: 'rgba(232,179,57,0.4)', borderWidth: 1,
+        titleColor: '#e8b339',
+        titleFont: { family: 'JetBrains Mono', size: 12 },
+        bodyColor: '#d5dae6', bodyFont: { family: 'JetBrains Mono', size: 11 },
+        padding: 12,
+        callbacks: {
+          label: ctx => `${ctx.dataset.label}: ${EF.fmt.bigKrw(ctx.parsed.y)}조`,
+        },
+      },
+    },
+  },
+});
+
+const baseDep = EF_depletionYear(baseTraj);
+
+function refresh() {
+  const scenario = readScenario();
+  const traj = EF_project(scenario, baseTraj, baseAssum);
+  const series = years.map(y => (traj[y] || {balance:0}).balance);
+  chart.data.datasets[1].data = series;
+  chart.update('none');
+
+  const dep = EF_depletionYear(traj);
+  const peak = EF_peak(traj);
+
+  const depEl = document.getElementById('r-depletion');
+  if (dep == null) { depEl.textContent = '안 고갈 ✨'; depEl.className = 'ef-result-value good'; }
+  else { depEl.textContent = dep + '년'; depEl.className = 'ef-result-value' + (dep < baseDep ? ' warn' : ''); }
+
+  document.getElementById('r-peak').textContent =
+    peak.balance > 0 ? `${peak.year}년 · ${EF.fmt.bigKrw(peak.balance)}조` : '—';
+
+  const deltaEl = document.getElementById('r-delta');
+  if (dep == null && baseDep != null) {
+    deltaEl.textContent = `+ 무한대 ✨`; deltaEl.className = 'ef-result-value good';
+  } else if (dep == null) {
+    deltaEl.textContent = `±0`; deltaEl.className = 'ef-result-value';
+  } else {
+    const d = dep - baseDep;
+    const sign = d >= 0 ? '+' : '';
+    deltaEl.textContent = `${sign}${d}년`;
+    deltaEl.className = 'ef-result-value' + (d > 0 ? ' good' : d < 0 ? ' warn' : '');
+  }
+
+  // Table
+  const tbody = document.querySelector('#year-table tbody');
+  tbody.innerHTML = '';
+  let prevBalance = null;
+  years.forEach(y => {
+    const row = traj[y];
+    if (!row) return;
+    const net = row.revenue - row.expenditure + row.return_income;
+    const tr = document.createElement('tr');
+    if (row.balance <= 0 && (prevBalance == null || prevBalance > 0)) tr.classList.add('depleted');
+    else if (row.balance <= 0) tr.classList.add('depleted');
+    if (y === peak.year) tr.classList.add('peak');
+    tr.innerHTML = `
+      <td>${y}</td>
+      <td>${EF.fmt.bigKrw(row.balance)}</td>
+      <td>${EF.fmt.bigKrw(row.revenue)}</td>
+      <td>${EF.fmt.bigKrw(row.expenditure)}</td>
+      <td>${EF.fmt.bigKrw(row.return_income)}</td>
+      <td style="color:${net>=0?'var(--green)':'var(--red)'}">${net>=0?'+':''}${EF.fmt.bigKrw(net)}</td>
+    `;
+    tbody.appendChild(tr);
+    prevBalance = row.balance;
+  });
+}
+
+refresh();
+})();
+</script>
+</body>
+</html>

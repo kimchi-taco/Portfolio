@@ -1,0 +1,67 @@
+{
+  "estimate": {
+    "as_of": "2026-05-11",
+    "anchor_date": "2026-02-28",
+    "anchor_total": 1610.4,
+    "estimated_total": 1763.7,
+    "delta_trillion_krw": 153.3,
+    "delta_pct": 9.52,
+    "by_class": {
+      "domestic_equity": {
+        "anchor_value": 394.55,
+        "current_value": 510.77,
+        "pct_change": 29.46,
+        "proxy": "KOSPI"
+      },
+      "foreign_equity": {
+        "anchor_value": 573.3,
+        "current_value": 611.68,
+        "pct_change": 6.69,
+        "proxy": "MSCI_WORLD"
+      },
+      "domestic_bond": {
+        "anchor_value": 297.92,
+        "current_value": 297.92,
+        "pct_change": 0.0,
+        "proxy": "KR_BOND"
+      },
+      "foreign_bond": {
+        "anchor_value": 101.46,
+        "current_value": 101.76,
+        "pct_change": 0.3,
+        "proxy": "GLOBAL_BOND"
+      },
+      "alternative": {
+        "anchor_value": 235.12,
+        "current_value": 235.12,
+        "pct_change": 0.0,
+        "proxy": "ALT_BLEND"
+      },
+      "cash": {
+        "anchor_value": 4.83,
+        "current_value": 4.83,
+        "pct_change": 0.0,
+        "proxy": "CASH"
+      },
+      "welfare_other": {
+        "anchor_value": 1.61,
+        "current_value": 1.61,
+        "pct_change": 0.0,
+        "proxy": "CASH"
+      }
+    }
+  },
+  "market_changes": {
+    "KOSPI": 0.2945642797841008,
+    "MSCI_WORLD": 0.0669477306949866,
+    "USDKRW": 0.011324323296836983,
+    "KR_BOND": 0.0,
+    "GLOBAL_BOND": 0.002990451087257373,
+    "ALT_BLEND": 0.0,
+    "CASH": 0.0
+  },
+  "anchor": {
+    "as_of": "2026-02-28",
+    "total": 1610.4
+  }
+}

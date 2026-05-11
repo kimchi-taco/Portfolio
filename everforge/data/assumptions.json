@@ -1,0 +1,71 @@
+{
+  "base_assumptions": {
+    "fertility_rate_2025_trough": 0.65,
+    "fertility_rate_long_term": 1.21,
+    "employment_rate_15_64": 0.685,
+    "contribution_rate": 0.09,
+    "replacement_rate_2028": 0.4,
+    "pension_age": 65,
+    "real_return_rate_long_term": 0.045,
+    "real_wage_growth_long_term": 0.019,
+    "real_gdp_growth_long_term": 0.016,
+    "inflation_long_term": 0.02
+  },
+  "base_scenario": {
+    "real_return_rate": 0.045,
+    "real_wage_growth": 0.019,
+    "fertility_rate": 1.21,
+    "contribution_rate": 0.09,
+    "replacement_rate": 0.4
+  },
+  "population": {
+    "2026": {
+      "age_18_64": 3245,
+      "age_65plus": 1045
+    },
+    "2030": {
+      "age_18_64": 3100,
+      "age_65plus": 1295
+    },
+    "2035": {
+      "age_18_64": 2890,
+      "age_65plus": 1530
+    },
+    "2040": {
+      "age_18_64": 2680,
+      "age_65plus": 1720
+    },
+    "2045": {
+      "age_18_64": 2510,
+      "age_65plus": 1825
+    },
+    "2050": {
+      "age_18_64": 2370,
+      "age_65plus": 1900
+    },
+    "2055": {
+      "age_18_64": 2235,
+      "age_65plus": 1955
+    },
+    "2060": {
+      "age_18_64": 2110,
+      "age_65plus": 1995
+    },
+    "2070": {
+      "age_18_64": 1790,
+      "age_65plus": 2055
+    },
+    "2080": {
+      "age_18_64": 1535,
+      "age_65plus": 2050
+    }
+  },
+  "headline_facts": {
+    "peak_year": 2040,
+    "peak_balance_trillion_krw": 2018.0,
+    "deficit_year": 2041,
+    "depletion_year": 2055,
+    "source_report": "제5차 국민연금 재정추계 (2023.03)",
+    "next_report_year": 2028
+  }
+}

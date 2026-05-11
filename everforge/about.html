@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Everforge — 모델 설명</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+KR:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/everforge.css">
+</head>
+<body>
+
+<nav class="ef-nav">
+  <a href="/everforge/" class="brand">EVERFORGE</a>
+  <ul class="nav-links">
+    <li><a href="/everforge/">개요</a></li>
+    <li><a href="/everforge/detail.html">시뮬레이터</a></li>
+    <li><a href="/everforge/about.html" class="active">설명</a></li>
+    <li><a href="/" style="color:var(--tx-3)">⬥ FORGE</a></li>
+  </ul>
+  <div class="nav-meta"><span class="pulse"></span><span>METHODOLOGY</span></div>
+</nav>
+
+<div class="ef-container">
+
+  <section class="ef-section">
+    <div class="ef-section-label">Methodology</div>
+    <h2 class="ef-section-title">어떻게 계산했나요?</h2>
+    <p class="ef-section-desc">간단한 답: 정부 5차 재정추계(2023)의 시계열을 기준선으로 두고, 사용자가 슬라이더로 가정을 바꾸면 그 변화량만큼 시계열을 보정합니다.</p>
+
+    <div class="ef-prose">
+
+      <h3>⬥ 데이터 출처</h3>
+      <ul>
+        <li><strong>NPS 월간 공시</strong> — 자산군별 적립금 비중과 총액 (2개월 시차).
+          <br><a href="https://fund.nps.or.kr/oprtprcn/ivsmprcn/getOHED0016M0.do" target="_blank" rel="noopener">국민연금기금운용본부 · 포트폴리오 현황</a>
+        </li>
+        <li><strong>제5차 국민연금 재정추계 (2023.03)</strong> — 기준 시나리오의 연도별 수입 · 지출 · 잔액 시계열. 정부의 재정추계전문위원회가 5년마다 산출하는 공식 결과로, 다음 회차는 2028년 예정.</li>
+        <li><strong>통계청 KOSIS 장래인구추계</strong> — 출산율 슬라이더의 lag 모델링과 연령코호트 가정에 사용. 2022년 기준 중위 시나리오.
+          <br><a href="https://kosis.kr/" target="_blank" rel="noopener">kosis.kr</a>
+        </li>
+        <li><strong>한국은행 ECOS</strong> — 국고채금리 (채권 평가용), 실질 임금상승률, GDP. <a href="https://ecos.bok.or.kr/" target="_blank" rel="noopener">ecos.bok.or.kr</a></li>
+        <li><strong>yfinance (Yahoo Finance)</strong> — KOSPI(^KS11), MSCI World(URTH), USD/KRW(KRW=X), Global Bond(AGG) 일별 시가. 마지막 NPS 공시 이후 시장 변동을 자산군별 비중에 보간.</li>
+      </ul>
+
+      <h3>⬥ 실시간 자산 추정 (Anchor + Interpolation)</h3>
+      <p>마지막 NPS 공시 시점의 자산군별 잔액을 <code>anchor</code>로 두고, 그 이후 KOSPI · MSCI · 환율 · 채권가격 변동만큼 자산군별로 보간합니다. 보간값은 절대 anchor를 덮어쓰지 않으며, 다음 월간공시 도착 시 anchor 자체가 갱신되면서 추정치가 한 번에 점프합니다. 이 점프가 모델의 오차를 가시화하므로 의도적입니다.</p>
+
+      <h4>자산군별 시장 proxy</h4>
+      <ul>
+        <li>국내주식 → KOSPI</li>
+        <li>해외주식 → MSCI World × USD/KRW</li>
+        <li>국내채권 → 국고채금리 변동 (역상관, 듀레이션 기반 근사)</li>
+        <li>해외채권 → AGG × USD/KRW</li>
+        <li>대체투자 · 단기자금 → 변동 없음 (시장 인덱스 부재)</li>
+      </ul>
+
+      <h3>⬥ 고갈 시점 시뮬레이션</h3>
+      <p>정부 5차 추계의 연도별 시계열(2024~2080, 수입 · 지출 · 운용수익)을 base case로 임베드하고, 사용자가 슬라이더로 5개 변수를 조정하면 그 변화량을 perturbation factor로 변환해 시계열에 곱합니다.</p>
+
+      <h4>변수와 적용 방식</h4>
+      <ul>
+        <li><strong>실질 운용수익률</strong> — 매년 운용수익에 (사용자값 / 4.5%) 비율로 직접 적용.</li>
+        <li><strong>실질 임금상승률</strong> — 수입에는 누적 복리로 적용, 지출(연금급여)에는 그 70%만 (B값이 임금에 부분연동되는 특성 반영).</li>
+        <li><strong>합계출산율</strong> — 출생 후 18~20세 진입까지 lag 적용. 즉 2026년 출산율 변화는 2046년부터 수입에 반영.</li>
+        <li><strong>보험료율</strong> — 수입에 (사용자값 / 9%) 비율로 직접 적용.</li>
+        <li><strong>소득대체율</strong> — 지출에 (사용자값 / 40%) 비율로 적용.</li>
+      </ul>
+
+      <p>매년 잔액 = (전년 잔액) + 수입 − 지출 + 운용수익. 잔액이 0 이하가 되는 첫 해를 <strong>고갈 연도</strong>로 정의합니다.</p>
+
+      <h3>⬥ 검증</h3>
+      <p>모든 슬라이더를 기본값(정부 5차 추계 가정)에 두면 모델은 임베드된 공식 시계열을 그대로 반환합니다. 즉 <code>2055년 고갈</code>, <code>2040년 최대(2,018조)</code>를 재현합니다. 슬라이더를 바꾸면 perturbation 경로로 진입합니다.</p>
+
+      <h3>⬥ 모델의 한계 (반드시 알고 사용)</h3>
+
+      <div class="disclaimer">
+        본 시뮬레이션은 <strong>정부 5차 재정추계(2023)를 base case로 한 단순 perturbation 모델</strong>입니다.
+        정부 추계는 1,000명 단위 가입자 코호트별 동학을 풀지만 본 모델은 그것을 비율 변환으로 근사합니다.
+        <strong>정책 결정 · 투자 의사결정에 사용하지 마세요.</strong>
+        다음 회차(2028년 6차 추계) 공개 시 base case가 갱신됩니다.
+      </div>
+
+      <h4>구체적 단순화</h4>
+      <ul>
+        <li>가입자수·수급자수의 연령코호트별 동학을 직접 풀지 않고, 출산율 변화를 단순 lag으로만 반영했습니다.</li>
+        <li>임금-급여 연동은 단순 0.7 지수로 근사했습니다 (실제 B값 산식과 차이).</li>
+        <li>경제활동참가율 · 가입률 · 평균수령기간 변화는 모두 정부 base case 그대로 사용합니다.</li>
+        <li>대체투자 · 부동산은 실시간 추정에서 변동 없음으로 처리합니다 (인덱스 부재).</li>
+      </ul>
+
+      <h3>⬥ 코드 · 데이터</h3>
+      <p>전체 파이프라인 코드는 <a href="https://github.com/kimchi-taco" target="_blank" rel="noopener">github.com/kimchi-taco</a> 공개 예정. JSON 데이터는 <code>/everforge/data/</code> 경로에서 직접 받을 수 있습니다 (current.json, forecasts.json, assumptions.json).</p>
+
+      <h3>⬥ 갱신 주기</h3>
+      <ul>
+        <li><strong>NPS 공시 (월간)</strong> — 매월 1일 09:00 KST, 가장 최근 월간공시 반영해 anchor 갱신.</li>
+        <li><strong>시장 보간 (일간)</strong> — 평일 18:00 KST, KOSPI · MSCI · 환율 변동 갱신.</li>
+        <li><strong>5차 추계 가정 (정부)</strong> — 2028년 6차 발표 시 base case 교체.</li>
+      </ul>
+
+    </div>
+  </section>
+
+  <footer class="ef-footer">
+    ⬥ <em>EVERFORGE</em> ⬥ &nbsp;
+    <a href="/everforge/">← 메인으로</a> ·
+    <a href="/everforge/detail.html">시뮬레이터 →</a>
+  </footer>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,883 @@
+{
+  "generated_at": "2026-05-11",
+  "headline_facts": {
+    "peak_year": 2040,
+    "peak_balance_trillion_krw": 2018.0,
+    "deficit_year": 2041,
+    "depletion_year": 2055,
+    "source_report": "제5차 국민연금 재정추계 (2023.03)",
+    "next_report_year": 2028
+  },
+  "scenarios": {
+    "base": {
+      "label": "기본 (정부 5차 추계)",
+      "description": "정부 재정추계전문위원회 2023년 발표 가정 그대로",
+      "assumptions": {
+        "real_return_rate": 0.045,
+        "real_wage_growth": 0.019,
+        "fertility_rate": 1.21,
+        "contribution_rate": 0.09,
+        "replacement_rate": 0.4
+      },
+      "trajectory": {
+        "2024": {
+          "balance": 1100.0,
+          "revenue": 62.0,
+          "expenditure": 44.0,
+          "return_income": 48.0
+        },
+        "2025": {
+          "balance": 1190.0,
+          "revenue": 68.0,
+          "expenditure": 50.0,
+          "return_income": 52.0
+        },
+        "2026": {
+          "balance": 1280.0,
+          "revenue": 74.0,
+          "expenditure": 56.0,
+          "return_income": 56.0
+        },
+        "2027": {
+          "balance": 1370.0,
+          "revenue": 81.0,
+          "expenditure": 63.0,
+          "return_income": 60.0
+        },
+        "2028": {
+          "balance": 1460.0,
+          "revenue": 88.0,
+          "expenditure": 70.0,
+          "return_income": 64.0
+        },
+        "2029": {
+          "balance": 1550.0,
+          "revenue": 95.0,
+          "expenditure": 78.0,
+          "return_income": 68.0
+        },
+        "2030": {
+          "balance": 1635.0,
+          "revenue": 103.0,
+          "expenditure": 87.0,
+          "return_income": 72.0
+        },
+        "2031": {
+          "balance": 1710.0,
+          "revenue": 110.0,
+          "expenditure": 97.0,
+          "return_income": 75.0
+        },
+        "2032": {
+          "balance": 1780.0,
+          "revenue": 117.0,
+          "expenditure": 108.0,
+          "return_income": 78.0
+        },
+        "2033": {
+          "balance": 1840.0,
+          "revenue": 123.0,
+          "expenditure": 120.0,
+          "return_income": 81.0
+        },
+        "2034": {
+          "balance": 1885.0,
+          "revenue": 129.0,
+          "expenditure": 133.0,
+          "return_income": 83.0
+        },
+        "2035": {
+          "balance": 1920.0,
+          "revenue": 134.0,
+          "expenditure": 147.0,
+          "return_income": 84.0
+        },
+        "2036": {
+          "balance": 1950.0,
+          "revenue": 138.0,
+          "expenditure": 161.0,
+          "return_income": 85.0
+        },
+        "2037": {
+          "balance": 1975.0,
+          "revenue": 141.0,
+          "expenditure": 176.0,
+          "return_income": 86.0
+        },
+        "2038": {
+          "balance": 1995.0,
+          "revenue": 144.0,
+          "expenditure": 191.0,
+          "return_income": 87.0
+        },
+        "2039": {
+          "balance": 2010.0,
+          "revenue": 146.0,
+          "expenditure": 206.0,
+          "return_income": 88.0
+        },
+        "2040": {
+          "balance": 2018.0,
+          "revenue": 148.0,
+          "expenditure": 222.0,
+          "return_income": 88.0
+        },
+        "2041": {
+          "balance": 2015.0,
+          "revenue": 150.0,
+          "expenditure": 239.0,
+          "return_income": 88.0
+        },
+        "2042": {
+          "balance": 2000.0,
+          "revenue": 152.0,
+          "expenditure": 257.0,
+          "return_income": 87.0
+        },
+        "2043": {
+          "balance": 1970.0,
+          "revenue": 153.0,
+          "expenditure": 276.0,
+          "return_income": 86.0
+        },
+        "2044": {
+          "balance": 1925.0,
+          "revenue": 155.0,
+          "expenditure": 296.0,
+          "return_income": 84.0
+        },
+        "2045": {
+          "balance": 1860.0,
+          "revenue": 156.0,
+          "expenditure": 317.0,
+          "return_income": 81.0
+        },
+        "2046": {
+          "balance": 1775.0,
+          "revenue": 158.0,
+          "expenditure": 339.0,
+          "return_income": 77.0
+        },
+        "2047": {
+          "balance": 1665.0,
+          "revenue": 159.0,
+          "expenditure": 362.0,
+          "return_income": 72.0
+        },
+        "2048": {
+          "balance": 1525.0,
+          "revenue": 161.0,
+          "expenditure": 385.0,
+          "return_income": 66.0
+        },
+        "2049": {
+          "balance": 1350.0,
+          "revenue": 162.0,
+          "expenditure": 409.0,
+          "return_income": 58.0
+        },
+        "2050": {
+          "balance": 1140.0,
+          "revenue": 164.0,
+          "expenditure": 433.0,
+          "return_income": 49.0
+        },
+        "2051": {
+          "balance": 890.0,
+          "revenue": 165.0,
+          "expenditure": 458.0,
+          "return_income": 38.0
+        },
+        "2052": {
+          "balance": 595.0,
+          "revenue": 167.0,
+          "expenditure": 483.0,
+          "return_income": 26.0
+        },
+        "2053": {
+          "balance": 290.0,
+          "revenue": 168.0,
+          "expenditure": 508.0,
+          "return_income": 13.0
+        },
+        "2054": {
+          "balance": 45.0,
+          "revenue": 170.0,
+          "expenditure": 534.0,
+          "return_income": 13.0
+        },
+        "2055": {
+          "balance": 0.0,
+          "revenue": 171.0,
+          "expenditure": 560.0,
+          "return_income": 2.0
+        },
+        "2056": {
+          "balance": 0.0,
+          "revenue": 173.0,
+          "expenditure": 585.0,
+          "return_income": 0.0
+        },
+        "2058": {
+          "balance": 0.0,
+          "revenue": 177.0,
+          "expenditure": 635.0,
+          "return_income": 0.0
+        },
+        "2060": {
+          "balance": 0.0,
+          "revenue": 181.0,
+          "expenditure": 685.0,
+          "return_income": 0.0
+        },
+        "2062": {
+          "balance": 0.0,
+          "revenue": 185.0,
+          "expenditure": 735.0,
+          "return_income": 0.0
+        },
+        "2064": {
+          "balance": 0.0,
+          "revenue": 189.0,
+          "expenditure": 785.0,
+          "return_income": 0.0
+        },
+        "2066": {
+          "balance": 0.0,
+          "revenue": 194.0,
+          "expenditure": 830.0,
+          "return_income": 0.0
+        },
+        "2068": {
+          "balance": 0.0,
+          "revenue": 199.0,
+          "expenditure": 870.0,
+          "return_income": 0.0
+        },
+        "2070": {
+          "balance": 0.0,
+          "revenue": 204.0,
+          "expenditure": 905.0,
+          "return_income": 0.0
+        },
+        "2072": {
+          "balance": 0.0,
+          "revenue": 209.0,
+          "expenditure": 935.0,
+          "return_income": 0.0
+        },
+        "2074": {
+          "balance": 0.0,
+          "revenue": 214.0,
+          "expenditure": 962.0,
+          "return_income": 0.0
+        },
+        "2076": {
+          "balance": 0.0,
+          "revenue": 219.0,
+          "expenditure": 985.0,
+          "return_income": 0.0
+        },
+        "2078": {
+          "balance": 0.0,
+          "revenue": 224.0,
+          "expenditure": 1005.0,
+          "return_income": 0.0
+        },
+        "2080": {
+          "balance": 0.0,
+          "revenue": 230.0,
+          "expenditure": 1025.0,
+          "return_income": 0.0
+        }
+      },
+      "summary": {
+        "peak_year": 2040,
+        "peak_balance": 2018.0,
+        "depletion_year": 2055,
+        "horizon_end": 2080,
+        "horizon_start": 2024
+      }
+    },
+    "bear": {
+      "label": "비관 (인구절벽 가속)",
+      "description": "출산율 하락 지속·수익률 부진·임금정체",
+      "assumptions": {
+        "real_return_rate": 0.03,
+        "real_wage_growth": 0.01,
+        "fertility_rate": 0.8,
+        "contribution_rate": 0.09,
+        "replacement_rate": 0.4
+      },
+      "trajectory": {
+        "2024": {
+          "balance": 1100.0,
+          "revenue": 62.0,
+          "expenditure": 44.0,
+          "return_income": 48.0
+        },
+        "2025": {
+          "balance": 1152.4,
+          "revenue": 67.4,
+          "expenditure": 49.7,
+          "return_income": 34.7
+        },
+        "2026": {
+          "balance": 1205.9,
+          "revenue": 72.7,
+          "expenditure": 55.3,
+          "return_income": 36.2
+        },
+        "2027": {
+          "balance": 1260.6,
+          "revenue": 78.9,
+          "expenditure": 61.8,
+          "return_income": 37.7
+        },
+        "2028": {
+          "balance": 1316.5,
+          "revenue": 84.9,
+          "expenditure": 68.3,
+          "return_income": 39.3
+        },
+        "2029": {
+          "balance": 1372.7,
+          "revenue": 90.9,
+          "expenditure": 75.6,
+          "return_income": 40.9
+        },
+        "2030": {
+          "balance": 1429.0,
+          "revenue": 97.7,
+          "expenditure": 83.8,
+          "return_income": 42.5
+        },
+        "2031": {
+          "balance": 1483.2,
+          "revenue": 103.4,
+          "expenditure": 92.9,
+          "return_income": 43.7
+        },
+        "2032": {
+          "balance": 1534.6,
+          "revenue": 109.0,
+          "expenditure": 102.8,
+          "return_income": 45.1
+        },
+        "2033": {
+          "balance": 1581.2,
+          "revenue": 113.6,
+          "expenditure": 113.5,
+          "return_income": 46.6
+        },
+        "2034": {
+          "balance": 1621.8,
+          "revenue": 118.0,
+          "expenditure": 125.0,
+          "return_income": 47.6
+        },
+        "2035": {
+          "balance": 1654.2,
+          "revenue": 121.5,
+          "expenditure": 137.3,
+          "return_income": 48.2
+        },
+        "2036": {
+          "balance": 1677.7,
+          "revenue": 124.1,
+          "expenditure": 149.4,
+          "return_income": 48.8
+        },
+        "2037": {
+          "balance": 1690.3,
+          "revenue": 125.6,
+          "expenditure": 162.3,
+          "return_income": 49.3
+        },
+        "2038": {
+          "balance": 1692.0,
+          "revenue": 127.2,
+          "expenditure": 175.1,
+          "return_income": 49.6
+        },
+        "2039": {
+          "balance": 1681.9,
+          "revenue": 127.8,
+          "expenditure": 187.7,
+          "return_income": 49.8
+        },
+        "2040": {
+          "balance": 1658.4,
+          "revenue": 128.4,
+          "expenditure": 201.0,
+          "return_income": 49.1
+        },
+        "2041": {
+          "balance": 1620.6,
+          "revenue": 129.0,
+          "expenditure": 215.1,
+          "return_income": 48.2
+        },
+        "2042": {
+          "balance": 1567.0,
+          "revenue": 129.6,
+          "expenditure": 229.8,
+          "return_income": 46.6
+        },
+        "2043": {
+          "balance": 1495.9,
+          "revenue": 129.3,
+          "expenditure": 245.3,
+          "return_income": 44.9
+        },
+        "2044": {
+          "balance": 1406.8,
+          "revenue": 129.8,
+          "expenditure": 261.4,
+          "return_income": 42.5
+        },
+        "2045": {
+          "balance": 1297.5,
+          "revenue": 129.5,
+          "expenditure": 278.2,
+          "return_income": 39.5
+        },
+        "2046": {
+          "balance": 1167.6,
+          "revenue": 130.0,
+          "expenditure": 295.7,
+          "return_income": 35.8
+        },
+        "2047": {
+          "balance": 1012.8,
+          "revenue": 127.5,
+          "expenditure": 313.8,
+          "return_income": 31.6
+        },
+        "2048": {
+          "balance": 833.6,
+          "revenue": 125.7,
+          "expenditure": 331.7,
+          "return_income": 26.8
+        },
+        "2049": {
+          "balance": 627.7,
+          "revenue": 123.2,
+          "expenditure": 350.2,
+          "return_income": 21.1
+        },
+        "2050": {
+          "balance": 395.8,
+          "revenue": 121.4,
+          "expenditure": 368.4,
+          "return_income": 15.2
+        },
+        "2051": {
+          "balance": 136.2,
+          "revenue": 118.9,
+          "expenditure": 387.3,
+          "return_income": 8.8
+        },
+        "2052": {
+          "balance": 0.0,
+          "revenue": 117.0,
+          "expenditure": 405.9,
+          "return_income": 2.7
+        },
+        "2053": {
+          "balance": 0.0,
+          "revenue": 114.5,
+          "expenditure": 424.3,
+          "return_income": 0.0
+        },
+        "2054": {
+          "balance": 0.0,
+          "revenue": 112.6,
+          "expenditure": 443.2,
+          "return_income": 0.0
+        },
+        "2055": {
+          "balance": 0.0,
+          "revenue": 110.1,
+          "expenditure": 461.9,
+          "return_income": 0.0
+        },
+        "2056": {
+          "balance": 0.0,
+          "revenue": 108.2,
+          "expenditure": 479.6,
+          "return_income": 0.0
+        },
+        "2058": {
+          "balance": 0.0,
+          "revenue": 104.3,
+          "expenditure": 514.1,
+          "return_income": 0.0
+        },
+        "2060": {
+          "balance": 0.0,
+          "revenue": 100.3,
+          "expenditure": 547.8,
+          "return_income": 0.0
+        },
+        "2062": {
+          "balance": 0.0,
+          "revenue": 96.3,
+          "expenditure": 580.5,
+          "return_income": 0.0
+        },
+        "2064": {
+          "balance": 0.0,
+          "revenue": 92.1,
+          "expenditure": 612.3,
+          "return_income": 0.0
+        },
+        "2066": {
+          "balance": 0.0,
+          "revenue": 88.4,
+          "expenditure": 639.4,
+          "return_income": 0.0
+        },
+        "2068": {
+          "balance": 0.0,
+          "revenue": 89.1,
+          "expenditure": 662.0,
+          "return_income": 0.0
+        },
+        "2070": {
+          "balance": 0.0,
+          "revenue": 89.7,
+          "expenditure": 680.1,
+          "return_income": 0.0
+        },
+        "2072": {
+          "balance": 0.0,
+          "revenue": 90.3,
+          "expenditure": 694.0,
+          "return_income": 0.0
+        },
+        "2074": {
+          "balance": 0.0,
+          "revenue": 90.8,
+          "expenditure": 705.2,
+          "return_income": 0.0
+        },
+        "2076": {
+          "balance": 0.0,
+          "revenue": 91.3,
+          "expenditure": 713.2,
+          "return_income": 0.0
+        },
+        "2078": {
+          "balance": 0.0,
+          "revenue": 91.7,
+          "expenditure": 718.7,
+          "return_income": 0.0
+        },
+        "2080": {
+          "balance": 0.0,
+          "revenue": 92.5,
+          "expenditure": 723.9,
+          "return_income": 0.0
+        }
+      },
+      "summary": {
+        "peak_year": 2038,
+        "peak_balance": 1692.0,
+        "depletion_year": 2052,
+        "horizon_end": 2080,
+        "horizon_start": 2024
+      }
+    },
+    "bull": {
+      "label": "낙관 (개혁+수익률 양호)",
+      "description": "보험료율 13%·수익률 6%·임금 3% 가정",
+      "assumptions": {
+        "real_return_rate": 0.06,
+        "real_wage_growth": 0.03,
+        "fertility_rate": 1.21,
+        "contribution_rate": 0.13,
+        "replacement_rate": 0.4
+      },
+      "trajectory": {
+        "2024": {
+          "balance": 1100.0,
+          "revenue": 62.0,
+          "expenditure": 44.0,
+          "return_income": 48.0
+        },
+        "2025": {
+          "balance": 1218.2,
+          "revenue": 99.3,
+          "expenditure": 50.4,
+          "return_income": 69.3
+        },
+        "2026": {
+          "balance": 1347.0,
+          "revenue": 109.2,
+          "expenditure": 56.8,
+          "return_income": 76.4
+        },
+        "2027": {
+          "balance": 1487.6,
+          "revenue": 120.8,
+          "expenditure": 64.4,
+          "return_income": 84.2
+        },
+        "2028": {
+          "balance": 1640.8,
+          "revenue": 132.7,
+          "expenditure": 72.1,
+          "return_income": 92.7
+        },
+        "2029": {
+          "balance": 1806.5,
+          "revenue": 144.8,
+          "expenditure": 81.0,
+          "return_income": 101.9
+        },
+        "2030": {
+          "balance": 1986.1,
+          "revenue": 158.7,
+          "expenditure": 91.0,
+          "return_income": 111.9
+        },
+        "2031": {
+          "balance": 2176.6,
+          "revenue": 171.3,
+          "expenditure": 102.2,
+          "return_income": 121.5
+        },
+        "2032": {
+          "balance": 2378.5,
+          "revenue": 184.2,
+          "expenditure": 114.7,
+          "return_income": 132.4
+        },
+        "2033": {
+          "balance": 2590.1,
+          "revenue": 195.7,
+          "expenditure": 128.4,
+          "return_income": 144.3
+        },
+        "2034": {
+          "balance": 2809.9,
+          "revenue": 207.5,
+          "expenditure": 143.4,
+          "return_income": 155.8
+        },
+        "2035": {
+          "balance": 3035.0,
+          "revenue": 217.8,
+          "expenditure": 159.7,
+          "return_income": 167.0
+        },
+        "2036": {
+          "balance": 3264.7,
+          "revenue": 226.7,
+          "expenditure": 176.2,
+          "return_income": 179.2
+        },
+        "2037": {
+          "balance": 3496.8,
+          "revenue": 234.2,
+          "expenditure": 194.1,
+          "return_income": 192.0
+        },
+        "2038": {
+          "balance": 3731.7,
+          "revenue": 241.7,
+          "expenditure": 212.2,
+          "return_income": 205.4
+        },
+        "2039": {
+          "balance": 3968.4,
+          "revenue": 247.7,
+          "expenditure": 230.6,
+          "return_income": 219.5
+        },
+        "2040": {
+          "balance": 4203.5,
+          "revenue": 253.8,
+          "expenditure": 250.4,
+          "return_income": 231.7
+        },
+        "2041": {
+          "balance": 4436.4,
+          "revenue": 260.1,
+          "expenditure": 271.6,
+          "return_income": 244.4
+        },
+        "2042": {
+          "balance": 4663.9,
+          "revenue": 266.4,
+          "expenditure": 294.2,
+          "return_income": 255.4
+        },
+        "2043": {
+          "balance": 4884.0,
+          "revenue": 271.0,
+          "expenditure": 318.4,
+          "return_income": 267.4
+        },
+        "2044": {
+          "balance": 5095.1,
+          "revenue": 277.5,
+          "expenditure": 344.0,
+          "return_income": 277.7
+        },
+        "2045": {
+          "balance": 5292.1,
+          "revenue": 282.3,
+          "expenditure": 371.2,
+          "return_income": 285.9
+        },
+        "2046": {
+          "balance": 5473.3,
+          "revenue": 289.0,
+          "expenditure": 400.0,
+          "return_income": 292.1
+        },
+        "2047": {
+          "balance": 5633.0,
+          "revenue": 294.0,
+          "expenditure": 430.3,
+          "return_income": 296.0
+        },
+        "2048": {
+          "balance": 5770.5,
+          "revenue": 300.9,
+          "expenditure": 461.1,
+          "return_income": 297.7
+        },
+        "2049": {
+          "balance": 5875.7,
+          "revenue": 306.0,
+          "expenditure": 493.5,
+          "return_income": 292.6
+        },
+        "2050": {
+          "balance": 5946.7,
+          "revenue": 313.2,
+          "expenditure": 526.4,
+          "return_income": 284.4
+        },
+        "2051": {
+          "balance": 5968.5,
+          "revenue": 318.5,
+          "expenditure": 561.0,
+          "return_income": 264.3
+        },
+        "2052": {
+          "balance": 5930.7,
+          "revenue": 325.8,
+          "expenditure": 596.1,
+          "return_income": 232.5
+        },
+        "2053": {
+          "balance": 5803.0,
+          "revenue": 331.3,
+          "expenditure": 631.7,
+          "return_income": 172.8
+        },
+        "2054": {
+          "balance": 5819.7,
+          "revenue": 338.9,
+          "expenditure": 669.1,
+          "return_income": 346.8
+        },
+        "2055": {
+          "balance": 5802.2,
+          "revenue": 344.5,
+          "expenditure": 706.9,
+          "return_income": 344.9
+        },
+        "2056": {
+          "balance": 5758.6,
+          "revenue": 352.3,
+          "expenditure": 744.1,
+          "return_income": 348.1
+        },
+        "2058": {
+          "balance": 5652.5,
+          "revenue": 368.3,
+          "expenditure": 819.9,
+          "return_income": 345.5
+        },
+        "2060": {
+          "balance": 5478.6,
+          "revenue": 384.8,
+          "expenditure": 897.8,
+          "return_income": 339.2
+        },
+        "2062": {
+          "balance": 5231.3,
+          "revenue": 401.9,
+          "expenditure": 978.0,
+          "return_income": 328.7
+        },
+        "2064": {
+          "balance": 4904.3,
+          "revenue": 419.5,
+          "expenditure": 1060.3,
+          "return_income": 313.9
+        },
+        "2066": {
+          "balance": 4500.3,
+          "revenue": 439.9,
+          "expenditure": 1138.1,
+          "return_income": 294.3
+        },
+        "2068": {
+          "balance": 4020.4,
+          "revenue": 461.0,
+          "expenditure": 1211.0,
+          "return_income": 270.0
+        },
+        "2070": {
+          "balance": 3465.7,
+          "revenue": 482.9,
+          "expenditure": 1278.8,
+          "return_income": 241.2
+        },
+        "2072": {
+          "balance": 2837.9,
+          "revenue": 505.4,
+          "expenditure": 1341.2,
+          "return_income": 207.9
+        },
+        "2074": {
+          "balance": 2136.1,
+          "revenue": 528.8,
+          "expenditure": 1400.8,
+          "return_income": 170.3
+        },
+        "2076": {
+          "balance": 1361.1,
+          "revenue": 552.9,
+          "expenditure": 1456.0,
+          "return_income": 128.2
+        },
+        "2078": {
+          "balance": 512.5,
+          "revenue": 577.8,
+          "expenditure": 1508.1,
+          "return_income": 81.7
+        },
+        "2080": {
+          "balance": 0.0,
+          "revenue": 606.1,
+          "expenditure": 1561.4,
+          "return_income": 30.7
+        }
+      },
+      "summary": {
+        "peak_year": 2051,
+        "peak_balance": 5968.5,
+        "depletion_year": 2080,
+        "horizon_end": 2080,
+        "horizon_start": 2024
+      }
+    }
+  }
+}

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Everforge — 국민연금, 언제까지 버틸까?</title>
+<meta name="description" content="국민연금 자산 실시간 추정과 고갈 시점 시뮬레이션. 정부 5차 재정추계(2023) 기반.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+KR:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/everforge.css">
+</head>
+<body>
+
+<nav class="ef-nav">
+  <a href="/everforge/" class="brand">EVERFORGE</a>
+  <ul class="nav-links">
+    <li><a href="/everforge/" class="active">개요</a></li>
+    <li><a href="/everforge/detail.html">시뮬레이터</a></li>
+    <li><a href="/everforge/about.html">설명</a></li>
+    <li><a href="/" style="color:var(--tx-3)">⬥ FORGE</a></li>
+  </ul>
+  <div class="nav-meta"><span class="pulse"></span><span id="meta-asof">로딩 중…</span></div>
+</nav>
+
+<div class="ef-container">
+
+  <!-- HERO -->
+  <section class="ef-hero">
+    <div class="ef-hero-kicker">National Pension Service · Real-time Estimate</div>
+    <h1 class="ef-hero-tagline">국민연금, <em>정말로</em> 고갈될까요?</h1>
+    <p class="ef-hero-sub">정부 5차 재정추계 기준 추정치. 슬라이더 한 번 움직이면 결과가 출렁입니다.</p>
+
+    <div class="ef-counter-wrap">
+      <div>
+        <div class="ef-counter-label">현재 적립 자산 (추정)</div>
+        <div>
+          <span class="ef-counter-value" id="hero-balance">—</span>
+          <span class="ef-counter-unit">조원</span>
+        </div>
+        <div class="ef-counter-delta" id="hero-delta">—</div>
+        <div class="ef-counter-meta" id="hero-meta">—</div>
+      </div>
+      <div class="ef-depletion">
+        <div class="ef-counter-label">기본 시나리오 고갈</div>
+        <div class="ef-depletion-year" id="hero-depletion">2055년</div>
+        <div class="ef-depletion-quip" id="hero-quip">—</div>
+        <div class="ef-depletion-source">제5차 재정추계 (2023.03)</div>
+      </div>
+    </div>
+
+    <div class="ef-cta-row">
+      <a href="/everforge/detail.html" class="ef-btn primary">🎚️ 직접 시뮬레이션 해보기</a>
+      <a href="/everforge/about.html" class="ef-btn ghost">📖 어떻게 계산했나요?</a>
+    </div>
+  </section>
+
+  <!-- SCENARIO COMPARISON -->
+  <section class="ef-section">
+    <div class="ef-section-label">Scenarios</div>
+    <h2 class="ef-section-title">세 가지 미래, 골라잡으세요</h2>
+    <p class="ef-section-desc">동일한 모델, 가정만 다릅니다. <em style="color:var(--gold-0);font-style:normal">출산율</em>과 <em style="color:var(--gold-0);font-style:normal">운용수익률</em>이 진짜 핵심 변수입니다.</p>
+
+    <div class="ef-grid-3" id="scenario-cards">
+      <div class="ef-card"><div class="ef-card-label">기본 — 정부 5차 추계</div><div class="ef-card-title">…</div></div>
+      <div class="ef-card highlight"><div class="ef-card-label">기본 — 정부 5차 추계</div><div class="ef-card-title">…</div></div>
+      <div class="ef-card"><div class="ef-card-label">기본 — 정부 5차 추계</div><div class="ef-card-title">…</div></div>
+    </div>
+  </section>
+
+  <!-- ASSET BREAKDOWN -->
+  <section class="ef-section">
+    <div class="ef-section-label">Portfolio Allocation</div>
+    <h2 class="ef-section-title">지금 돈은 어디에?</h2>
+    <p class="ef-section-desc">마지막 NPS 공시 자산군 비중 + 그 이후 시장 변동을 보간해 추정한 값입니다.</p>
+
+    <div class="ef-breakdown" id="breakdown-card">
+      <div class="ef-breakdown-head">
+        <h3>자산군별 현황</h3>
+        <span class="badge" id="breakdown-asof">LOADING</span>
+      </div>
+      <div id="breakdown-rows">
+        <div class="ef-breakdown-row"><div class="name">…</div><div class="bar-wrap"><div class="bar" style="width:0%"></div></div><div class="val">—</div><div class="pct">—</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="ef-footer">
+    ⬥ <em>EVERFORGE</em> ⬥ &nbsp; 데이터 출처:
+    <a href="https://fund.nps.or.kr/" target="_blank" rel="noopener">NPS 기금운용본부</a> ·
+    <a href="https://www.nps.or.kr/" target="_blank" rel="noopener">국민연금공단</a> ·
+    <a href="https://kosis.kr/" target="_blank" rel="noopener">통계청 KOSIS</a> &nbsp;
+    · <a href="https://mav-ash.com/">mav-ash.com</a>
+  </footer>
+
+</div>
+
+<script src="js/utils.js"></script>
+<script>
+(async function() {
+  let current, forecasts;
+  try {
+    [current, forecasts] = await Promise.all([
+      EF.loadJson('data/current.json'),
+      EF.loadJson('data/forecasts.json'),
+    ]);
+  } catch (e) {
+    document.getElementById('hero-balance').textContent = 'DATA ERROR';
+    console.error(e);
+    return;
+  }
+
+  // ── HERO: counter ─────────────────────────────────────
+  const est = current.estimate;
+  EF.animateNumber(
+    document.getElementById('hero-balance'),
+    est.anchor_total,
+    est.estimated_total,
+  );
+  const delta = est.delta_trillion_krw;
+  const dEl = document.getElementById('hero-delta');
+  if (delta >= 0) {
+    dEl.textContent = `▲ 마지막 공시 대비 +${EF.fmt.bigKrw(delta)}조 (${EF.fmt.pct(est.delta_pct, 2, true)})`;
+    dEl.classList.remove('neg');
+  } else {
+    dEl.textContent = `▼ 마지막 공시 대비 ${EF.fmt.bigKrw(delta)}조 (${EF.fmt.pct(est.delta_pct, 2, true)})`;
+    dEl.classList.add('neg');
+  }
+  document.getElementById('hero-meta').textContent =
+    `마지막 NPS 공시: ${est.anchor_date} · 추정 시점: ${est.as_of}`;
+  document.getElementById('meta-asof').textContent =
+    `as of ${est.as_of}`;
+
+  // ── HERO: depletion ────────────────────────────────────
+  const baseSum = forecasts.scenarios.base.summary;
+  document.getElementById('hero-depletion').textContent =
+    baseSum.depletion_year ? `${baseSum.depletion_year}년` : '— (안 고갈)';
+  document.getElementById('hero-quip').innerHTML = EF.depletionQuip(baseSum.depletion_year, est.as_of.slice(0,4) * 1);
+
+  // ── SCENARIO CARDS ─────────────────────────────────────
+  const container = document.getElementById('scenario-cards');
+  container.innerHTML = '';
+  const order = ['bear', 'base', 'bull'];
+  const labels = {
+    bear: { kicker: 'BEAR', mood: 'warn' },
+    base: { kicker: 'BASE', mood: 'neutral' },
+    bull: { kicker: 'BULL', mood: 'good' },
+  };
+  order.forEach(key => {
+    const s = forecasts.scenarios[key];
+    const summary = s.summary;
+    const isBase = key === 'base';
+    const dep = summary.depletion_year;
+    const card = document.createElement('div');
+    card.className = 'ef-card' + (isBase ? ' highlight' : '');
+    card.innerHTML = `
+      <div class="ef-card-label">${labels[key].kicker} — ${s.label}</div>
+      <div class="ef-card-title">${s.description}</div>
+      <div style="flex:1"></div>
+      <div class="ef-card-big ${labels[key].mood}">${dep ? dep + '년' : '안 고갈 ✨'}</div>
+      <div class="ef-card-sub" style="margin-top:8px;margin-bottom:0">${EF.depletionQuip(dep, est.as_of.slice(0,4)*1).replace(/<\/?em>/g,'')}</div>
+      <div class="ef-card-row"><span class="l">PEAK</span><span class="v">${summary.peak_year}년 · ${EF.fmt.bigKrw(summary.peak_balance)}조</span></div>
+      <div class="ef-card-row"><span class="l">수익률</span><span class="v">${(s.assumptions.real_return_rate*100).toFixed(1)}%</span></div>
+      <div class="ef-card-row"><span class="l">출산율</span><span class="v">${s.assumptions.fertility_rate.toFixed(2)}</span></div>
+      <div class="ef-card-row"><span class="l">보험료율</span><span class="v">${(s.assumptions.contribution_rate*100).toFixed(1)}%</span></div>
+    `;
+    container.appendChild(card);
+  });
+
+  // ── ASSET BREAKDOWN ────────────────────────────────────
+  document.getElementById('breakdown-asof').textContent = `as of ${est.as_of}`;
+  const rows = document.getElementById('breakdown-rows');
+  rows.innerHTML = '';
+  const classes = est.by_class;
+  const maxWeight = Math.max(...Object.values(classes).map(c => c.current_value));
+  Object.entries(classes).forEach(([key, c]) => {
+    if (key === 'welfare_other' && c.current_value < 5) return;  // skip tiny
+    const pct = (c.current_value / est.estimated_total) * 100;
+    const widthPct = (c.current_value / maxWeight) * 100;
+    const r = document.createElement('div');
+    r.className = 'ef-breakdown-row';
+    const chgCls = c.pct_change > 0.1 ? 'up' : c.pct_change < -0.1 ? 'dn' : '';
+    const chgSign = c.pct_change > 0 ? '+' : '';
+    r.innerHTML = `
+      <div class="name">${EF.CLASS_KO[key] || key}</div>
+      <div class="bar-wrap"><div class="bar" style="width:${widthPct}%"></div></div>
+      <div class="val">${EF.fmt.bigKrw(c.current_value)}조 (${pct.toFixed(1)}%)</div>
+      <div class="pct ${chgCls}">${chgSign}${c.pct_change.toFixed(2)}%</div>
+    `;
+    rows.appendChild(r);
+  });
+})();
+</script>
+</body>
+</html>
