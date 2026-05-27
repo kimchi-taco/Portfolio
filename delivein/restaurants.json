@@ -1,9 +1,9 @@
 {
-  "updated": "2026-04-28",
+  "updated": "2026-05-28",
   "source_stats": {
     "manual_curated": 22,
-    "crawled": 33,
-    "last_crawl": "2026-04-28T03:00:47.602070"
+    "crawled": 34,
+    "last_crawl": "2026-05-28T03:00:40.292841"
   },
   "restaurants": [
     {
@@ -2303,6 +2303,39 @@
       "id": 72,
       "source": "crawl",
       "added": "2026-04-28",
+      "score": 50
+    },
+    {
+      "name": "백부장집 닭한마리",
+      "category": [
+        "노포",
+        "회식",
+        "점심"
+      ],
+      "since": 1980,
+      "type": "닭한마리",
+      "address": "서울 종로구 삼봉로 100-1",
+      "phone": "02-732-2565",
+      "menu": [
+        {
+          "item": "닭한마리(2인)",
+          "price": "28,000원"
+        }
+      ],
+      "hours": "월~토 11:00~22:00",
+      "closed": "일요일",
+      "reservation": true,
+      "reservationNote": "단체 예약 가능",
+      "capacity": "100석 이상",
+      "coords": [
+        37.5721,
+        126.9825
+      ],
+      "description": "광화문과 종각 직장인들의 단골 회식 장소로 깔끔한 육수와 특제 소스가 유명합니다.",
+      "verdict": "군더더기 없는 깔끔한 닭한마리의 정석",
+      "id": 73,
+      "source": "crawl",
+      "added": "2026-05-28",
       "score": 50
     }
   ]
