@@ -1,9 +1,9 @@
 {
-  "updated": "2026-05-28",
+  "updated": "2026-06-28",
   "source_stats": {
     "manual_curated": 22,
-    "crawled": 34,
-    "last_crawl": "2026-05-28T03:00:40.292841"
+    "crawled": 35,
+    "last_crawl": "2026-06-28T03:00:44.999448"
   },
   "restaurants": [
     {
@@ -2336,6 +2336,42 @@
       "id": 73,
       "source": "crawl",
       "added": "2026-05-28",
+      "score": 50
+    },
+    {
+      "name": "뚝배기집",
+      "category": [
+        "노포",
+        "점심"
+      ],
+      "since": 1980,
+      "type": "찌개/백반",
+      "address": "서울 종로구 종로16길 12",
+      "phone": "02-2265-5732",
+      "menu": [
+        {
+          "item": "우렁된장",
+          "price": "7,000원"
+        },
+        {
+          "item": "순두부",
+          "price": "6,000원"
+        }
+      ],
+      "hours": "매일 07:00~21:30",
+      "closed": "연중무휴",
+      "reservation": false,
+      "reservationNote": "현장 방문",
+      "capacity": "~20석",
+      "coords": [
+        37.569,
+        126.989
+      ],
+      "description": "종로 직장인들의 성지로 불리는 가성비 최고의 뚝배기 찌개 전문점입니다.",
+      "verdict": "저렴한 가격에 든든한 한 끼를 해결할 수 있는 종로의 보석 같은 밥집",
+      "id": 74,
+      "source": "crawl",
+      "added": "2026-06-28",
       "score": 50
     }
   ]
