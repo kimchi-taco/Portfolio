@@ -1,9 +1,9 @@
 {
-  "updated": "2026-06-28",
+  "updated": "2026-07-28",
   "source_stats": {
     "manual_curated": 22,
-    "crawled": 35,
-    "last_crawl": "2026-06-28T03:00:44.999448"
+    "crawled": 37,
+    "last_crawl": "2026-07-28T03:00:41.122565"
   },
   "restaurants": [
     {
@@ -2372,6 +2372,74 @@
       "id": 74,
       "source": "crawl",
       "added": "2026-06-28",
+      "score": 50
+    },
+    {
+      "name": "백제정육점",
+      "category": [
+        "노포",
+        "회식"
+      ],
+      "since": 1980,
+      "type": "육회/소고기",
+      "address": "서울 종로구 종로35길 34",
+      "phone": "02-762-7491",
+      "menu": [
+        {
+          "item": "육회(500g)",
+          "price": "39,000원"
+        },
+        {
+          "item": "차돌박이",
+          "price": "42,000원"
+        }
+      ],
+      "hours": "10:00~22:30",
+      "closed": "일요일",
+      "reservation": true,
+      "reservationNote": "단체 예약 가능",
+      "capacity": "100석 이상",
+      "coords": [
+        37.5718,
+        127.0015
+      ],
+      "description": "종로5가에서 육회와 차돌박이로 명성이 자자한 가성비 좋은 정육 식당입니다.",
+      "verdict": "푸짐한 양의 육회와 차돌박이를 즐길 수 있는 노포 회식 명소",
+      "id": 75,
+      "source": "crawl",
+      "added": "2026-07-28",
+      "score": 50
+    },
+    {
+      "name": "뽐모도로",
+      "category": [
+        "노포",
+        "점심"
+      ],
+      "since": 1994,
+      "type": "파스타",
+      "address": "서울 종로구 새문안로9길 6",
+      "phone": "02-722-4675",
+      "menu": [
+        {
+          "item": "새우 마늘 크림 스파게티",
+          "price": "19,500원"
+        }
+      ],
+      "hours": "11:30~21:00 (브레이크타임 15:00~17:00)",
+      "closed": "일요일",
+      "reservation": false,
+      "reservationNote": "현장 대기",
+      "capacity": "~30석",
+      "coords": [
+        37.5718,
+        126.9742
+      ],
+      "description": "광화문 직장인들 사이에서 전설적인 파스타 맛집으로 통하는 양이 푸짐한 이탈리안 레스토랑입니다.",
+      "verdict": "한국식 파스타의 정점이자 광화문의 추억이 담긴 곳",
+      "id": 76,
+      "source": "crawl",
+      "added": "2026-07-28",
       "score": 50
     }
   ]
