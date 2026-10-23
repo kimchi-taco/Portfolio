@@ -26,3 +26,12 @@
 
 총성·기관총·저격 소리는 녹음 샘플 없이 WebAudio 합성 (`src/systems/sfx.ts`).
 유닛 토큰·카드·주사위는 코드로 그린다 (외부 그림 없음).
+
+### 시나리오 2 추가 타일 (2026-10-23)
+| 파일 | 원본 | 팩 | 가공 |
+|---|---|---|---|
+| tiles/river.png | PNG/Tiles/Terrain/Grass/grass_05.png | Hexagon Pack | 파란 색조로 재채색 + 물결 선 (`tools/tilegen/make_water_tiles.py`) |
+| tiles/bridge.png | 위 river.png | Hexagon Pack | 남북 돌다리 띠·난간 그림 |
+| tiles/ford.png | PNG/Tiles/Terrain/Grass/grass_05.png | Hexagon Pack | 옅은 청록 재채색 + 징검돌·물결 |
+| tiles/windmill.png | PNG/Tiles/Medieval/medieval_windmill.png | Hexagon Pack | 이름 변경 |
+| tiles/ruins.png | PNG/Tiles/Medieval/medieval_ruins.png | Hexagon Pack | 이름 변경 |
